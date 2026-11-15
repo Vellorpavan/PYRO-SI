@@ -69,7 +69,7 @@ export function drawPartialGChart(o2, psi, flow, currentG) {
 
   const maxSpread = 10.0;
 
-  // 1. Shaded Empirical Confidence Interval Band (±14% uncertainty before direct LUCI/FM2 flight data)
+  // 1. Conceptual Empirical Bounding Corridor (±14% illustrative envelope prior to direct in-situ flight data)
   ctx.beginPath();
   for (let i = 0; i <= 50; i++) {
     const gStep = i / 50;
