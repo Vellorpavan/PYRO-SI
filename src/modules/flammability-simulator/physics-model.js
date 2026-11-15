@@ -403,13 +403,28 @@ export function calculateFlammability({ o2, psi, flow, g, material = 'sibal' } =
   const nomexRate = o2Val < 27.5 ? (0.0).toFixed(1) : (0.35 * spreadIndex).toFixed(1);
 
   // 9. Material Hazard Figures Audit & Provenance Records
+  const isNomex = (material && material.toLowerCase() === 'nomex');
+  const materialModelStatus = isNomex ? 'MATERIAL_OUTSIDE_SUPPORTED_LOI_DOMAIN' : 'SUPPORTED_CALIBRATION_BASELINE';
+  const materialModelNote = isNomex
+    ? 'Nomex HT90-40 documented LOI (28.0–30.0% O2) exceeds the model supported LOI scaling range [12.5, 24.0]%. The 12.5–24.0% LOI scaling curve applies exclusively to SIBAL fabric (base LOI 17.5%). The model does not extrapolate or silently clamp Nomex LOI; Nomex spread rates are unverified qualitative proxies.'
+    : 'Operating within supported material domain.';
+
   const materialProvenance = {
     sibal: {
       materialName: 'SIBAL Composite Fabric (75% cotton / 25% fiberglass, 0.37 mm thick)',
       spreadRate_mm_s: sibalRate,
-      status: isHypoxicPurge ? VerificationStatus.PROVISIONAL_PROXY : VerificationStatus.VERIFIED_DATASET,
-      empiricalAnchor: 'SAFFIRE-I (PSI-98): 2.24 mm/s measured concurrent spread at 20 cm/s flow, 21.5% O2 (NASA TP-2019 / Acta Astronautica 2019)',
-      epistemicTier: EpistemicClassification.MODELLED
+      status: isHypoxicPurge ? VerificationStatus.UNVERIFIED : VerificationStatus.VERIFIED_DATASET,
+      empiricalAnchor: isHypoxicPurge
+        ? 'UNVERIFIED_MODELLED_HEURISTIC: Fixed 0.2 mm/s in hypoxic purge (<10% O2) is an unverified project heuristic representing slow smolder/pyrolysis decay, NOT a flight-measured result from SAFFIRE-I.'
+        : 'SAFFIRE-I (PSI-98): 2.24 mm/s measured concurrent spread at 20 cm/s flow, 21.5% O2 (NASA TP-2019 / Acta Astronautica 2019)',
+      epistemicTier: EpistemicClassification.MODELLED,
+      hypoxicOverride: isHypoxicPurge ? {
+        value_mm_s: 0.2,
+        classification: 'UNVERIFIED_MODELLED_HEURISTIC',
+        isFlightMeasured: false,
+        derivation: 'Project software floor heuristic representing smoldering decay; no flight experiments measured SIBAL at <10% O2.',
+        note: 'Fixed 0.2 mm/s rate is an unverified project heuristic, NOT a measured flight result.'
+      } : null
     },
     pmma: {
       materialName: 'Polymethyl Methacrylate (PMMA) Cast Sheet',
@@ -435,7 +450,10 @@ export function calculateFlammability({ o2, psi, flow, g, material = 'sibal' } =
         primarySource: 'NASA TP-2007-213777 (Flammability Assessment of Materials in Enriched Oxygen Atmospheres, White Sands Test Facility) & DuPont Nomex Technical Guide',
         pageCitationStatus: 'PAGE_UNVERIFIED',
         status: 'REPORTED_LITERATURE',
-        variabilityNote: 'LOI is not a universal fixed constant: it varies with fabric areal weight, weave, thickness, edge finish (hemmed vs unhemmed), moisture conditioning, and test apparatus (ASTM D2863 / NASA TP-2007-213777).'
+        variabilityNote: 'LOI is not a universal fixed constant: it varies with fabric areal weight, weave, thickness, edge finish (hemmed vs unhemmed), moisture conditioning, and test apparatus (ASTM D2863 / NASA TP-2007-213777).',
+        modelSupported: false,
+        runtimeStatus: 'OUT_OF_RANGE_UNSUPPORTED',
+        modelDomainConstraint: 'Documented LOI (28.0–30.0% O2) is outside the 1D model supported range [12.5, 24.0]%. The model does NOT silently clamp Nomex to 24% or extrapolate.'
       },
       nasaStd6001B_Test1: {
         testStandard: 'NASA-STD-6001B w/Change 3, Section 7.1 (Test 1: Upward Flame Propagation Test)',
@@ -446,21 +464,25 @@ export function calculateFlammability({ o2, psi, flow, g, material = 'sibal' } =
           edgeCondition: 'Tested with hemmed or unhemmed edges per fabric specification (edge hemming mitigates edge fraying and premature upward flame channeling)',
           mounting: 'Vertical orientation in standard sample clamp frame',
           testAtmosphere: 'Tested at worst-case operational pressure and maximum operational oxygen concentration',
-          ignitionMethod: 'Standard chemical igniter delivering calibrated thermal energy (750 ± 50 J per NASA-STD-6001B w/Change 3, Section 7.1.3.1 & Appendix A.1.2). Fixed 25 s dwell was previously referenced as a laboratory test configuration (LABORATORY_TEST_CONFIG_ONLY), but is UNVERIFIED [NO PRIMARY WSTF OR NASA RECORD PRODUCED]; it is NOT an established WSTF standard protocol and not a universal NASA-STD-6001B requirement.',
+          ignitionMethod: 'Standard chemical igniter conforming to ISO 14624-1 specifications referenced in NASA-STD-6001B Section 7.1 (burning duration 25 ± 5 s, flame temperature 1100 ± 90°C / 2000 ± 160°F, visible flame height 65 ± 6.5 mm). Note: Historical NASA Handbook NHB 8060.1B/C Test 1 specified 750 ± 50 cal (3138 ± 209 J). NASA-STD-6001B does NOT contain Section 7.1.3.1 or Appendix A.1.2 mandating 750 J.',
           ignitionEnergyAudit: {
-            standardDeliveredEnergy: '750 ± 50 J (NASA-STD-6001B w/Change 3, Section 7.1.3.1 & Appendix A.1.2; standard chemical igniter total thermal energy release)',
-            energyDensityLiteratureClaim: '2000 kJ/m² (Energy fluence / heat flux integrated over time from secondary aerospace flammability literature, NOT an active NASA-STD-6001B standard requirement clause; units kJ/m² are energy per area, NOT interchangeable with scalar energy in Joules)',
+            historicalStandardEnergy: '750 ± 50 cal (3138 ± 209 J; NASA Handbook NHB 8060.1B/C Test 1 & NASA TM-104797; standard chemical igniter heat output)',
+            standardDeliveredEnergy: 'Historical NASA standard specification: 750 ± 50 cal (often erroneously transcribed as 750 ± 50 J in secondary summaries). NASA-STD-6001B w/Change 3 does not contain Section 7.1.3.1 or Appendix A.1.2 specifying 750 J, but references ISO 14624-1.',
+            currentActiveStandardSpecification: 'NASA-STD-6001B w/Change 3 Section 7.1 references ISO 14624-1, specifying burning duration 25 ± 5 s, flame temperature 1100 ± 90°C (2000 ± 160°F), and flame height 65 ± 6.5 mm; NASA-STD-6001B does NOT contain Section 7.1.3.1 or Appendix A.1.2 mandating 750 ± 50 J.',
+            energyUnitsCorrection: 'The 750 value in historical NASA standards is in CALORIES (750 ± 50 cal), NOT Joules. Transcribing 750 cal as 750 J was a factor-of-4.184 unit error.',
+            energyDensityLiteratureClaim: '2000 kJ/m² (Energy fluence / heat flux from secondary literature; historically confused with the 2000 ± 160°F flame temperature; NOT an active standard clause; units kJ/m² are energy per area, NOT interchangeable with scalar energy in Joules)',
             gasBurnerAlternative: 'Alternative ignition source permitted under Section 7.1.3 only when authorized by test requestor; standard chemical igniter is the mandatory baseline for standard Test 1',
             quantitiesInterchangeable: false,
-            status: 'VERIFIED_STANDARD_CLAUSE_750J_VS_UNVERIFIED_SECONDARY_2000kJ_m2'
+            status: 'REMOVED_CURRENT_STANDARD_VERIFICATION_CLAIM'
           },
           ignitionDwellVerification: {
             value_seconds: 25,
-            status: 'UNVERIFIED',
+            standardRange_seconds: '25 ± 5 s',
+            status: 'VERIFIED_ISO_14624_1_AND_NHB_8060_1',
             wstfRecordProduced: false,
-            standardRequirement: false,
-            classification: 'UNVERIFIED_LABORATORY_ANECDOTE',
-            note: 'No official NASA White Sands Test Facility document title, record identifier, date, section, or source produced supporting a 25 s standard mandate. NASA-STD-6001B specifies calibrated energy delivery, not a 25 s dwell.'
+            standardRequirement: true,
+            classification: 'VERIFIED_STANDARD_CHEMICAL_IGNITER_BURN_DURATION',
+            note: 'The 25 ± 5 second burning duration is explicitly specified in ISO 14624-1 Section 5.1 and NASA Handbook NHB 8060.1B/C Test 1 as the chemical igniter burning duration, referenced by NASA-STD-6001B Section 7.1. It is not an unrecorded WSTF operational anomaly.'
           }
         },
         acceptanceCriteria: {
@@ -604,11 +626,20 @@ export function calculateFlammability({ o2, psi, flow, g, material = 'sibal' } =
       inputKey: 'o2',
       units: '% O2 by volume (mole percent)',
       referenceBaseline: '21.0% O2 nominal Earth atmospheric baseline',
-      supportedScientificRange: 'Not an established physical range; software bounds apply',
-      softwareImplementationBounds: {
-        minFloor: 0.0,
-        defaultFallback: 21.0,
-        unclampedHighValuesHandled: true
+      exactRuntimeExpression: 'const o2Ratio = Math.pow(Math.max(0.1, (o2Val - loi) / (21.0 - 15.5)), 1.35)',
+      executionOrder: [
+        '1. Input Sanitization: o2Val = Math.max(0.0, Number(o2) || (o2 === 0 ? 0.0 : 21.0)) clamps negative inputs to 0.0.',
+        '2. Scaled LOI: loi = clamp((17.5 + flowFactor) * pressureFactor, 12.5, 24.0) evaluated for SIBAL baseline.',
+        '3. Normalized Difference: diff = (o2Val - loi) / 5.5, which is negative when o2Val < loi, zero at loi, and positive when o2Val > loi.',
+        '4. Anti-NaN Software Floor Clamp: clampedBase = Math.max(0.1, diff) clamps base to 0.1 minimum to prevent JavaScript Math.pow(negative, 1.35) returning NaN.',
+        '5. Exponentiation: o2Ratio = Math.pow(clampedBase, 1.35) evaluates to 0.1^1.35 ≈ 0.04467 when diff <= 0.1.',
+        '6. Spread Index: spreadIndex = psiVal > 0 ? Math.max(0.0, o2Ratio * pressScale * ventBonus) : 0.0.'
+      ],
+      javascriptAntiNanProtection: {
+        issue: 'In JavaScript, Math.pow(x, 1.35) returns NaN for any negative x because non-integer powers of negative numbers are complex.',
+        protectionMechanism: 'Math.max(0.1, ...) ensures base x is strictly >= 0.1, preventing NaN propagation.',
+        consequenceBelowLOI: 'Produces a mathematical residual base of 0.1^1.35 ≈ 0.04467 when o2Val <= loi.',
+        scientificInterpretation: 'CRITICAL: The non-zero spreadIndex below LOI is a pure software implementation floor to prevent NaN. It does NOT represent sustained physical combustion or physical flame spread. Physical flame propagation is extinguished below LOI.'
       },
       behaviorAtOrBelowLOI: {
         mechanism: 'Math.max(0.1, (o2Val - loi) / 5.5) clamps normalized base to 0.1 software floor, yielding o2Ratio = 0.1^1.35 ≈ 0.0447; spreadIndex retains non-zero residual value unless suppressed or zeroed by material-specific thresholds (e.g. Nomex clamped to 0.0 mm/s below 27.5% O2; SIBAL clamped to 0.2 mm/s in hypoxic purge <10% O2)',
@@ -676,6 +707,7 @@ export function calculateFlammability({ o2, psi, flow, g, material = 'sibal' } =
     vBuoyant,
     vEffective,
     loi,
+    sibal_loi: loi,
     spreadIndex,
     riskScore,
     rates: {
@@ -685,6 +717,8 @@ export function calculateFlammability({ o2, psi, flow, g, material = 'sibal' } =
       nomex: nomexRate
     },
     materialProvenance,
+    materialModelStatus,
+    materialModelNote,
     guardrailThresholds,
     suppressionRec,
     physiological,
