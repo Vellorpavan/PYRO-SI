@@ -31,9 +31,13 @@ export function initGodEyeGlobe() {
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.2;
 
-  // Clear previous canvas if re-initializing
-  container.innerHTML = '';
-  container.appendChild(renderer.domElement);
+  // Remove existing canvas element if re-initializing
+  const existingCanvas = container.querySelector('canvas');
+  if (existingCanvas) {
+    existingCanvas.remove();
+  }
+  renderer.domElement.className = 'w-full h-full block';
+  container.insertBefore(renderer.domElement, container.firstChild);
 
   // Lighting
   const ambientLight = new THREE.AmbientLight(0x223355, 1.4);

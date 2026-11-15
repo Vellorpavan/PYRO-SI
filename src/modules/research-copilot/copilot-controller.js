@@ -53,9 +53,9 @@ function renderTerminalOutput(terminal, title, badge, rawContent) {
 
   terminal.innerHTML = `
     <div class="space-y-4">
-      <div class="flex items-center justify-between border-b border-cyanHud/20 pb-2">
-        <span class="font-display font-bold text-sm text-cyanHud">${escapeHtml(title)}</span>
-        <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-violetSi/20 border border-violetSi/40 text-violet-300">
+      <div class="flex items-center justify-between border-b border-white/[0.08] pb-2">
+        <span class="font-sans font-bold text-sm text-sky-400">${escapeHtml(title)}</span>
+        <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/15 border border-indigo-500/30 text-indigo-300">
           ${escapeHtml(badge)}
         </span>
       </div>

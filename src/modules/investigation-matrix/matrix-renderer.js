@@ -67,42 +67,42 @@ export function renderPsiMatrix() {
           : 'bg-violet-500/15 border-violet-500/40 text-violet-300';
 
     const card = document.createElement('div');
-    card.className = `hud-panel rounded-xl p-4 flex flex-col justify-between gap-4 transition-all hover:border-cyanHud ${isSelected ? 'border-cyanHud ring-1 ring-cyanHud/50' : ''}`;
+    card.className = `hud-panel rounded-xl p-4 flex flex-col justify-between gap-3.5 transition-all hover:border-slate-500 ${isSelected ? 'border-sky-400 ring-1 ring-sky-400/40' : ''}`;
     card.innerHTML = `
-      <div class="space-y-2">
+      <div class="space-y-2.5">
         <div class="flex items-start justify-between gap-2">
           <div class="flex items-center gap-1.5 flex-wrap">
-            <span class="font-mono text-xs font-bold px-2 py-0.5 rounded ${rackBadgeColor}">
+            <span class="font-mono text-[11px] font-bold px-2 py-0.5 rounded ${rackBadgeColor}">
               <i class="fa-solid fa-microchip mr-1"></i>${escapeHtml(inv.rack)}
             </span>
-            <span class="font-mono text-xs text-slate-300 bg-space px-2 py-0.5 rounded border border-slate-700">
+            <span class="font-mono text-[11px] text-slate-300 bg-space px-2 py-0.5 rounded border border-slate-700">
               ${escapeHtml(inv.fuelType)}
             </span>
-            <span class="font-mono text-[10px] text-cyanHud bg-cyanHud/10 px-1.5 py-0.5 rounded border border-cyanHud/30 font-bold">
+            <span class="font-mono text-[10px] text-sky-400 bg-sky-400/10 px-1.5 py-0.5 rounded border border-sky-400/30 font-bold">
               ${escapeHtml(inv.psiId || inv.id)}
             </span>
           </div>
           <div class="text-right">
-            <span class="text-[9px] font-mono text-slate-400 block tracking-tight">PRIORITY RANK</span>
-            <span class="font-display font-extrabold text-base ${inv.calculatedScore >= 90 ? 'text-cyanHud' : inv.calculatedScore >= 80 ? 'text-emeraldSafe' : 'text-slate-300'}">
+            <span class="text-[9px] font-mono text-slate-400 block tracking-tight">PRIORITY</span>
+            <span class="telemetry-num font-bold text-sm ${inv.calculatedScore >= 90 ? 'text-sky-400' : inv.calculatedScore >= 80 ? 'text-emerald-400' : 'text-slate-300'}">
               ${inv.calculatedScore}%
             </span>
           </div>
         </div>
 
         <div>
-          <div class="flex items-center gap-2">
-            <span class="text-cyanHud font-mono text-xs font-bold">#${index + 1}</span>
-            <h3 class="font-display font-bold text-sm text-white">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-sky-400 font-mono text-xs font-bold">#${index + 1}</span>
+            <h3 class="font-sans font-bold text-sm text-white">
               ${escapeHtml(inv.code)}
             </h3>
             ${inv.verified ? `
-              <span class="text-[10px] font-mono text-emeraldSafe bg-emeraldSafe/10 border border-emeraldSafe/30 px-1.5 py-0.2 rounded" title="Verified in NASA PSI Database">
-                <i class="fa-solid fa-circle-check mr-0.5"></i>PSI VERIFIED
+              <span class="provenance-badge-verified" title="Verified in NASA Physical Sciences Informatics Database">
+                <i class="fa-solid fa-circle-check"></i>PSI FLIGHT VERIFIED
               </span>
             ` : `
-              <span class="text-[10px] font-mono text-amber-400 bg-amber-400/10 border border-amber-400/30 px-1.5 py-0.2 rounded" title="Planned Artemis concept; no dataset in PSI">
-                <i class="fa-solid fa-clock mr-0.5"></i>CONCEPT ONLY
+              <span class="provenance-badge-concept" title="Planned Artemis concept; awaiting LUCI/FM2 deployment">
+                <i class="fa-solid fa-clock"></i>CONCEPT ONLY
               </span>
             `}
           </div>
@@ -111,7 +111,7 @@ export function renderPsiMatrix() {
 
         <div class="p-2 rounded bg-space/70 border border-slate-800 text-[10px] font-mono space-y-1">
           <div class="flex justify-between text-slate-400">
-            <span>DATA SIZE: <strong class="text-white">${escapeHtml(inv.dataSize || 'N/A')}</strong></span>
+            <span>FLIGHT DATA: <strong class="text-white">${escapeHtml(inv.dataSize || 'N/A')}</strong></span>
             <span>STATUS: <strong class="text-slate-200">${escapeHtml(inv.version || 'Archived')}</strong></span>
           </div>
           <div class="text-emerald-400 truncate">
@@ -131,11 +131,11 @@ export function renderPsiMatrix() {
         </div>
 
         <div class="flex items-center gap-2">
-          <button onclick="window.toggleCompareStudy('${escapeHtml(inv.id)}')" class="flex-1 py-1.5 px-2 rounded text-xs font-mono font-semibold transition-all flex items-center justify-center gap-1.5 ${isSelected ? 'bg-cyanHud text-space font-bold' : 'bg-panelLight text-slate-200 border border-slate-700 hover:border-cyanHud'}">
+          <button onclick="window.toggleCompareStudy('${escapeHtml(inv.id)}')" class="flex-1 py-1.5 px-2 rounded text-xs font-mono font-semibold transition-all flex items-center justify-center gap-1.5 ${isSelected ? 'bg-sky-400 text-slate-950 font-bold' : 'bg-panelLight text-slate-200 border border-slate-700 hover:border-sky-400'}">
             <i class="fa-solid ${isSelected ? 'fa-check' : 'fa-code-compare'}"></i>
             <span>${isSelected ? 'IN COMPARATOR' : 'COMPARE'}</span>
           </button>
-          <a href="${escapeHtml(inv.psiUrl || 'https://psi.nasa.gov/physci/repo/search?q=combustion')}" target="_blank" rel="noopener noreferrer" class="p-1.5 px-2.5 rounded bg-space border border-slate-700 text-slate-400 hover:text-cyanHud hover:border-cyanHud text-xs font-mono" title="Open verified record on NASA repository">
+          <a href="${escapeHtml(inv.psiUrl || 'https://psi.nasa.gov/physci/repo/search?q=combustion')}" target="_blank" rel="noopener noreferrer" class="p-1.5 px-2.5 rounded bg-space border border-slate-700 text-slate-400 hover:text-sky-400 hover:border-sky-400 text-xs font-mono" title="Open verified record on NASA repository">
             <i class="fa-solid fa-arrow-up-right-from-square"></i>
           </a>
         </div>

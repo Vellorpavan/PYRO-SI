@@ -80,8 +80,8 @@ export function renderComparisonTable() {
               <th class="p-2.5 min-w-[200px] border-r border-slate-800 last:border-r-0">
                 <div class="flex items-center justify-between gap-2">
                   <div class="flex items-center gap-1.5">
-                    <span class="text-cyanHud font-mono text-[10px] bg-cyanHud/10 px-1 rounded">${escapeHtml(s.psiId || s.id)}</span>
-                    <span class="font-display font-bold text-white text-xs">${escapeHtml(s.code)}</span>
+                    <span class="text-sky-400 font-mono text-[10px] bg-sky-400/10 px-1 rounded">${escapeHtml(s.psiId || s.id)}</span>
+                    <span class="font-sans font-bold text-white text-xs">${escapeHtml(s.code)}</span>
                   </div>
                   <button onclick="window.toggleCompareStudy('${escapeHtml(s.id)}')" class="text-slate-400 hover:text-crimsonAlert p-1" title="Remove from comparison">
                     <i class="fa-solid fa-xmark"></i>

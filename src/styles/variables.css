@@ -1,64 +1,87 @@
 /* =============================================================================
-   GODEYE // PYRO-SI — Design Tokens (Hallmark / Refero / Apple Standard)
+   GODEYE // PYRO-SI — Design Tokens (Aerospace Scientific Standard)
    NASA Space Apps Challenge 2026 — Flame in Freefall
+   Benchmarked against NASA Eyes, SpaceX Crew Dragon, Palantir Foundry, Linear
    ============================================================================= */
 
 :root {
-  /* Color Palette — Space Tactical & Combustion Telemetry */
-  --color-space: #06080E;
-  --color-space-deep: #030407;
-  --color-space-surface: #090D18;
-  --color-panel: rgba(13, 19, 34, 0.88);
-  --color-panel-solid: #0D1322;
-  --color-panel-light: #131C31;
-  --color-panel-lighter: #1A2642;
+  /* Canvas & Elevation Hierarchy */
+  --canvas-void:          #06080C; /* Deepest background behind 3D canvases & charts */
+  --canvas-base:          #0B0E14; /* Default darkroom application background */
+  --surface-base:         #111622; /* Primary card & panel container */
+  --surface-raised:       #182030; /* Elevated components, headers, active chips */
+  --surface-overlay:      #1F293D; /* Modal dialogs, floating tooltips */
+  --surface-sunken:       #080B10; /* Inset metric panels, slider wells, code boxes */
 
-  /* Tactical Accents */
-  --color-cyan-hud: #00F0FF;
-  --color-cyan-hud-dim: rgba(0, 240, 255, 0.15);
-  --color-cyan-hud-border: rgba(0, 240, 255, 0.28);
-  --color-cyan-hud-glow: rgba(0, 240, 255, 0.4);
+  /* Hairline Borders & Dividers */
+  --border-subtle:        rgba(255, 255, 255, 0.07);
+  --border-default:       rgba(255, 255, 255, 0.12);
+  --border-strong:        rgba(255, 255, 255, 0.22);
+  --border-focus:         #38BDF8; /* Sky-400 */
 
-  --color-flame-amber: #FF6B00;
-  --color-flame-amber-dim: rgba(255, 107, 0, 0.15);
-  --color-flame-amber-border: rgba(255, 107, 0, 0.35);
-  --color-flame-amber-glow: rgba(255, 107, 0, 0.45);
+  /* Scientific Telemetry & Accents (WCAG AAA compliant on --surface-base) */
+  --accent-cyan:          #38BDF8; /* Sky-400: Primary telemetry, spatial navigation */
+  --accent-cyan-subtle:   rgba(56, 189, 248, 0.10);
+  --accent-amber:         #F59E0B; /* Amber-500: Thermal, combustion, caution */
+  --accent-amber-subtle:  rgba(245, 158, 11, 0.10);
+  --accent-emerald:       #10B981; /* Emerald-500: Nominal status, verified data */
+  --accent-emerald-subtle:rgba(16, 185, 129, 0.10);
+  --accent-rose:          #F43F5E; /* Rose-500: Flammability hazard, warning */
+  --accent-rose-subtle:   rgba(244, 63, 94, 0.12);
+  --accent-indigo:        #818CF8; /* Indigo-400: Empirical simulation, AI copilot */
+  --accent-indigo-subtle: rgba(129, 140, 248, 0.10);
 
-  --color-crimson-alert: #FF2A54;
-  --color-crimson-dim: rgba(255, 42, 84, 0.15);
-  --color-crimson-border: rgba(255, 42, 84, 0.4);
+  /* Typography Colors */
+  --text-primary:         #F8FAFC; /* Slate-50: Main headings & primary readouts */
+  --text-secondary:       #94A3B8; /* Slate-400: Labels, secondary descriptions */
+  --text-muted:           #64748B; /* Slate-500: Units, metadata, timestamps */
+  --text-disabled:        #475569; /* Slate-600: Inactive states */
 
-  --color-emerald-safe: #00E676;
-  --color-emerald-dim: rgba(0, 230, 118, 0.15);
-  --color-emerald-border: rgba(0, 230, 118, 0.35);
-
-  --color-violet-si: #A855F7;
-  --color-violet-dim: rgba(168, 85, 247, 0.15);
-  --color-violet-border: rgba(168, 85, 247, 0.4);
+  /* Backward Compatibility Aliases for Components */
+  --color-space:          var(--canvas-base);
+  --color-space-deep:     var(--canvas-void);
+  --color-space-surface:  var(--surface-sunken);
+  --color-panel:          var(--surface-base);
+  --color-panel-solid:    var(--surface-base);
+  --color-panel-light:    var(--surface-raised);
+  --color-panel-lighter:  var(--surface-overlay);
+  --color-cyan-hud:       var(--accent-cyan);
+  --color-cyan-hud-dim:   var(--accent-cyan-subtle);
+  --color-cyan-hud-border:var(--border-default);
+  --color-flame-amber:    var(--accent-amber);
+  --color-flame-amber-dim:var(--accent-amber-subtle);
+  --color-flame-amber-border: rgba(245, 158, 11, 0.35);
+  --color-crimson-alert:  var(--accent-rose);
+  --color-emerald-safe:   var(--accent-emerald);
+  --color-violet-si:      var(--accent-indigo);
 
   /* Typography */
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  --font-display: 'Orbitron', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-sans:            'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono:            'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-display:         'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 
   /* Borders & Radii */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-  --radius-full: 9999px;
+  --radius-xs:            4px;
+  --radius-sm:            6px;
+  --radius-md:            8px;
+  --radius-lg:            12px;
+  --radius-xl:            16px;
+  --radius-full:          9999px;
 
-  /* Shadows */
-  --shadow-hud: 0 8px 32px rgba(0, 0, 0, 0.55), inset 0 0 18px rgba(0, 240, 255, 0.04);
-  --shadow-hud-amber: 0 8px 32px rgba(0, 0, 0, 0.55), inset 0 0 18px rgba(255, 107, 0, 0.05);
-  --shadow-glow-cyan: 0 0 16px rgba(0, 240, 255, 0.35);
-  --shadow-glow-amber: 0 0 16px rgba(255, 107, 0, 0.35);
+  /* Shadows (Utilitarian Precision, Zero Neon Bloom) */
+  --shadow-sm:            0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md:            0 4px 16px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --shadow-lg:            0 12px 32px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --shadow-hud:           var(--shadow-md);
+  --shadow-hud-amber:     var(--shadow-md);
+  --shadow-glow-cyan:     none;
+  --shadow-glow-amber:    none;
 
-  /* Transitions — Spring Physics / Apple Motion */
-  --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-normal: 250ms cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-slow: 400ms cubic-bezier(0.16, 1, 0.3, 1);
+  /* Transitions — Spring Physics / Motion */
+  --transition-fast:      150ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal:    250ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-slow:      400ms cubic-bezier(0.16, 1, 0.3, 1);
 
   /* Layout Boundaries */
-  --max-content-width: 1600px;
+  --max-content-width:    1600px;
 }

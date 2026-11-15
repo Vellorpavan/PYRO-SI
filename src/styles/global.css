@@ -1,5 +1,6 @@
 /* =============================================================================
    GODEYE // PYRO-SI — Global Styles & Reset
+   Aerospace Mission Control Standard
    ============================================================================= */
 
 @import './variables.css';
@@ -18,8 +19,8 @@ html {
 }
 
 body {
-  background-color: var(--color-space);
-  color: #E2E8F0;
+  background-color: var(--canvas-base);
+  color: var(--text-primary);
   font-family: var(--font-sans);
   overflow-x: clip;
   min-height: 100vh;
@@ -27,87 +28,87 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-image: 
-    radial-gradient(circle at 15% 20%, rgba(0, 240, 255, 0.05) 0%, transparent 35%),
-    radial-gradient(circle at 85% 75%, rgba(255, 107, 0, 0.06) 0%, transparent 40%),
-    linear-gradient(rgba(0, 240, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 240, 255, 0.025) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+    radial-gradient(circle at 50% -10%, rgba(56, 189, 248, 0.04) 0%, transparent 50%),
+    radial-gradient(circle at 85% 90%, rgba(245, 158, 11, 0.025) 0%, transparent 40%);
+  background-attachment: fixed;
 }
 
 /* Accessibility: Focus Visible */
 :focus-visible {
-  outline: 2px solid var(--color-cyan-hud);
+  outline: 2px solid var(--accent-cyan);
   outline-offset: 2px;
 }
 
-/* Custom Range Sliders */
+/* Custom Range Sliders — Calibrated Aerospace Precision */
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
-  background: var(--color-panel-light);
+  background: var(--surface-sunken);
   height: 6px;
   border-radius: var(--radius-full);
-  border: 1px solid rgba(0, 240, 255, 0.3);
+  border: 1px solid var(--border-default);
   transition: border-color var(--transition-fast);
 }
 
 input[type="range"]:focus-visible {
-  border-color: var(--color-cyan-hud);
+  border-color: var(--accent-cyan);
 }
 
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  background: var(--color-cyan-hud);
-  box-shadow: 0 0 10px var(--color-cyan-hud);
+  background: #FFFFFF;
+  border: 2px solid var(--surface-base);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
   cursor: pointer;
-  transition: transform var(--transition-fast);
+  transition: transform var(--transition-fast), background-color var(--transition-fast);
 }
 
 input[type="range"]::-webkit-slider-thumb:hover {
-  transform: scale(1.2);
+  transform: scale(1.15);
+  background: var(--accent-cyan);
 }
 
 input[type="range"]::-webkit-slider-thumb:active {
   transform: scale(0.95);
 }
 
-.slider-amber::-webkit-slider-thumb {
-  background: var(--color-flame-amber) !important;
-  box-shadow: 0 0 10px var(--color-flame-amber) !important;
+.slider-amber::-webkit-slider-thumb:hover {
+  background: var(--accent-amber) !important;
 }
 
-/* Custom Scrollbar */
+/* Tick Marks Track Utility */
+.slider-ticks {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 4px;
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-muted);
+}
+
+/* Custom Minimalist Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-space);
+  background: var(--canvas-base);
 }
 
 ::-webkit-scrollbar-thumb {
   background: #1E293B;
   border-radius: 3px;
-  border: 1px solid rgba(0, 240, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-cyan-hud);
-}
-
-/* Pulse Animations */
-@keyframes pulseGlow {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.55; transform: scale(0.96); }
-}
-
-.pulse-glow {
-  animation: pulseGlow 2.4s infinite ease-in-out;
+  background: #334155;
 }
 
 /* Reduced Motion Fallback */

@@ -56,15 +56,15 @@ export function setFlameVisualMode(mode) {
   currentFlameMode = mode;
 
   // Update button active state
-  document.querySelectorAll('.flame-mode-pill').forEach(btn => {
-    btn.classList.remove('active-mode', 'bg-cyanHud', 'text-space', 'bg-flameAmber', 'font-bold');
-    btn.classList.add('bg-space', 'text-slate-300');
+  document.querySelectorAll('.flame-mode-btn, .flame-mode-pill').forEach(btn => {
+    btn.classList.remove('active-mode', 'bg-sky-400/20', 'text-sky-400', 'border-sky-400/50', 'bg-cyanHud/20', 'text-cyanHud', 'border-cyanHud/50', 'font-bold');
+    btn.classList.add('bg-surface-raised', 'text-slate-300');
   });
 
   const activeBtn = document.getElementById('flame-mode-' + mode);
   if (activeBtn) {
-    activeBtn.classList.add('active-mode', mode === '1g' ? 'bg-flameAmber' : 'bg-cyanHud', 'text-space', 'font-bold');
-    activeBtn.classList.remove('bg-space', 'text-slate-300');
+    activeBtn.classList.add('active-mode', 'bg-sky-400/20', 'text-sky-400', 'border-sky-400/50', 'font-bold');
+    activeBtn.classList.remove('bg-surface-raised', 'text-slate-300');
   }
 
   const badge = document.getElementById('flame-regime-badge');
@@ -117,11 +117,11 @@ export function animateFlamePhysics() {
   const cy = h * 0.56;
 
   // Background clear
-  flameCtx.fillStyle = 'rgba(6, 8, 14, 0.45)';
+  flameCtx.fillStyle = 'rgba(6, 8, 12, 0.45)';
   flameCtx.fillRect(0, 0, w, h);
 
   // Subtle coordinate grid
-  flameCtx.strokeStyle = 'rgba(0, 240, 255, 0.05)';
+  flameCtx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
   flameCtx.lineWidth = 1;
   for (let x = 0; x < w; x += 28) {
     flameCtx.beginPath(); flameCtx.moveTo(x, 0); flameCtx.lineTo(x, h); flameCtx.stroke();
