@@ -20,7 +20,7 @@
     "threejs",
     "orbital-mechanics"
   ],
-  "author": "Team whoami (NASA Space Apps Challenge 2026)",
+  "author": "Vellor Pavan (Team whoami — NASA Space Apps Challenge 2026)",
   "license": "MIT",
   "devDependencies": {
     "serve": "^14.2.4"
