@@ -2,9 +2,9 @@
 
 **Project:** GODEYE // PYRO-SI — Spacecraft Fire Safety Intelligence Platform  
 **Challenge:** NASA Space Apps Challenge 2026 — *Flame in Freefall*  
-**Date:** November 15, 2026  
+**Date:** November 16, 2026  
 **Document Identifier:** NASA-PYRO-ROADMAP-001  
-**Version:** 4.7 (Phase 2.3.1 NASA Data API Discovery & Source Verification Completed)  
+**Version:** 4.8 (Phase 2.3.3 NASA Data Verification & Catalogue Integration Completed)  
 **Governance Standard:** NASA Systems Engineering Handbook (SP-2016-6105)
 
 ---
@@ -119,6 +119,23 @@ To ensure **GODEYE // PYRO-SI** achieves absolute scientific credibility while f
 │ • Author resilient Python client (backend/ingestion/parse_api_client.py) & CLI tool.   │
 │ • Implement 7-Criterion NASA Source Verification & 12-Field Data Availability Matrix.  │
 │ • Author 12 Python backend tests (100% green); preserve 17 scientific suites (848 tests│
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ PHASE 2.3.2: Secure Shared Parse.bot API Integration (COMPLETED)                       │
+│ • Implement Python backend proxy endpoint (GET/POST /api/v1/nasa/resources).           │
+│ • Manage server-side secret PARSE_API_KEY in backend environment; zero frontend leak.   │
+│ • SlidingWindowRateLimiter (30 req/min per IP) to prevent API abuse.                   │
+│ • Authored 11 backend proxy tests (23 total backend tests green).                      │
+│ • Delivered docs/PARSE_BOT_INTEGRATION_GUIDE.md & deployment secret runbook.           │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ PHASE 2.3.3: NASA Data Verification & Catalogue Integration (COMPLETED & VERIFIED)     │
+│ • Security audit & dynamic session tokens: POST /api/v1/auth/session with 1-hr TTL.    │
+│ • Excised static shared secret DEFAULT_APP_TOKEN from frontend JavaScript client.      │
+│ • Real NASA resource inspection: identified PSI-178 (Materials), PSI-138 (Fluids),     │
+│   and PSI-187 (Fluids) as non-combustion; quarantined OSD biological studies.          │
+│ • Built catalogue integrator: raw storage with SHA-256 manifests, schema normalization.│
+│ • Implemented Provenance Protection Invariant: zero downgrade of VERIFIED_DATASET.     │
+│ • Preserved all 19 core combustion flight datasets in psi-investigations.json.         │
+│ • 34 backend Python tests & 848 Node.js scientific assertions (100% green).            │
 ├────────────────────────────────────────────────────────────────────────────────────────┤
 │ PHASE 3: AI Research Co-Pilot RAG Architecture Integration (NEXT PHASE — AWAITING GATE)│
 │ • Replace static substring keyword routing with authentic Retrieval-Augmented          │
@@ -259,13 +276,31 @@ To ensure **GODEYE // PYRO-SI** achieves absolute scientific credibility while f
   - Added `test:backend` and `test:all` scripts to `package.json`.
   - Preserved all 17 Node.js scientific verification suites (848 passing assertions, 0 failures).
   - Authored `docs/PHASE_2_3_1_API_DISCOVERY_REPORT.md`, `docs/NASA_API_RESPONSE_SCHEMA.md`, and `docs/NASA_DATA_SOURCE_VERIFICATION_MATRIX.md`.
+- [x] **Task 16: Phase 2.3.2 Secure Shared Parse.bot API Integration:**
+  - Implemented server-side environment variable `PARSE_API_KEY` in gitignored `.env`.
+  - Updated `.env.example` documenting configuration without exposing credentials.
+  - Implemented secure proxy endpoint (`GET/POST /api/v1/nasa/resources`) in `backend/api/main.py`.
+  - Implemented `SlidingWindowRateLimiter` (30 requests/minute per client IP) with HTTP 429 response handling.
+  - Configured frontend integration client in `src/services/api/nasa-resources-client.js`.
+  - Authored 11 automated backend proxy tests in `tests/backend/test_proxy_endpoint.py`.
+  - Authored `docs/PARSE_BOT_INTEGRATION_GUIDE.md` and `docs/PHASE_2_3_2_SHARED_API_INTEGRATION_REPORT.md`.
+- [x] **Task 17: Phase 2.3.3 NASA Data Verification & Catalogue Integration:**
+  - Audited application auth: excised static shared secret `DEFAULT_APP_TOKEN` from frontend JavaScript; implemented dynamic session handshake (`POST /api/v1/auth/session`) issuing secure tokens (`secrets.token_urlsafe(32)`) with 1-hour TTL.
+  - Inspected real NASA resources retrieved via backend proxy from Parse.bot scraper `328daab1-12f9-4464-b73d-b5e0c392bfe7`.
+  - Audited Section 4 physical science accessions (`PSI-178`, `PSI-138`, `PSI-187`) against `https://psi.nasa.gov`: confirmed all are non-combustion (Materials Science / Levitation, Fluid Physics / Boiling, Fluid Physics / Capillary Plant Water).
+  - Quarantined Section 3 candidates (`OSD-979`, `OSD-729`, `OSD-554`) as biological data.
+  - Authored `backend/ingestion/catalogue_integrator.py`: raw storage with SHA-256 manifests, schema normalization, and non-combustion segregation into `src/data/reference/discovered-bps-resources.json`.
+  - Implemented Epistemic Precedence Hierarchy and Provenance Protection Invariant: guaranteed that `VERIFIED_DATASET` records (e.g. Saffire-I flight spread velocity) are never downgraded or overwritten by scraped metadata.
+  - Preserved all 19 original combustion flight investigations in `src/data/reference/psi-investigations.json`.
+  - Authored 8 integration tests in `tests/backend/test_catalogue_integration.py`; achieved 34/34 passing backend tests and 848/848 passing Node.js assertions.
+  - Authored `docs/NASA_CATALOGUE_INTEGRATION_SPEC.md`, `docs/NASA_INVESTIGATION_VERIFICATION_MATRIX.md`, and `docs/PHASE_2_3_3_NASA_DATA_INTEGRATION_REPORT.md`.
 
 ---
 
 ## 3. Next Phase Gates
 
 ```
-Phase 1 (Complete) ➔ Phase 1.1 (Complete) ➔ Phase 2 (Complete) ➔ Phase 2.1 (Complete) ➔ Phase 2.2 (Complete) ➔ Phase 2.2.1 (Complete) ➔ Phase 2.2.2 (Complete) ➔ Phase 2.2.3 (Complete) ➔ Phase 2.2.4 (Complete) ➔ Phase 2.2.4.1 (Complete) ➔ Phase 2.2.4.2 (Complete & FROZEN) ➔ Phase 2.3.1 (Complete) ➔ [AWAITING USER GATE APPROVAL FOR PHASE 2.3.2] ➔ Phase 3 (Gemini RAG Integration)
+Phase 1 (Complete) ➔ Phase 1.1 (Complete) ➔ Phase 2 (Complete) ➔ Phase 2.1 (Complete) ➔ Phase 2.2 (Complete) ➔ Phase 2.2.1 (Complete) ➔ Phase 2.2.2 (Complete) ➔ Phase 2.2.3 (Complete) ➔ Phase 2.2.4 (Complete) ➔ Phase 2.2.4.1 (Complete) ➔ Phase 2.2.4.2 (Complete & FROZEN) ➔ Phase 2.3.1 (Complete) ➔ Phase 2.3.2 (Complete) ➔ Phase 2.3.3 (Complete & VERIFIED) ➔ [AWAITING USER GATE APPROVAL FOR PHASE 3] ➔ Phase 3 (Gemini RAG Integration)
 ```
 
-No Phase 2.3.2 ingestion implementation or Phase 3 Gemini RAG integration will commence without explicit user review and authorization.
+No Phase 3 Gemini RAG integration will commence without explicit user review and authorization.

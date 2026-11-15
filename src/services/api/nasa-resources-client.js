@@ -3,47 +3,94 @@
  * Module: src/services/api/nasa-resources-client.js
  * Project: GODEYE // PYRO-SI — Spacecraft Fire Safety Intelligence Platform
  * 
- * Proxies calls to the secure backend gateway endpoint (/api/v1/nasa/resources).
- * End-users NEVER supply, handle, or view Parse.bot API credentials.
- * The backend manages the server-side secret and rate-limits requests.
+ * SECURITY AUDIT COMPLIANCE:
+ * - ZERO hardcoded secrets or privileged tokens are embedded in this client module.
+ * - Authenticates dynamically via session handshake: POST /api/v1/auth/session.
+ * - Proxies calls to the secure backend gateway endpoint (/api/v1/nasa/resources).
+ * - End-users NEVER supply, handle, or view Parse.bot API credentials.
  */
 
 const DEFAULT_BACKEND_URL = 'http://localhost:8000';
-const DEFAULT_APP_TOKEN = 'pyro-app-auth-token-2026';
+
+let cachedSessionToken = null;
+let sessionExpiresAt = 0;
+
+/**
+ * Obtains or refreshes a dynamic application session token.
+ * 
+ * @param {string} backendUrl 
+ * @returns {Promise<string>} Valid dynamic session token
+ */
+export async function obtainAppSession(backendUrl = DEFAULT_BACKEND_URL) {
+  const now = Date.now();
+  if (cachedSessionToken && now < sessionExpiresAt - 60000) {
+    return cachedSessionToken;
+  }
+
+  const url = `${backendUrl.replace(/\/+$/, '')}/api/v1/auth/session`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json'
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to obtain application session token (HTTP ${response.status})`);
+  }
+
+  const data = await response.json();
+  cachedSessionToken = data.session_token;
+  sessionExpiresAt = now + ((data.expires_in || 3600) * 1000);
+  return cachedSessionToken;
+}
 
 /**
  * Fetches shared NASA research data resources via the backend proxy gateway.
  * 
  * @param {Object} options
  * @param {string} [options.backendUrl] Base URL of the PYRO-SI FastAPI backend gateway
- * @param {string} [options.appToken] Application session token
  * @param {number} [options.timeoutMs] Request timeout in milliseconds (default: 20000)
  * @returns {Promise<Object>} Normalized NASA resources payload
  */
 export async function fetchSharedNasaResources({
   backendUrl = DEFAULT_BACKEND_URL,
-  appToken = DEFAULT_APP_TOKEN,
   timeoutMs = 20000
 } = {}) {
+  const token = await obtainAppSession(backendUrl);
   const url = `${backendUrl.replace(/\/+$/, '')}/api/v1/nasa/resources`;
 
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
-    const response = await fetch(url, {
+    let response = await fetch(url, {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
-        'X-App-Token': appToken
+        'X-Session-Token': token
       },
       signal: controller.signal
     });
 
+    // If session expired, retry once with a fresh session
+    if (response.status === 401) {
+      cachedSessionToken = null;
+      const freshToken = await obtainAppSession(backendUrl);
+      response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'X-Session-Token': freshToken
+        },
+        signal: controller.signal
+      });
+    }
+
     clearTimeout(timer);
 
     if (response.status === 401) {
-      throw new Error('Application authorization failed. Invalid session credentials.');
+      throw new Error('Application session unauthorized or expired.');
     }
     if (response.status === 429) {
       const retryAfter = response.headers.get('Retry-After') || '60';

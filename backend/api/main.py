@@ -1,7 +1,7 @@
 """
 FastAPI Backend Gateway for PYRO-SI
 Handles RAG query orchestration, NASA PSI proxying, live telemetry,
-and secure server-side Parse.bot NASA research data retrieval.
+dynamic session authorization, and secure Parse.bot NASA research data retrieval.
 """
 
 from collections import defaultdict
@@ -10,6 +10,7 @@ import json
 import logging
 import os
 import re
+import secrets
 from threading import Lock
 import time
 from typing import Any, Dict, List, Optional, Tuple
@@ -37,7 +38,7 @@ if not logger.handlers:
 
 app = FastAPI(
     title="GODEYE // PYRO-SI Backend Gateway",
-    version="2026.4.1",
+    version="2026.4.2",
     description="Scientific intelligence API proxying NASA PSI, Parse.bot, and Google Gemini RAG"
 )
 
@@ -53,8 +54,8 @@ app.add_middleware(
 # Configuration constants
 DEFAULT_PARSE_SCRAPER_ID = "328daab1-12f9-4464-b73d-b5e0c392bfe7"
 DEFAULT_PARSE_ENDPOINT = f"https://api.parse.bot/scraper/{DEFAULT_PARSE_SCRAPER_ID}/list_data_resources"
-DEFAULT_APP_SECRET_TOKEN = "pyro-app-auth-token-2026"
 REQUEST_TIMEOUT_SECONDS = 15.0
+SESSION_TTL_SECONDS = 3600.0
 
 
 # -----------------------------------------------------------------------------
@@ -98,40 +99,89 @@ rate_limiter = SlidingWindowRateLimiter(max_requests=30, window_seconds=60.0)
 
 
 # -----------------------------------------------------------------------------
+# Dynamic Session Store (Zero Hardcoded Frontend Secrets)
+# -----------------------------------------------------------------------------
+class DynamicSessionStore:
+    """
+    In-memory session store providing dynamic, cryptographically secure
+    session tokens for application users without embedding static secrets in frontend JS.
+    """
+
+    def __init__(self, ttl_seconds: float = SESSION_TTL_SECONDS):
+        self.ttl_seconds = ttl_seconds
+        self.sessions: Dict[str, Dict[str, Any]] = {}
+        self.lock = Lock()
+
+    def create_session(self, client_ip: str) -> str:
+        now = time.time()
+        token = secrets.token_urlsafe(32)
+        with self.lock:
+            # Purge expired sessions
+            self.sessions = {t: s for t, s in self.sessions.items() if s["expires_at"] > now}
+            self.sessions[token] = {
+                "client_ip": client_ip,
+                "created_at": now,
+                "expires_at": now + self.ttl_seconds
+            }
+        return token
+
+    def validate_session(self, token: str, client_ip: str) -> bool:
+        if not token:
+            return False
+        now = time.time()
+        with self.lock:
+            session = self.sessions.get(token)
+            if not session:
+                return False
+            if session["expires_at"] <= now:
+                del self.sessions[token]
+                return False
+            return True
+
+
+session_store = DynamicSessionStore(ttl_seconds=SESSION_TTL_SECONDS)
+
+
+# -----------------------------------------------------------------------------
 # Security & Authorization Dependencies
 # -----------------------------------------------------------------------------
-def get_expected_app_token() -> str:
-    """Returns the expected application authorization token from environment."""
-    return os.environ.get("APP_SECRET_TOKEN", DEFAULT_APP_SECRET_TOKEN).strip()
-
-
 def verify_app_authorization(
     request: Request,
+    x_session_token: Optional[str] = Header(None, alias="X-Session-Token"),
     x_app_token: Optional[str] = Header(None, alias="X-App-Token"),
     authorization: Optional[str] = Header(None)
 ) -> str:
     """
-    Verifies that the request originates from an authorized application client session.
-    Prevents public scraping abuse of our proxy endpoint.
-    Users of the application never need to provide external API keys.
+    Verifies that the request carries a genuine active application session token.
+    No static secret is ever embedded in frontend client JavaScript.
     """
-    expected_token = get_expected_app_token()
+    client_ip = request.client.host if request.client else "anonymous"
 
-    provided_token = None
-    if x_app_token:
-        provided_token = x_app_token.strip()
+    # Extract token from candidate headers
+    token = None
+    if x_session_token:
+        token = x_session_token.strip()
+    elif x_app_token:
+        token = x_app_token.strip()
     elif authorization and authorization.lower().startswith("bearer "):
-        provided_token = authorization[7:].strip()
+        token = authorization[7:].strip()
 
-    if not provided_token or provided_token != expected_token:
-        logger.warning(f"Unauthorized proxy attempt from IP: {request.client.host if request.client else 'unknown'}")
+    # Validate against active dynamic session store
+    is_valid = session_store.validate_session(token, client_ip)
+    
+    # Also allow optional explicit admin token for automated backend-to-backend calls
+    admin_token = os.environ.get("ADMIN_API_TOKEN")
+    if not is_valid and admin_token and token == admin_token:
+        is_valid = True
+
+    if not is_valid:
+        logger.warning(f"Unauthorized proxy access attempt from IP: {client_ip}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Unauthorized application request. Valid application session credentials required."
+            detail="Authentication required. A valid active application session token must be provided."
         )
 
-    # Apply rate limiting by client IP
-    client_ip = request.client.host if request.client else "anonymous"
+    # Apply sliding-window rate limiting by client IP
     allowed, remaining, retry_after = rate_limiter.check_rate_limit(client_ip)
     if not allowed:
         logger.warning(f"Rate limit exceeded for IP {client_ip}. Retry after {retry_after}s.")
@@ -144,12 +194,19 @@ def verify_app_authorization(
     # Attach remaining quota to request state for response headers
     request.state.rate_limit_remaining = remaining
 
-    return provided_token
+    return token
 
 
 # -----------------------------------------------------------------------------
 # Pydantic Schemas
 # -----------------------------------------------------------------------------
+class SessionResponse(BaseModel):
+    session_token: str
+    token_type: str = "Bearer"
+    expires_in: int
+    issued_at: str
+
+
 class QueryRequest(BaseModel):
     query: str
     habitat: Optional[str] = "ISS"
@@ -177,6 +234,8 @@ class DiscoveredAccession(BaseModel):
     id: str
     title: Optional[str] = None
     url: Optional[str] = None
+    discipline: Optional[str] = None
+    is_combustion_study: bool = False
 
 
 class NasaResourcesResponse(BaseModel):
@@ -193,6 +252,27 @@ class NasaResourcesResponse(BaseModel):
 
 
 # -----------------------------------------------------------------------------
+# Session Handshake Endpoint (Task 1: Dynamic Client Sessions)
+# -----------------------------------------------------------------------------
+@app.post("/api/v1/auth/session", response_model=SessionResponse)
+def create_application_session(request: Request):
+    """
+    Issues a dynamic, cryptographically secure application session token.
+    Allows frontend clients to authenticate without baking static secrets into client JS.
+    """
+    client_ip = request.client.host if request.client else "anonymous"
+    token = session_store.create_session(client_ip)
+    logger.info(f"Issued dynamic session token for client IP: {client_ip}")
+
+    return SessionResponse(
+        session_token=token,
+        token_type="Bearer",
+        expires_in=int(SESSION_TTL_SECONDS),
+        issued_at=datetime.now(timezone.utc).isoformat()
+    )
+
+
+# -----------------------------------------------------------------------------
 # Existing Gateway Endpoints (Preserved 100% Unchanged)
 # -----------------------------------------------------------------------------
 @app.get("/health")
@@ -200,8 +280,9 @@ def health_check():
     return {
         "status": "healthy",
         "service": "PYRO-SI Scientific Intelligence Gateway",
-        "version": "2026.4.1",
-        "parse_bot_proxy_configured": bool(os.environ.get("PARSE_API_KEY"))
+        "version": "2026.4.2",
+        "parse_bot_proxy_configured": bool(os.environ.get("PARSE_API_KEY")),
+        "active_sessions_count": len(session_store.sessions)
     }
 
 
@@ -250,7 +331,7 @@ def get_nasa_resources_proxy(
     Security & Architecture Contracts:
     1. Reads shared secret `PARSE_API_KEY` exclusively from backend environment.
     2. Frontend users never receive or need their own Parse.bot API key.
-    3. Prevents abuse via application authentication and sliding-window rate limiting.
+    3. Prevents abuse via dynamic application sessions and sliding-window rate limiting.
     4. Recursively redacts credentials from upstream response.
     5. Dissects discovered sections and extracts physical sciences investigation IDs.
     """
@@ -269,7 +350,7 @@ def get_nasa_resources_proxy(
     headers = {
         "X-API-Key": parse_api_key,
         "Accept": "application/json",
-        "User-Agent": "GODEYE-PYRO-SI/2026.4.1 (NASA Space Apps; Backend Gateway Proxy)"
+        "User-Agent": "GODEYE-PYRO-SI/2026.4.2 (NASA Space Apps; Backend Gateway Proxy)"
     }
 
     try:
@@ -323,6 +404,13 @@ def get_nasa_resources_proxy(
     discovered_accessions = []
     total_items = 0
 
+    # Discipline classification mapping for discovered PSI accessions
+    KNOWN_DISCIPLINES = {
+        "PSI-178": ("Materials Science / High-Temp Oxide Liquids", False),
+        "PSI-138": ("Fluid Physics / Pool Boiling Heat Transfer", False),
+        "PSI-187": ("Fluid Physics / Plant Water Capillary Management", False)
+    }
+
     for sec in raw_sections:
         sec_name = sec.get("section", "General")
         sec_items = []
@@ -338,7 +426,19 @@ def get_nasa_resources_proxy(
             if psi_match:
                 psi_id = psi_match.group(1).upper()
                 if not any(a.id == psi_id for a in discovered_accessions):
-                    discovered_accessions.append(DiscoveredAccession(id=psi_id, title=title, url=url))
+                    discipline, is_comb = KNOWN_DISCIPLINES.get(
+                        psi_id,
+                        ("Physical Sciences (Discipline Unverified)", False)
+                    )
+                    discovered_accessions.append(
+                        DiscoveredAccession(
+                            id=psi_id,
+                            title=title,
+                            url=url,
+                            discipline=discipline,
+                            is_combustion_study=is_comb
+                        )
+                    )
 
         sections_list.append(DiscoveredSection(section=sec_name, items=sec_items))
 

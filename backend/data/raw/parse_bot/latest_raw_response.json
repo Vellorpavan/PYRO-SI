@@ -1,0 +1,169 @@
+{
+  "status": "success",
+  "data": {
+    "page_url": "https://science.nasa.gov/biological-physical/data/",
+    "sections": [
+      {
+        "section": "BPS Data and Repositories",
+        "items": [
+          {
+            "title": "OSDR",
+            "description": "Biological Data Project - Learn more about OSDR",
+            "url": "https://science.nasa.gov/biological-physical/data/osdr/"
+          },
+          {
+            "title": "PSI",
+            "description": "Physical Sciences Data Project - Learn more about PSI",
+            "url": "https://science.nasa.gov/physical-sciences-informatics-psi/history-of-physical-science-informatics/"
+          },
+          {
+            "title": "NBISC",
+            "description": "Biorepository of non-human samples-Learn more about NBISC",
+            "url": "https://science.nasa.gov/biological-physical/data/nbisc/"
+          },
+          {
+            "title": "SMCC",
+            "description": "Repository for collections of space microbes-Learn more about SMCC",
+            "url": "https://visualization.osdr.nasa.gov/smcc/"
+          }
+        ]
+      },
+      {
+        "section": "Explore and Contribute",
+        "items": [
+          {
+            "title": "Biological Data",
+            "description": "Search biological space-relevant datasets",
+            "url": "https://osdr.nasa.gov/bio/repo/search?q=&data_source=cgene,alsda,esa&data_type=study"
+          },
+          {
+            "title": "Biological Submission Portal",
+            "description": "Submit your biological space-relevant data",
+            "url": "https://science.nasa.gov/biological-physical/data/osdr/osdr-submission-portal/"
+          },
+          {
+            "title": "Physical Sciences Data",
+            "description": "Search physical sciences datasets",
+            "url": "https://psi.nasa.gov/physci/repo/search?q=&data_source=psi&data_type=investigation"
+          },
+          {
+            "title": "Physical Sciences Submission Portal",
+            "description": "Submit your physical sciences data",
+            "url": "https://psi.nasa.gov/physci/submission-sso-login.html"
+          }
+        ]
+      },
+      {
+        "section": "New Biological Data",
+        "items": [
+          {
+            "title": "OSD-979",
+            "description": "Small changes in thermoregulation influence cancellous bone turnover balance in distal femur metaphysis in growing female mice",
+            "url": "https://osdr.nasa.gov/bio/repo/data/studies/OSD-979"
+          },
+          {
+            "title": "OSD-729",
+            "description": "Biofilm formation is correlated with low nutrient and simulated microgravity conditions in a Burkholderia isolate from the ISS water processor assembly",
+            "url": "https://osdr.nasa.gov/bio/repo/data/studies/OSD-729"
+          },
+          {
+            "title": "OSD-554",
+            "description": "Characterization of Biofilm Formation, Growth, and Gene Expression on Different Materials and Environmental Conditions in Microgravity (Gene expression of Pseudomonas aeruginosa biofilms)",
+            "url": "https://osdr.nasa.gov/bio/repo/data/studies/OSD-554"
+          }
+        ]
+      },
+      {
+        "section": "New Physical Sciences Data",
+        "items": [
+          {
+            "title": "PSI-178",
+            "description": "The origin of fragility in high-temperature oxide liquids - towards fabrication of novel non-equilibrium oxides (ELF-6 PRONTO)",
+            "url": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-178"
+          },
+          {
+            "title": "PSI-138",
+            "description": "Pool Boiling Heat Transfer Mechanisms in Low Gravity: Numerical Experiments of MABE and NPBX Data",
+            "url": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-138"
+          },
+          {
+            "title": "PSI-187",
+            "description": "Plant Water Management (PWM)",
+            "url": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-187"
+          }
+        ]
+      },
+      {
+        "section": "Working Groups and Data Management",
+        "items": [
+          {
+            "title": "OSDR AWGs",
+            "description": "Join OSDR Analysis Working",
+            "url": "https://science.nasa.gov/biological-physical/data/awg/"
+          },
+          {
+            "title": "BPS Data Management Policy",
+            "description": "Policy and guidelines for managing scientific Data",
+            "url": "https://science.nasa.gov/biological-physical/data/bps-data-management/"
+          }
+        ]
+      },
+      {
+        "section": "More Data tools",
+        "items": [
+          {
+            "title": "Visualization Portals",
+            "description": "Explore OSDR Visualization Portals",
+            "url": "https://visualization.osdr.nasa.gov/"
+          },
+          {
+            "title": "Biospecimen Search Tool",
+            "description": "Search and request biospecimens",
+            "url": "https://visualization.osdr.nasa.gov/nbisc/home/"
+          },
+          {
+            "title": "Microgravity Tool",
+            "description": "Explore Microgravity Analysis Platform",
+            "url": "https://science.nasa.gov/physical-sciences-informatics-psi/microgravity-analytics-tool/"
+          },
+          {
+            "title": "SPLASH",
+            "description": "Database of spaceflight experimental hardware",
+            "url": "https://visualization.osdr.nasa.gov/splash/"
+          }
+        ]
+      },
+      {
+        "section": "Resources",
+        "items": [
+          {
+            "title": "Task Book",
+            "description": "The NASA Task Book is an online database of research projects supported by NASA's Biological & Physical Sciences (BPS) Division and Human Research Program (HRP).",
+            "url": "https://taskbook.nasa.gov"
+          },
+          {
+            "title": "NSLSL",
+            "description": "The NSLSL seeks to consolidate global space life sciences literature into a single database.",
+            "url": "https://public.ksc.nasa.gov/nslsl/"
+          },
+          {
+            "title": "PSI Database Tutorial",
+            "description": "A guide to search and navigate investigations in PSI.",
+            "url": "https://assets.science.nasa.gov/content/dam/science/bps/bps-general/bps-data_osdr_psi/Complete_PSI_Database_Guide.pdf"
+          },
+          {
+            "title": "PSI Workspace Tutorial",
+            "description": "A guide designed to help you navigate the PSI workspace.",
+            "url": "https://assets.science.nasa.gov/content/dam/science/bps/bps-general/bps-data_osdr_psi/PSI%20Tutorial_Portal%20%20Workspaces.pdf"
+          },
+          {
+            "title": "OSDR Tutorials",
+            "description": "How To Guides for OSDR applications.",
+            "url": "https://osdr-tutorials.readthedocs.io/en/latest/"
+          }
+        ]
+      }
+    ],
+    "item_count": 25
+  }
+}

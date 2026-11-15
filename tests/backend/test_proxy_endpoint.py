@@ -4,12 +4,13 @@ Module: tests.backend.test_proxy_endpoint
 Project: GODEYE // PYRO-SI — Spacecraft Fire Safety Intelligence Platform
 
 Verifies:
-1. Client authorization enforcement (401 on missing or invalid app token)
-2. Successful proxy retrieval (mocked and live)
-3. Server-side secret injection from PARSE_API_KEY
-4. Rate limiting enforcement (429 on abuse)
-5. Timeout and gateway error translation (504, 502)
-6. Zero secret leakage in response payloads, headers, or exception traces
+1. Dynamic session handshake (POST /api/v1/auth/session)
+2. Client authorization enforcement (401 on missing or invalid session token)
+3. Successful proxy retrieval (mocked and live)
+4. Server-side secret injection from PARSE_API_KEY
+5. Rate limiting enforcement (429 on abuse)
+6. Timeout and gateway error translation (504, 502)
+7. Zero secret leakage in response payloads, headers, or exception traces
 """
 
 import json
@@ -20,7 +21,7 @@ from unittest.mock import MagicMock, patch
 from fastapi.testclient import TestClient
 from requests.exceptions import Timeout
 
-from backend.api.main import app, rate_limiter, DEFAULT_APP_SECRET_TOKEN
+from backend.api.main import app, rate_limiter, session_store
 
 
 class TestNasaResourcesProxy(unittest.TestCase):
@@ -28,35 +29,52 @@ class TestNasaResourcesProxy(unittest.TestCase):
 
     def setUp(self):
         self.client = TestClient(app)
-        # Reset rate limiter state before each test
+        # Reset state before each test
         rate_limiter.requests.clear()
-        self.valid_headers = {"X-App-Token": DEFAULT_APP_SECRET_TOKEN}
+        session_store.sessions.clear()
         self.real_key = os.environ.get("PARSE_API_KEY", "")
+
+        # Obtain a valid dynamic session token
+        auth_resp = self.client.post("/api/v1/auth/session")
+        self.assertEqual(auth_resp.status_code, 200)
+        self.valid_session_token = auth_resp.json()["session_token"]
+        self.valid_headers = {"X-Session-Token": self.valid_session_token}
 
     def tearDown(self):
         rate_limiter.requests.clear()
+        session_store.sessions.clear()
         if self.real_key:
             os.environ["PARSE_API_KEY"] = self.real_key
 
     # -------------------------------------------------------------------------
-    # 1. Authorization Tests
+    # 1. Dynamic Session Handshake & Authorization Tests
     # -------------------------------------------------------------------------
+    def test_session_handshake_issues_dynamic_token(self):
+        """Client can request a dynamic session token without static embedded secrets."""
+        response = self.client.post("/api/v1/auth/session")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertIn("session_token", data)
+        self.assertGreater(len(data["session_token"]), 20)
+        self.assertEqual(data["token_type"], "Bearer")
+        self.assertGreater(data["expires_in"], 0)
+
     def test_missing_app_authorization_returns_401(self):
         """Unauthenticated client request must return HTTP 401 Unauthorized."""
         response = self.client.get("/api/v1/nasa/resources")
         self.assertEqual(response.status_code, 401)
-        self.assertIn("Unauthorized application request", response.json()["detail"])
+        self.assertIn("Authentication required", response.json()["detail"])
 
-    def test_invalid_app_authorization_returns_401(self):
-        """Request with incorrect app token must return HTTP 401 Unauthorized."""
-        headers = {"X-App-Token": "invalid-tampered-token-xyz"}
+    def test_invalid_session_token_returns_401(self):
+        """Request with incorrect or forged session token must return HTTP 401 Unauthorized."""
+        headers = {"X-Session-Token": "invalid-forged-token-xyz-123456789"}
         response = self.client.get("/api/v1/nasa/resources", headers=headers)
         self.assertEqual(response.status_code, 401)
-        self.assertIn("Unauthorized application request", response.json()["detail"])
+        self.assertIn("Authentication required", response.json()["detail"])
 
     def test_bearer_authorization_accepted(self):
         """Bearer token in Authorization header is accepted."""
-        headers = {"Authorization": f"Bearer {DEFAULT_APP_SECRET_TOKEN}"}
+        headers = {"Authorization": f"Bearer {self.valid_session_token}"}
         with patch("requests.get") as mock_get:
             mock_resp = MagicMock()
             mock_resp.status_code = 200
@@ -137,6 +155,8 @@ class TestNasaResourcesProxy(unittest.TestCase):
         self.assertEqual(len(accessions), 2)
         self.assertEqual(accessions[0]["id"], "PSI-178")
         self.assertEqual(accessions[1]["id"], "PSI-138")
+        self.assertIn("Materials Science", accessions[0]["discipline"])
+        self.assertFalse(accessions[0]["is_combustion_study"])
 
         # Check rate limit headers
         self.assertIn("X-RateLimit-Limit", response.headers)
