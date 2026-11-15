@@ -4,7 +4,7 @@
 **Challenge:** NASA Space Apps Challenge 2026 — *Flame in Freefall*  
 **Date:** November 15, 2026  
 **Document Identifier:** NASA-PYRO-ROADMAP-001  
-**Version:** 4.5 (Phase 2.2.4.1 Evidence Closure Addendum Completed — FROZEN)  
+**Version:** 4.6 (Phase 2.2.4.2 Ignition Citation & Runtime Contract Correction Completed — FROZEN)  
 **Governance Standard:** NASA Systems Engineering Handbook (SP-2016-6105)
 
 ---
@@ -100,6 +100,17 @@ To ensure **GODEYE // PYRO-SI** achieves absolute scientific credibility while f
 │   below LOI, LOI bounds [12.5, 24.0], pressure reference values (10.2 / 14.7 psia),    │
 │   hard vacuum zero pressure behavior, piecewise vent tiers, orthogonal gravity coupling│
 │ • Complete verification suite: 16 suites, 823 passing tests (100% green, 0 failures). │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ PHASE 2.2.4.2: Ignition Citation & Runtime Contract Correction (COMPLETED & FROZEN)   │
+│ • Audit ignition energy: 750 ± 50 cal in historical NHB 8060.1B/C Test 1 (3138 ± 209 J)│
+│   vs ISO 14624-1 in active NASA-STD-6001B; correct factor-of-4.184 unit error and       │
+│   excise non-existent Section 7.1.3.1 / App A.1.2 clause attributions.                 │
+│ • Resolve Nomex LOI contract domain conflict: runtime LOI model clamped to [12.5, 24.0]│
+│   is SIBAL-specific; return MATERIAL_OUTSIDE_SUPPORTED_LOI_DOMAIN without silent cut.   │
+│ • Document oxygen-term Math.max(0.1, ...) anti-NaN clamp; prove spreadIndex 0.048225   │
+│   below LOI is software artifact not combustion; provide verified numerical tests.     │
+│ • Reclassify SIBAL hypoxic override (0.2 mm/s below 10% O2) as UNVERIFIED heuristic.   │
+│ • Complete verification suite: 17 suites, 848 passing tests (100% green, 0 failures). │
 │ • SCIENTIFIC BASELINE OFFICIALLY FROZEN FOR PHASE 3 GATE REVIEW.                       │
 ├────────────────────────────────────────────────────────────────────────────────────────┤
 │ PHASE 3: AI Research Co-Pilot RAG Architecture Integration (NEXT PHASE — AWAITING GATE)│
@@ -222,6 +233,13 @@ To ensure **GODEYE // PYRO-SI** achieves absolute scientific credibility while f
   - Added boundary tests for zero pressure, sub-0.1 psi pressure, sub-LOI oxygen, hypoxic purge, ventilation tiers, and physiological vacuum.
   - Expanded test harness to 16 suites, **823 passing assertions** (100% pass rate, 0 failures).
   - Authored `docs/PHASE_2_2_4_1_EVIDENCE_CLOSURE_ADDENDUM.md` and `tests/scientific/phase-2-2-4-1-validation-report.md`.
+- [x] **Task 14: Phase 2.2.4.2 Ignition Citation and Runtime Contract Correction:**
+  - Forensic audit of ignition source: identified historical 750 ± 50 cal in NASA Handbook NHB 8060.1B/C Test 1 ($3138 \pm 209$ J), explained factor-of-4.184 unit error, removed false claim of NASA-STD-6001B Sections 7.1.3.1 and App A.1.2 mandating 750 J, verified active standard cites ISO 14624-1 ($25 \pm 5$ s, $1100 \pm 90^\circ$C, $65 \pm 6.5$ mm).
+  - Resolved Nomex LOI contract domain conflict: runtime 1D convective LOI scaling model clamped to [12.5, 24.0]% is SIBAL-specific ($17.5\%$ base); preserved Nomex documented LOI (28.0 - 30.0% O2) without silent truncation, returning `materialModelStatus: 'MATERIAL_OUTSIDE_SUPPORTED_LOI_DOMAIN'` and `modelSupported: false`.
+  - Reconciled oxygen-term formula `o2Ratio = Math.pow(Math.max(0.1, (o2Val - loi) / 5.5), 1.35)`: documented 6-step execution order, proved JavaScript `Math.pow(negative, 1.35) === NaN` requiring anti-NaN clamp, demonstrated non-zero `spreadIndex` ($0.048225$) below LOI is a software anti-NaN floor artifact rather than physical combustion, and added numerical boundary tests.
+  - Reclassified SIBAL hypoxic override ($0.2$ mm/s below 10% O2) as `UNVERIFIED_MODELLED_HEURISTIC` (SAFFIRE-I never measured SIBAL below 10% O2).
+  - Expanded test harness to 17 suites, **848 passing assertions** (100% green, 0 failures).
+  - Authored `docs/PHASE_2_2_4_2_RUNTIME_AND_IGNITION_CORRECTION.md` and `tests/scientific/phase-2-2-4-2-validation-report.md`.
   - Reaffirmed scientific baseline freeze and explicit flight qualification scope disclaimer.
 
 ---
@@ -229,7 +247,7 @@ To ensure **GODEYE // PYRO-SI** achieves absolute scientific credibility while f
 ## 3. Next Phase Gates
 
 ```
-Phase 1 (Complete) ➔ Phase 1.1 (Complete) ➔ Phase 2 (Complete) ➔ Phase 2.1 (Complete) ➔ Phase 2.2 (Complete) ➔ Phase 2.2.1 (Complete) ➔ Phase 2.2.2 (Complete) ➔ Phase 2.2.3 (Complete) ➔ Phase 2.2.4 (Complete) ➔ Phase 2.2.4.1 (Complete & FROZEN) ➔ [AWAITING USER GATE APPROVAL] ➔ Phase 3 (Gemini RAG Integration)
+Phase 1 (Complete) ➔ Phase 1.1 (Complete) ➔ Phase 2 (Complete) ➔ Phase 2.1 (Complete) ➔ Phase 2.2 (Complete) ➔ Phase 2.2.1 (Complete) ➔ Phase 2.2.2 (Complete) ➔ Phase 2.2.3 (Complete) ➔ Phase 2.2.4 (Complete) ➔ Phase 2.2.4.1 (Complete) ➔ Phase 2.2.4.2 (Complete & FROZEN) ➔ [AWAITING USER GATE APPROVAL] ➔ Phase 3 (Gemini RAG Integration)
 ```
 
 No Phase 3 code or Gemini RAG integration will commence without explicit user review and authorization.

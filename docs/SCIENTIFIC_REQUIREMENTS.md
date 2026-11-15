@@ -4,7 +4,7 @@
 **Challenge:** NASA Space Apps Challenge 2026 — *Flame in Freefall*  
 **Date:** November 15, 2026  
 **Document Identifier:** NASA-PYRO-SIR-001  
-**Version:** 4.5 (Phase 2.2.4.1 Evidence Closure Addendum Baseline)  
+**Version:** 4.6 (Phase 2.2.4.2 Ignition Citation & Runtime Contract Baseline)  
 **Standard Authority:** NASA-STD-3001 Rev F, NASA-STD-6001B w/Change 3, NASA SPD-41a, NASA Physical Sciences Informatics (PSI)  
 
 ---
@@ -201,18 +201,18 @@ The platform catalogue has been refactored to eliminate the fixed 10-investigati
 ### 6.5. Material Characterization & Provenance Traceability
 - **DuPont Nomex HT90-40 (Meta-Aramid Fabric):**
   - **Limiting Oxygen Index (LOI):** $28.0\% - 30.0\%\ \text{O}_2$ (conditional reference range). Traced to standard test method ASTM D2863 (*Standard Test Method for Measuring the Minimum Oxygen Concentration to Support Candle-Like Combustion of Plastics*) and NASA TP-2007-213777 (*Flammability Assessment of Materials for Spacecraft Applications*). Specific page/table citation in TP-2007-213777 is designated **`PAGE_UNVERIFIED`**.
-  - **LOI Non-Universality Disclosure:** Nomex LOI is **not** a universal fixed constant. It varies with fabric areal weight, weave density, thickness, edge finish (hemmed vs unhemmed), moisture conditioning, and test apparatus geometry.
+  - **LOI Non-Universality & Model Domain Conflict Resolution:**
+    - Nomex LOI ($28.0\% - 30.0\%$) is **not** a universal fixed constant. It varies with fabric areal weight, weave density, thickness, edge finish (hemmed vs unhemmed), moisture conditioning, and test apparatus geometry.
+    - **Contract Resolution:** The simulator's 1D convective LOI scaling curve ($\text{loi} = \text{clamp}((17.5 + \text{flowFactor})\times(14.7/P)^{0.18}, 12.5, 24.0)$) was formulated exclusively for SIBAL thin fabric (nominal base LOI $17.5\%$). The upper cap of $24.0\%$ is SIBAL-specific. Nomex's documented LOI ($28.0\% - 30.0\%$) is **outside the supported LOI range** of the 1D model. The model does **NOT** silently reduce or clamp Nomex's LOI to $24.0\%$, nor does it invent an unverified extrapolation. Instead, selecting Nomex returns an explicit status: **`MATERIAL_OUTSIDE_SUPPORTED_LOI_DOMAIN`**. Nomex flame spread rates ($0.8\text{ mm/s}$ in Artemis EAM) are retained strictly as unverified qualitative proxies.
   - **NASA-STD-6001B w/Change 3 Test 1 (Upward Flame Propagation Test):**
     - **Governing Standard Reference:** NASA-STD-6001B w/Change 3, Section 7.1.2(b).
     - **Specimen Configuration:** Five (5) identical specimens of dimensions **$30.0\text{ cm} \times 6.5\text{ cm}$ ($12.0\text{ in} \times 2.5\text{ in}$)** tested vertically, one at a time, mounted in standard clamp frames. Tested with hemmed or unhemmed edges (edge hemming prevents edge unraveling and flame channeling). Tested in worst-case operational pressure and maximum operational oxygen concentration.
-    - **Ignition Energy & Source Forensic Audit:**
-      - **Standard Delivered Thermal Energy:** $750 \pm 50\text{ J}$ ($179 \pm 12\text{ cal}$) per **NASA-STD-6001B w/Change 3, Section 7.1.3.1 and Appendix A.1.2**. This is total thermal energy released by the standard chemical igniter.
-      - **$2000\text{ kJ/m}^2$ Energy Density:** This figure represents **heat fluence / energy per unit surface area** ($\text{kJ/m}^2 = \text{kW}\cdot\text{s/m}^2$) from secondary aerospace combustion literature. It is **NOT** an active NASA-STD-6001B normative requirement clause. Scalar energy ($750\text{ J}$) and energy fluence ($2000\text{ kJ/m}^2$) are fundamentally distinct physical quantities ($[M L^2 T^{-2}]$ vs $[M T^{-2}]$) and are **strictly non-interchangeable**.
+    - **Ignition Source Energy, Temperature & Duration Forensic Audit:**
+      - **Removal of False Clause Attribution:** The claim that NASA-STD-6001B w/Change 3 Section 7.1.3.1 and Appendix A.1.2 mandates "$750 \pm 50\text{ J}$" is **factually false**. The active standard contains no Section 7.1.3.1 or Appendix A.1.2 mandating this clause.
+      - **Historical Standard Source:** The $750 \pm 50$ specification originates from **NASA Handbook NHB 8060.1B/C Test 1** (and NASA TM-104797), which specified the chemical igniter heat output as **$750 \pm 50\text{ calories}$** ($3138 \pm 209\text{ J}$). Transcribing $750\text{ cal}$ as $750\text{ J}$ was a historical **factor-of-4.184 unit error**.
+      - **Active Standard Authority (ISO 14624-1):** NASA-STD-6001B Section 7.1 harmonizes Test 1 with **ISO 14624-1**, specifying the chemical igniter by burning duration (**$25 \pm 5\text{ s}$**), flame temperature (**$1100 \pm 90^\circ\text{C}$ / $2000 \pm 160^\circ\text{F}$**), and visible flame height (**$65 \pm 6.5\text{ mm}$ / $2.5 \pm 0.25\text{ in}$**).
+      - **$2000\text{ kJ/m}^2$ Energy Fluence:** Secondary aerospace literature estimate ($\int \dot{q}'' dt$), historically confused with the $2000^\circ\text{F}$ operating flame temperature. It is **NOT** an active NASA-STD-6001B standard requirement clause. Energy fluence ($[M T^{-2}]$) and scalar energy ($[M L^2 T^{-2}]$) are **strictly non-interchangeable**.
       - **Gas Burner Alternative:** Governed by Section 7.1.3; permitted only when specified by the test requestor. The standard chemical igniter is the mandatory baseline for standard Test 1 upward propagation.
-    - **25-Second Ignition Dwell De-standardization:**
-      - The 25-second exposure value is classified as **`UNVERIFIED [NO PRIMARY WSTF OR NASA RECORD PRODUCED]`** / **`UNVERIFIED_LABORATORY_ANECDOTE`**.
-      - No official NASA White Sands Test Facility document title, record identifier, date, section, or source location has been verified.
-      - It is **NOT** attributed to WSTF as an established standard protocol, and is **NOT** a universal NASA-STD-6001B requirement.
     - **Acceptance Criteria (Pass/Fail):** ALL five (5) specimens must independently satisfy two criteria:
       1. Burn length must not exceed **$15.0\text{ cm}$ ($6.0\text{ in}$)** from the bottom edge.
       2. No flaming drips or flaming material transfer that ignites the dry standard surgical cotton / K-10 indicator paper placed beneath the specimen.
@@ -223,6 +223,7 @@ The platform catalogue has been refactored to eliminate the fixed 10-investigati
   - **Composite Fire Hazard Score ($85\%$):** Designated as **`MODELLED_HEURISTIC`** (project-defined critical hazard alert due to $\text{O}_2 > \text{LOI}$).
 - **SIBAL Cloth (75% Cotton / 25% Fiberglass Blend):**
   - **Primary Calibration Anchor:** NASA Saffire-I flight experiment (`PSI-98`). Measured concurrent flame spread rate: $2.24\text{ mm/s}$ at $20\text{ cm/s}$ forced airflow in $21.5\%\ \text{O}_2$ microgravity (Gary et al., 2017).
+  - **Hypoxic Purge Override Classification:** Below $10.0\%\ \text{O}_2$, the fixed spread rate of $0.2\text{ mm/s}$ is classified strictly as **`UNVERIFIED_MODELLED_HEURISTIC`** (software proxy representing smolder/pyrolysis decay). **It is NOT a flight-measured result from SAFFIRE-I or any other NASA flight experiment.**
 - **Cast PMMA (Polymethyl Methacrylate Slab):**
   - **Calibrated Reference:** NASA BASS-II flight experiment (`PSI-25`). Ground 1g opposed flame spread: $0.04\text{ mm/s}$, standard LOI: $17.0\%\ \text{O}_2$.
 
@@ -230,13 +231,13 @@ The platform catalogue has been refactored to eliminate the fixed 10-investigati
 
 ## 7. Scientific Baseline Freeze Declaration
 
-As of November 15, 2026, following the Phase 2.2.4.1 Evidence Closure Addendum, the scientific architecture, data contracts, standards mappings, and mathematical models of **GODEYE // PYRO-SI** are formally declared:
+As of November 15, 2026, following the Phase 2.2.4.2 Ignition Citation & Runtime Contract Correction, the scientific architecture, data contracts, standards mappings, and mathematical models of **GODEYE // PYRO-SI** are formally declared:
 
 $$\mathbf{STATUS:\ FROZEN}$$
 
 - **Governing Human Standards:** NASA-STD-3001 Volume 2 Revision F (Approved July 14, 2026), Table 6.2-1 verbatim terminology.
-- **Governing Material Standards:** NASA-STD-6001B w/Change 3 Section 7.1.2(b) (specimen dimensions $30\text{ cm} \times 6.5\text{ cm}$, 5 specimens tested vertically one at a time, burn length $\le 15\text{ cm}$ / $6\text{ in}$, zero K-10 paper ignition, failure of any one specimen fails material; standard chemical igniter delivering $750 \pm 50\text{ J}$ per Section 7.1.3.1 & App A.1.2).
+- **Governing Material Standards:** NASA-STD-6001B w/Change 3 Section 7.1.2(b) (specimen dimensions $30\text{ cm} \times 6.5\text{ cm}$, 5 specimens tested vertically one at a time, burn length $\le 15\text{ cm}$ / $6\text{ in}$, zero K-10 paper ignition, failure of any one specimen fails material; chemical igniter conforming to ISO 14624-1 / NHB 8060.1B/C).
 - **Governing Flight Repositories:** NASA Physical Sciences Informatics (PSI), 19 validated records.
-- **Automated Verification Harness:** 16 test suites, 823 passed assertions, 0 failures (100% green pass rate, exit code 0).
+- **Automated Verification Harness:** 17 test suites, 848 passed assertions, 0 failures (100% green pass rate, exit code 0).
 - **Qualification Scope Disclaimer:** Marking the scientific evidence baseline as frozen establishes evidentiary traceability, authentic standards mappings, and model disclosures; **this does NOT mean the uncalibrated 1D phenomenological model is independently validated or suitable for flight qualification.** Certified NASA-STD-6001B laboratory flammability testing remains mandatory for actual spaceflight hardware.
 - **Phase 3 Gate Policy:** No implementation of Phase 3 (Gemini 2.0 Flash RAG AI Co-Pilot) or modifications to frozen physics calculations may proceed without formal gate review and sign-off.

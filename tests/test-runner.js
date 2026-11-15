@@ -19,6 +19,7 @@ import { runPhase222TraceabilityTests } from './scientific/phase-2-2-2-traceabil
 import { runPhase223CorrectionTests } from './scientific/phase-2-2-3-correction.test.js';
 import { runPhase224AuditTests } from './scientific/phase-2-2-4-audit.test.js';
 import { runPhase2241AddendumTests } from './scientific/phase-2-2-4-1-addendum.test.js';
+import { runPhase2242ContractTests } from './scientific/phase-2-2-4-2-contract.test.js';
 
 let passed = 0;
 let failed = 0;
@@ -38,22 +39,23 @@ console.log('       GODEYE // PYRO-SI — PHASE 2 VERIFICATION SUITE');
 console.log('=======================================================\x1b[0m\n');
 
 const testSuites = [
-  { name: '[1/16] Flammability Physics Model Unit Tests', fn: runFlammabilityModelTests },
-  { name: '[2/16] PSI Investigation Ranker Unit Tests', fn: runRankerTests },
-  { name: '[3/16] Partial-G Scientific Verification Tests', fn: runGravityCurveTests },
-  { name: '[4/16] Scientific Equation Boundary Tests', fn: runEquationBoundaryTests },
-  { name: '[5/16] Unit Conversion & Thermodynamic Tests', fn: runUnitConversionTests },
-  { name: '[6/16] Dynamic Investigation Catalogue Tests', fn: runInvestigationValidationTests },
-  { name: '[7/16] Missing Data & Fault Tolerance Tests', fn: runMissingDataHandlingTests },
-  { name: '[8/16] 7-Attribute Evidence Provenance Tests', fn: runSourceProvenanceTests },
-  { name: '[9/16] Epistemic Evidence Classification Tests', fn: runEvidenceClassificationTests },
-  { name: '[10/16] Physiological vs Flammability Separation Tests', fn: runPhysiologicalSeparationTests },
-  { name: '[11/16] UI Scientific Labels & Disclaimer Audit Tests', fn: runUiScientificLabelsTests },
-  { name: '[12/16] Phase 2.2.1 Evidence & Claim Audit Tests', fn: runPhase221EvidenceTests },
-  { name: '[13/16] Phase 2.2.2 Traceability & Baseline Freeze Tests', fn: runPhase222TraceabilityTests },
-  { name: '[14/16] Phase 2.2.3 Final Reference & Material Test Correction Tests', fn: runPhase223CorrectionTests },
-  { name: '[15/16] Phase 2.2.4 Final Standards & Model Traceability Audit Tests', fn: runPhase224AuditTests },
-  { name: '[16/16] Phase 2.2.4.1 Evidence Closure Addendum Tests', fn: runPhase2241AddendumTests }
+  { name: '[1/17] Flammability Physics Model Unit Tests', fn: runFlammabilityModelTests },
+  { name: '[2/17] PSI Investigation Ranker Unit Tests', fn: runRankerTests },
+  { name: '[3/17] Partial-G Scientific Verification Tests', fn: runGravityCurveTests },
+  { name: '[4/17] Scientific Equation Boundary Tests', fn: runEquationBoundaryTests },
+  { name: '[5/17] Unit Conversion & Thermodynamic Tests', fn: runUnitConversionTests },
+  { name: '[6/17] Dynamic Investigation Catalogue Tests', fn: runInvestigationValidationTests },
+  { name: '[7/17] Missing Data & Fault Tolerance Tests', fn: runMissingDataHandlingTests },
+  { name: '[8/17] 7-Attribute Evidence Provenance Tests', fn: runSourceProvenanceTests },
+  { name: '[9/17] Epistemic Evidence Classification Tests', fn: runEvidenceClassificationTests },
+  { name: '[10/17] Physiological vs Flammability Separation Tests', fn: runPhysiologicalSeparationTests },
+  { name: '[11/17] UI Scientific Labels & Disclaimer Audit Tests', fn: runUiScientificLabelsTests },
+  { name: '[12/17] Phase 2.2.1 Evidence & Claim Audit Tests', fn: runPhase221EvidenceTests },
+  { name: '[13/17] Phase 2.2.2 Traceability & Baseline Freeze Tests', fn: runPhase222TraceabilityTests },
+  { name: '[14/17] Phase 2.2.3 Final Reference & Material Test Correction Tests', fn: runPhase223CorrectionTests },
+  { name: '[15/17] Phase 2.2.4 Final Standards & Model Traceability Audit Tests', fn: runPhase224AuditTests },
+  { name: '[16/17] Phase 2.2.4.1 Evidence Closure Addendum Tests', fn: runPhase2241AddendumTests },
+  { name: '[17/17] Phase 2.2.4.2 Ignition Citation & Runtime Contract Tests', fn: runPhase2242ContractTests }
 ];
 
 for (const suite of testSuites) {
