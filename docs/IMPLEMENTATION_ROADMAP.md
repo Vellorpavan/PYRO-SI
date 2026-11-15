@@ -1,120 +1,97 @@
-# PHASED IMPLEMENTATION ROADMAP
+# GODEYE // PYRO-SI — Implementation Roadmap & Execution Plan
 
-## GODEYE // PYRO-SI — Incremental Engineering & Scaling Strategy
-
-**Document Version:** 2.0.0  
-**Challenge:** NASA Space Apps Challenge 2026 — Flame in Freefall  
-**Team:** whoami  
+**Project:** GODEYE // PYRO-SI — Spacecraft Fire Safety Intelligence Platform  
+**Challenge:** NASA Space Apps Challenge 2026 — *Flame in Freefall*  
+**Date:** November 15, 2026  
+**Status:** REVISED UNDER SCIENTIFIC REVIEW GATE  
+**Execution Lead:** Senior Full-Stack Engineering & 3D Visualization Team  
 
 ---
 
-## 1. Roadmap Overview & Phasing Principles
+## 1. Roadmap Overview & Scientific Governance Gates
 
-To maintain scientific integrity and engineering stability, enhancements to GODEYE // PYRO-SI are staged into six disciplined phases. 
+To guarantee that the platform maintains absolute scientific credibility while achieving the visual fidelity of the reference design (`media_1794744533852_b07836bc.jpg`), implementation proceeds under five gated milestones:
 
-The restructuring and modularization (Phase 1) is complete and verified. Subsequent phases introduce real NASA PSI API ingestion, Google Gemini RAG intelligence, and cloud scaling without destabilizing the working client application.
-
-```mermaid
-flowchart LR
-    P1["Phase 1: Restructuring & Modularization (DONE)"] --> P2["Phase 2: Live Ingestion & Scientific Rigor"]
-    P2 --> P3["Phase 3: Gemini RAG Co-Pilot & Cloud Run"]
-    P3 --> P4["Phase 4: Advanced Partial-G Physics Engine"]
-    P4 --> P5["Phase 5: Automated QA & Accessibility"]
-    P5 --> P6["Phase 6: Space Apps Submission & Public Launch"]
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│ PHASE 1: Scientific Review Gate & Claims Disposition (CURRENT GATE — COMPLETED)         │
+│ • Audit and dispose of disputed claims in `SCIENTIFIC_CLAIMS_REGISTER.md`.             │
+│ • Complete forensic 11-parameter `INVESTIGATION_VERIFICATION_MATRIX.md`.              │
+│ • Remove unvalidated ±14% claims and uncalibrated SIBAL spread rate formulas.         │
+│ • Sourced NASA-STD-3001 hypoxia compliance to Vol 2 [V2 6005] ($19.0 - 23.7 kPa).      │
+│ • Establish 6-tier provenance contract (`MEASURED` to `UNKNOWN`).                     │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ PHASE 2: Illustrative 3D Asset Pipeline (Blender + Three.js)                           │
+│ • Build clean geometric GLTF components in Blender 5.4 (Earth, ISS, Moon, Mars, Rig). │
+│ • Implement Three.js runtime shaders with explicit `[ILLUSTRATIVE]` labels.           │
+│ • Deliver 0g spherical blue diffusion shell and exploratory partial-g plume models.   │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ PHASE 3: Module-by-Module UI/UX Alignment & Provenance Badge Integration               │
+│ • Align View 0 (Home) with reference image (ISS cupola window flame hero).            │
+│ • Implement 3D Environment Switcher in View 1 (Orbital & Flame Lab).                   │
+│ • Embed 6-tier provenance badges across all module outputs in Views 2, 3, 4, and 5.   │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ PHASE 4: Scientific Verification & Automated Test Suite Execution                      │
+│ • Update unit tests to reflect corrected scientific bounds and 6-tier provenance.      │
+│ • Verify that 100% of unit tests pass in `tests/test-runner.js`.                       │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ PHASE 5: Automated Visual Capture & Dual-Dimension Acceptance Delivery                 │
+│ • Capture headless Chrome screenshots across all views; verify visual + scientific A+. │
+└────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 2. Phase-by-Phase Roadmap
+## 2. Detailed Work Breakdown Structure (WBS)
 
-### PHASE 1: Forensic Audit & Modular Restructuring (COMPLETED)
-- **Goal**: Deconstruct monolithic 2,532-line single-file prototype into a modular, maintainable, and testable enterprise architecture.
-- **Key Deliverables**:
-  - `_ORIGINAL_SOURCE_BACKUP.html` preserved as baseline reference.
-  - Externalized data stores (`psi-investigations.json`, `habitat-nodes.json`, `incidents-spinoffs.json`, `copilot-knowledge.json`).
-  - Modularized ES architecture (`src/app/`, `src/modules/`, `src/styles/`, `src/utils/`).
-  - Zero-dependency automated test runner (`tests/test-runner.js`) with 15 passing tests.
-  - Complete 9-document architecture and governance suite in `docs/`.
-- **Verification Gate**: $100\%$ pass rate on unit and scientific tests; zero feature regressions relative to original prototype.
+### Phase 1: Scientific Governance & Review Gate (Completed)
+- [x] Create `docs/SCIENTIFIC_CLAIMS_REGISTER.md` with forensic dispositions (`VERIFIED`, `CORRECTED`, `REMOVED`, `PENDING EVIDENCE`).
+- [x] Create `docs/INVESTIGATION_VERIFICATION_MATRIX.md` with 11 discrete metadata parameters for all 10 investigations.
+- [x] Clarify the partial-gravity combustion data gap in NASA PSI.
+- [x] Correct distinction between CFI-G (`PSI-159`, gaseous cool flames in 0g) and E-FIELD (`PSI-22`, electric-field convective body force proxy).
+- [x] Distinguish planned Artemis CLPS payloads (FM2/LUCI) from completed PSI flight archives.
+- [x] Remove the claimed SIBAL empirical equation and synthetic $\pm 14\%$ uncertainty bound.
+- [x] Source hypoxia compliance directly to **NASA-STD-3001, Vol 2, Rev D, Section 6.1 `[V2 6005]`** ($19.0 - 23.7\ \text{kPa}$ / $2.76 - 3.44\ \text{psi}$ nominal, $16.0\ \text{kPa}$ / $2.32\ \text{psi}$ contingency).
+- [x] Revise `docs/SCIENTIFIC_REQUIREMENTS.md`.
+- [x] Revise `docs/PRODUCT_VISION.md`.
+- [x] Revise `docs/3D_ASSET_AND_RENDERING_PLAN.md`.
+- [x] Revise `docs/MODULE_DESIGN_SPECIFICATION.md`.
+- [x] Revise `docs/IMPLEMENTATION_ROADMAP.md`.
 
----
+### Phase 2: Illustrative 3D Asset & Shader Pipeline
+- [ ] **Earth & Orbit Enhancement (`orbital-globe.js`):**
+  - Integrate NASA Visible Earth Blue Marble equirectangular texture map.
+  - Implement Fresnel atmospheric glow shader.
+  - Build 3D modular ISS station geometry with solar array wings and cupola module.
+  - Add interactive camera rotation and target focus.
+- [ ] **Extraterrestrial Habitat Environments (`habitat-environments.js`):**
+  - Build procedural 3D Lunar Base Camp scene (cratered regolith, habitat dome, vertical solar array, Earth in the sky), labeled `[ILLUSTRATIVE CONCEPTUAL HABITAT]`.
+  - Build procedural 3D Mars Habitat scene (red dunes, geodesic pressurized dome, thin pink atmosphere), labeled `[ILLUSTRATIVE CONCEPTUAL HABITAT]`.
+  - Add environment switcher in the Lab studio allowing instant switching between Earth LEO, Moon, and Mars.
+- [ ] **Combustion Chamber & Morphological Flames (`flame-chamber-3d.js`):**
+  - Create 3D CIR/MSG combustion chamber model with viewing flange, nozzle, and igniter electrodes.
+  - Implement 4 distinct volumetric flame morphologies (0g spherical blue shell, 0.16g elongated partial-g plume, 0.38g conical plume, 1.0g flickering teardrop), clearly labeled with their respective provenance tiers.
 
-### PHASE 2: Live NASA PSI Dataset Ingestion & Schema Calibration
-- **Goal**: Replace manual JSON updates with automated pipelines pulling directly from NASA's Open PSI portal and publishing full provenance links.
-- **Why It Matters**: Guarantees that astronauts, payload engineers, and competition judges inspect authentic NASA flight data rather than static mockups.
-- **Required Datasets**:
-  - NASA PSI Open Data Catalog API (`psi.nasa.gov/api/v1`).
-  - Full-text technical reports from NASA Technical Reports Server (NTRS).
-- **Key Deliverables**:
-  - `scripts/data-ingestion/fetch_psi.py`: Python CLI tool fetching canonical investigation records.
-  - JSON schema enforcement via `src/data/schemas/investigation.schema.json`.
-  - Addition of downloadable raw sensor data links (BASS-II radiometer CSVs, Saffire pressure time-series).
-  - Explicit experimental measurement tolerances added to investigation metadata.
-- **Dependencies**: Python 3.10+, `requests`, `jsonschema`.
-- **Verification Criteria**: Script runs cleanly, validates 10/10 studies against JSON schema, and reports zero missing fields or broken URLs.
+### Phase 3: Module Enhancements & Provenance Badges
+- [ ] **View 0 (Home Dashboard):**
+  - Update hero banner with the cinematic ISS cupola window combustion rig artwork matching `media_1794744533852_b07836bc.jpg`.
+  - Add the 3 hero pills: `NASA PSI Data`, `AI Research Analysis`, `Habitat Risk Prediction`.
+  - Update sidebar bottom card with high-resolution photographic lunar habitat base.
+  - Embed the photographic experiment cards in the NASA PSI Highlights section with `REPORTED [PSI]` badges.
+- [ ] **View 1 (Orbital & Flame Lab):**
+  - Provide full-screen toggles for the 3D Planetary/Habitat environment and the 3D Combustion Chamber.
+- [ ] **View 2 (PSI Matrix):**
+  - Render the 11 audited metadata parameters from `INVESTIGATION_VERIFICATION_MATRIX.md`.
+- [ ] **View 3 (Flammability Simulator):**
+  - Replace uncalibrated $\pm 14\%$ labels with explicit `[MODELLED - DE RIS THEORETICAL PROXY]` badges.
+- [ ] **View 4 (Research Co-Pilot):**
+  - Ground all answer outputs with explicit citations to verified PSI flight records.
 
----
+### Phase 4: Scientific Verification & Test Execution
+- [ ] Run full test suite: `node tests/test-runner.js`.
+- [ ] Verify that 100% of unit tests pass without regressions.
 
-### PHASE 3: Evidence-Grounded Gemini RAG Co-Pilot & Cloud Run Gateway
-- **Goal**: Replace hardcoded keyword matching in the Research Co-Pilot with a true generative AI system that answers complex questions using retrieved NASA PSI papers.
-- **Why It Matters**: Enables open-ended conversational research while mathematically constraining the model to prevent scientific hallucination.
-- **Google Services Leveraged**:
-  - **Google Gemini 2.0 Flash API**: High-speed, high-reasoning conversational intelligence.
-  - **Vertex AI Search & Embeddings** (`text-embedding-004`): Dense semantic vector retrieval over indexed NASA PDFs.
-  - **Cloud Run**: Serverless container running FastAPI, keeping API keys securely hidden from client browsers.
-  - **Google Cloud Storage (GCS)**: Storing parsed NASA PSI research papers and embedding indices.
-- **Key Deliverables**:
-  - `backend/api/main.py`: FastAPI backend with `/api/v1/copilot/query` and `/api/v1/telemetry/iss`.
-  - `backend/intelligence/rag_pipeline.py`: Chunking, vector indexing, and Gemini prompt chain.
-  - Frontend client adapter in `src/services/gemini/gemini-client.js`.
-- **Dependencies**: Docker, Google Cloud SDK, `google-generativeai`.
-- **Verification Criteria**: Co-Pilot accurately answers 20 blind combustion physics questions citing specific investigation codes and DOIs without fabricating data.
-
----
-
-### PHASE 4: Calibrated Flammability Physics & Predictive Modeling
-- **Goal**: Upgrade empirical flammability formulas into scientifically calibrated predictive models backed by NASA-STD-6001 Test 1 data.
-- **Why It Matters**: Transforms an illustrative educational tool into a decision-support aid capable of calculating Limiting Oxygen Index (LOI) and fire spread rates with quantified confidence intervals.
-- **Key Deliverables**:
-  - Implementation of NASA-STD-6001 Test 1 upward flammability threshold tables.
-  - Polymeric material library expansion (Teflon, Kapton, Polycarbonate, Kevlar, Nomex).
-  - Display of explicit confidence bands ($\pm \sigma$) on the partial-gravity bounding curve canvas.
-  - Dynamic ambient pressure unit toggling ($\text{psia} \leftrightarrow \text{kPa} \leftrightarrow \text{bar}$).
-- **Verification Criteria**: Model predictions cross-checked against published BASS-II and Saffire spread rates with $<15\%$ error margin across verified test cases.
-
----
-
-### PHASE 5: Automated End-to-End Testing & Accessibility Audit
-- **Goal**: Establish automated continuous integration (CI) verifying visual rendering, responsive layouts, and accessibility standards.
-- **Why It Matters**: Prevents UI regressions and ensures universal usability across devices and for operators with visual or motor impairments.
-- **Key Deliverables**:
-  - Playwright E2E test suite testing tab navigation, habitat selection, slider reactivity, and clipboard copying.
-  - Automated Lighthouse CI audit targeting scores $>95$ across Performance, Accessibility, and Best Practices.
-  - Screen-reader verification using VoiceOver / NVDA.
-- **Dependencies**: Node.js, `@playwright/test`.
-- **Verification Criteria**: Zero accessibility violations; $100\%$ green automated test pipeline on GitHub Actions.
-
----
-
-### PHASE 6: Space Apps Submission Kit Finalization & Deployment
-- **Goal**: Package the application for final evaluation and public demonstration during the NASA Space Apps Challenge 2026.
-- **Why It Matters**: Delivers an unassailable presentation package to judges, complete with live URL, video demonstration, and full open-source repository.
-- **Key Deliverables**:
-  - Production deployment to Firebase Edge CDN (`https://pyro-si.web.app`).
-  - High-resolution demo video walkthrough recorded with Playwright UI demo tools.
-  - Interactive 7-slide presentation deck exportable in PDF and Markdown format.
-  - Open-source repository cleanup and license compliance audit.
-- **Verification Criteria**: Live public URL loads in $<1.5\text{s}$ globally; submission kit blocks tested and verified with one-click copying.
-
----
-
-## 3. Milestone Summary Schedule
-
-| Milestone | Target Horizon | Lead Focus | Deliverable Output |
-|---|---|---|---|
-| **M1: Modular Core** | Week 1 (Done) | Architecture & Frontend | Modular repo, test suite, complete docs |
-| **M2: Ingestion & Provenance** | Week 2 | Data Engineering | Automated PSI ingestion script & schema |
-| **M3: Gemini RAG Engine** | Week 3 | Scientific AI | Cloud Run FastAPI backend + Gemini 2.0 |
-| **M4: Physics Calibration** | Week 4 | Combustion Engineering | NASA-STD-6001 calibrated LOI models |
-| **M5: CI/CD & Accessibility** | Week 5 | Full-Stack / QA | Playwright E2E suite, Lighthouse score >95 |
-| **M6: Global Launch** | Week 6 | Mission Operations | Firebase deployment, Space Apps submission |
+### Phase 5: Visual QA & Acceptance
+- [ ] Execute `python3 scripts/capture_all_views.py` with Chrome headless and WebGL.
+- [ ] Visually inspect all 8 screenshot artifacts.
+- [ ] Commit all changes cleanly to git.
