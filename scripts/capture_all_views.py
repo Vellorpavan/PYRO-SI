@@ -20,6 +20,12 @@ views = [
         "height": 900
     },
     {
+        "name": "00_home_dashboard_full.png",
+        "url": "http://localhost:8089/index.html?tab=tab-home",
+        "width": 1440,
+        "height": 1350
+    },
+    {
         "name": "01_lab_workspace_globe.png",
         "url": "http://localhost:8089/index.html?tab=tab-godeye&studio=globe",
         "width": 1440,

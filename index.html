@@ -7,8 +7,10 @@
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Three.js for 3D Orbital Globe -->
+  <!-- Three.js for 3D Orbital Globe & Combustion Chamber -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="./assets/vendor/OrbitControls.js"></script>
+  <script src="./assets/vendor/GLTFLoader.js"></script>
   <!-- Google Fonts: Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -56,7 +58,7 @@
     <!-- =======================================================================
          LEFT SIDEBAR NAVIGATION (Desktop: fixed width, Mobile: hidden)
          ======================================================================= -->
-    <aside class="hidden md:flex md:w-64 bg-white border-r border-slate-200/80 flex-col justify-between shrink-0 z-20">
+    <aside class="hidden md:flex md:w-64 h-screen sticky top-0 bg-white border-r border-slate-200/80 flex-col justify-between shrink-0 z-20">
       
       <!-- Top Section: NASA Logo & Vertical Navigation Items -->
       <div class="p-5 space-y-6">
@@ -83,12 +85,12 @@
 
           <button onclick="switchMainTab('tab-psi')" id="sidebar-tab-psi" class="sidebar-nav-btn">
             <i class="fa-solid fa-layer-group w-4 text-center text-slate-500"></i>
-            <span>PSI Matrix</span>
+            <span>PSI Investigation Matrix</span>
           </button>
 
           <button onclick="switchMainTab('tab-simulator')" id="sidebar-tab-simulator" class="sidebar-nav-btn">
             <i class="fa-solid fa-fire w-4 text-center text-slate-500"></i>
-            <span>Simulator</span>
+            <span>Flammability Simulator</span>
           </button>
 
           <button onclick="switchMainTab('tab-sicopilot')" id="sidebar-tab-sicopilot" class="sidebar-nav-btn">
@@ -104,21 +106,12 @@
 
       </div>
 
-      <!-- Bottom Cosmic Space Apps Art Card -->
-      <div class="p-4 m-3 rounded-2xl relative overflow-hidden bg-gradient-to-b from-[#1E1B4B] via-[#0F172A] to-[#020617] text-white shadow-inner">
-        <!-- Background space stars and glow -->
-        <div class="absolute inset-0 opacity-40 bg-[radial-gradient(#818CF8_1px,transparent_1px)] [background-size:12px_12px] pointer-events-none"></div>
-        <div class="relative z-10 flex items-center gap-3">
-          <!-- Crescent Moon Circle -->
-          <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-200 to-indigo-400 p-0.5 shadow-md flex items-center justify-center">
-            <div class="w-full h-full rounded-full bg-slate-950 flex items-center justify-center text-[10px] text-amber-200">
-              <i class="fa-solid fa-moon"></i>
-            </div>
-          </div>
-          <div>
-            <div class="font-bold text-xs tracking-tight text-white">NASA</div>
-            <div class="text-[10px] text-indigo-200 leading-tight">Space Apps<br>Challenge 2026</div>
-          </div>
+      <!-- Bottom Cosmic Space Apps Art Card (Photographic Lunar Surface) -->
+      <div class="m-3 rounded-2xl relative overflow-hidden text-white shadow-md border border-slate-800 min-h-[170px] flex flex-col justify-end p-4"
+           style="background: linear-gradient(180deg, rgba(15, 23, 42, 0.15) 0%, rgba(15, 23, 42, 0.92) 80%), url('./assets/images/sidebar_lunar_card.jpg') center/cover;">
+        <div class="relative z-10 space-y-1">
+          <div class="font-bold text-sm tracking-tight text-white leading-tight">Flame in Freefall</div>
+          <div class="text-[11px] text-slate-300 font-normal leading-snug">NASA Space Apps<br>Challenge 2026</div>
         </div>
       </div>
 
@@ -183,23 +176,39 @@
              ===================================================================== -->
         <section id="tab-home" class="tab-section space-y-6">
 
-          <!-- CINEMATIC SPACE HERO BANNER -->
+          <!-- CINEMATIC SPACE HERO BANNER (MATCHING TARGET DESIGN) -->
           <div class="rounded-2xl p-6 sm:p-8 text-white relative overflow-hidden shadow-lg border border-slate-900/10" 
-               style="background: linear-gradient(90deg, #090D1A 0%, rgba(9, 13, 26, 0.90) 50%, rgba(9, 13, 26, 0.45) 100%), url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1600&auto=format&fit=crop&q=80') center/cover;">
+               style="background: linear-gradient(90deg, #070913 0%, rgba(7, 9, 19, 0.88) 46%, rgba(7, 9, 19, 0.35) 100%), url('./assets/images/hero_space_flame_bg.jpg') center/cover;">
             
             <div class="relative z-10 flex flex-col xl:flex-row xl:items-center justify-between gap-6">
               
-              <!-- Left: Title & Subtitle -->
-              <div class="max-w-2xl space-y-2">
+              <!-- Left: Title, Subtitle & 3 Capability Pills -->
+              <div class="max-w-2xl space-y-3">
                 <div class="text-[11px] font-mono tracking-widest text-indigo-300 font-bold uppercase">
                   FLAME IN FREEFALL
                 </div>
                 <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight">
-                  Space Fire Safety Intelligence
+                  Space <span class="text-purple-400">Fire Safety</span> Intelligence
                 </h2>
-                <p class="text-xs sm:text-sm text-slate-200 leading-relaxed max-w-xl pt-1">
-                  Explore NASA combustion research, analyze microgravity experiments, and predict fire behavior for future Moon and Mars habitats.
+                <p class="text-xs sm:text-sm text-slate-200 leading-relaxed max-w-xl">
+                  Turn NASA microgravity combustion data into actionable fire safety insights for future Moon and Mars habitats.
                 </p>
+
+                <!-- 3 Capability Pills (Reference Image Exact Match) -->
+                <div class="flex flex-wrap items-center gap-2.5 pt-1.5">
+                  <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/65 backdrop-blur-md border border-purple-500/40 text-xs font-medium text-slate-200">
+                    <i class="fa-solid fa-database text-purple-400 text-xs"></i>
+                    <span>NASA PSI Data</span>
+                  </div>
+                  <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/65 backdrop-blur-md border border-purple-500/40 text-xs font-medium text-slate-200">
+                    <i class="fa-solid fa-brain text-purple-400 text-xs"></i>
+                    <span>AI Research Analysis</span>
+                  </div>
+                  <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/65 backdrop-blur-md border border-purple-500/40 text-xs font-medium text-slate-200">
+                    <i class="fa-solid fa-cube text-purple-400 text-xs"></i>
+                    <span>Habitat Risk Prediction</span>
+                  </div>
+                </div>
               </div>
 
               <!-- Right: 4 Metric Cards inside Hero Banner -->
@@ -271,12 +280,15 @@
                     <div id="godeye-globe-container" class="w-full h-full cursor-grab active:cursor-grabbing"></div>
                   </div>
                   
-                  <!-- ISS Altitude / Velocity Callout Badge -->
-                  <div class="absolute top-3 right-3 bg-slate-900/80 backdrop-blur-md border border-white/15 rounded-lg px-2.5 py-1.5 font-mono text-[10px] text-white space-y-0.5 shadow-md">
-                    <div class="text-sky-400 font-bold flex items-center gap-1">
-                      <i class="fa-solid fa-satellite"></i> ISS
+                  <!-- ISS Telemetry Callout Badge (Top-Left matching reference design) -->
+                  <div class="absolute top-3 left-3 bg-slate-900/85 backdrop-blur-md border border-white/15 rounded-xl p-3 font-mono text-[10px] text-white space-y-1 shadow-lg pointer-events-none z-10">
+                    <div class="text-emerald-400 font-bold flex items-center gap-1.5 text-xs">
+                      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                      <span id="hud-env-title">ISS (Current)</span>
                     </div>
-                    <div id="hud-altvel-home" class="text-slate-200">Alt: 408.4 km | Vel: 7.66 km/s</div>
+                    <div id="hud-alt-val" class="text-slate-200">Alt: 408.4 km</div>
+                    <div id="hud-vel-val" class="text-slate-200">Vel: 7.66 km/s</div>
+                    <div id="hud-coord-val" class="text-slate-300">25.95° N, 81.08° E</div>
                   </div>
                 </div>
               </div>
@@ -295,7 +307,7 @@
 
                 <button onclick="selectHabitatNode('MARS')" id="node-btn-MARS" class="habitat-node-btn p-2 rounded-xl text-xs font-semibold text-center transition flex flex-col items-center gap-1 bg-slate-100 text-slate-700 hover:bg-purple-50 hover:text-purple-700">
                   <i class="fa-solid fa-globe text-orange-500"></i>
-                  <span>Mars (0.38 g)</span>
+                  <span>Mars Habitat (0.38 g)</span>
                 </button>
 
                 <button onclick="selectHabitatNode('SUIT')" id="node-btn-SUIT" class="habitat-node-btn p-2 rounded-xl text-xs font-semibold text-center transition flex flex-col items-center gap-1 bg-slate-100 text-slate-700 hover:bg-purple-50 hover:text-purple-700">
@@ -317,12 +329,12 @@
                   </div>
                 </div>
 
-                <!-- 2D Particle Canvas & Radio Controls -->
+                <!-- 3D Combustion Chamber & Radio Controls -->
                 <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 mt-3 items-center">
-                  <!-- Canvas (8 cols) -->
+                  <!-- Chamber 3D Viewport (7 cols) -->
                   <div class="sm:col-span-7 h-[220px] bg-[#0A0F1D] rounded-xl overflow-hidden relative shadow-inner">
                     <div id="home-flame-slot" class="w-full h-full">
-                      <canvas id="flame-physics-canvas" class="w-full h-full block" role="img" aria-label="Microgravity flame visualization"></canvas>
+                      <canvas id="flame-physics-canvas" class="w-full h-full block rounded-xl" role="img" aria-label="Microgravity flame visualization"></canvas>
                     </div>
                   </div>
 
@@ -454,63 +466,71 @@
                 </button>
               </div>
 
-              <!-- 4 White Research Cards -->
+              <!-- 4 Photographic Research Highlight Cards (Reference Match) -->
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 
                 <!-- Card 1: BASS-II -->
-                <div class="p-3.5 rounded-xl border border-slate-200 hover:border-purple-300 hover:shadow-sm transition bg-white space-y-2">
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                      <span class="text-amber-500 text-xs"><i class="fa-solid fa-flask"></i></span>
-                      <strong class="font-mono text-xs text-slate-900">BASS-II</strong>
+                <div onclick="viewPsiStudy('PSI-69')" class="cursor-pointer group rounded-xl border border-slate-200 hover:border-purple-400 hover:shadow-md transition bg-white overflow-hidden flex flex-col">
+                  <div class="h-28 w-full overflow-hidden bg-slate-950 relative">
+                    <img src="./assets/images/card_bass2.jpg" alt="BASS-II Combustion" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+                    <div class="absolute bottom-2 left-2">
+                      <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/90 text-white backdrop-blur-sm flex items-center gap-1 shadow-sm">
+                        <i class="fa-solid fa-circle-check text-[9px]"></i> Flight Data
+                      </span>
                     </div>
-                    <span class="badge-flight-data">
-                      <i class="fa-solid fa-circle-check text-[9px]"></i> Flight Data
-                    </span>
                   </div>
-                  <p class="text-xs text-slate-600 line-clamp-1">Burning & Suppression of Solids</p>
+                  <div class="p-3 space-y-1">
+                    <div class="font-bold text-xs text-slate-900 group-hover:text-purple-700 transition">BASS-II</div>
+                    <div class="text-[11px] text-slate-600 line-clamp-1">Burning & Suppression of Solids</div>
+                  </div>
                 </div>
 
                 <!-- Card 2: SAFFIRE I-III -->
-                <div class="p-3.5 rounded-xl border border-slate-200 hover:border-purple-300 hover:shadow-sm transition bg-white space-y-2">
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                      <span class="text-amber-500 text-xs"><i class="fa-solid fa-fire"></i></span>
-                      <strong class="font-mono text-xs text-slate-900">SAFFIRE I–III</strong>
+                <div onclick="viewPsiStudy('PSI-157')" class="cursor-pointer group rounded-xl border border-slate-200 hover:border-purple-400 hover:shadow-md transition bg-white overflow-hidden flex flex-col">
+                  <div class="h-28 w-full overflow-hidden bg-slate-950 relative">
+                    <img src="./assets/images/card_saffire.jpg" alt="SAFFIRE I–III Combustion" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+                    <div class="absolute bottom-2 left-2">
+                      <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/90 text-white backdrop-blur-sm flex items-center gap-1 shadow-sm">
+                        <i class="fa-solid fa-circle-check text-[9px]"></i> Flight Data
+                      </span>
                     </div>
-                    <span class="badge-flight-data">
-                      <i class="fa-solid fa-circle-check text-[9px]"></i> Flight Data
-                    </span>
                   </div>
-                  <p class="text-xs text-slate-600 line-clamp-1">Spacecraft Fire Safety Demonstration</p>
+                  <div class="p-3 space-y-1">
+                    <div class="font-bold text-xs text-slate-900 group-hover:text-purple-700 transition">SAFFIRE I–III</div>
+                    <div class="text-[11px] text-slate-600 line-clamp-1">Spacecraft Fire Safety Demonstration</div>
+                  </div>
                 </div>
 
                 <!-- Card 3: ACME: CFI-G -->
-                <div class="p-3.5 rounded-xl border border-slate-200 hover:border-purple-300 hover:shadow-sm transition bg-white space-y-2">
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                      <span class="text-purple-600 text-xs"><i class="fa-solid fa-atom"></i></span>
-                      <strong class="font-mono text-xs text-slate-900">ACME: CFI-G</strong>
+                <div onclick="viewPsiStudy('PSI-159')" class="cursor-pointer group rounded-xl border border-slate-200 hover:border-purple-400 hover:shadow-md transition bg-white overflow-hidden flex flex-col">
+                  <div class="h-28 w-full overflow-hidden bg-slate-950 relative">
+                    <img src="./assets/images/card_acme.jpg" alt="ACME: CFI-G Combustion" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+                    <div class="absolute bottom-2 left-2">
+                      <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/90 text-white backdrop-blur-sm flex items-center gap-1 shadow-sm">
+                        <i class="fa-solid fa-circle-check text-[9px]"></i> Flight Data
+                      </span>
                     </div>
-                    <span class="badge-flight-data">
-                      <i class="fa-solid fa-circle-check text-[9px]"></i> Flight Data
-                    </span>
                   </div>
-                  <p class="text-xs text-slate-600 line-clamp-1">Coflow Flames in Partial Gravity</p>
+                  <div class="p-3 space-y-1">
+                    <div class="font-bold text-xs text-slate-900 group-hover:text-purple-700 transition">ACME: CFI-G</div>
+                    <div class="text-[11px] text-slate-600 line-clamp-1">Coflow Flames in Partial Gravity</div>
+                  </div>
                 </div>
 
                 <!-- Card 4: FLEX / CFI -->
-                <div class="p-3.5 rounded-xl border border-slate-200 hover:border-purple-300 hover:shadow-sm transition bg-white space-y-2">
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                      <span class="text-sky-500 text-xs"><i class="fa-solid fa-droplet"></i></span>
-                      <strong class="font-mono text-xs text-slate-900">FLEX / CFI</strong>
+                <div onclick="viewPsiStudy('PSI-25')" class="cursor-pointer group rounded-xl border border-slate-200 hover:border-purple-400 hover:shadow-md transition bg-white overflow-hidden flex flex-col">
+                  <div class="h-28 w-full overflow-hidden bg-slate-950 relative">
+                    <img src="./assets/images/card_flex.jpg" alt="FLEX / CFI Combustion" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+                    <div class="absolute bottom-2 left-2">
+                      <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/90 text-white backdrop-blur-sm flex items-center gap-1 shadow-sm">
+                        <i class="fa-solid fa-circle-check text-[9px]"></i> Flight Data
+                      </span>
                     </div>
-                    <span class="badge-flight-data">
-                      <i class="fa-solid fa-circle-check text-[9px]"></i> Flight Data
-                    </span>
                   </div>
-                  <p class="text-xs text-slate-600 line-clamp-1">Flame Extinguishment & Cool Flames</p>
+                  <div class="p-3 space-y-1">
+                    <div class="font-bold text-xs text-slate-900 group-hover:text-purple-700 transition">FLEX / CFI</div>
+                    <div class="text-[11px] text-slate-600 line-clamp-1">Flame Extinguishment & Cool Flames</div>
+                  </div>
                 </div>
 
               </div>
@@ -530,9 +550,9 @@
 
                 <!-- Search Input Bar -->
                 <div class="relative flex items-center">
-                  <input id="home-copilot-input" onkeydown="if(event.key==='Enter') submitHomeQuery()" type="text" placeholder="Ask a research question..." class="w-full pl-4 pr-11 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 placeholder-slate-400 outline-none focus:border-purple-500 focus:bg-white transition" />
-                  <button onclick="submitHomeQuery()" class="absolute right-2 w-7 h-7 rounded-lg bg-purple-600 text-white flex items-center justify-center text-xs hover:bg-purple-700 transition" aria-label="Submit Question">
-                    <i class="fa-solid fa-arrow-up"></i>
+                  <input id="home-copilot-input" onkeydown="if(event.key==='Enter') submitHomeQuery()" type="text" placeholder="Ask a NASA combustion research question..." class="w-full pl-4 pr-11 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 placeholder-slate-400 outline-none focus:border-purple-500 focus:bg-white transition" />
+                  <button onclick="submitHomeQuery()" class="absolute right-2 w-7 h-7 rounded-lg bg-purple-600 text-white flex items-center justify-center text-xs hover:bg-purple-700 transition shadow-sm" aria-label="Submit Question">
+                    <i class="fa-solid fa-paper-plane text-[10px]"></i>
                   </button>
                 </div>
 

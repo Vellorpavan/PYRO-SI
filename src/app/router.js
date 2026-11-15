@@ -42,9 +42,9 @@ export function switchMainTab(tabId) {
   const sidebarBtn = document.getElementById('sidebar-' + tabId);
   if (sidebarBtn) sidebarBtn.classList.add('active-tab');
 
-  // Handle 3D Globe and 2D Flame canvas re-parenting between Home and Lab views
+  // Handle 3D Globe and 3D Flame canvas re-parenting between Home and Lab views
   const globeEl = document.getElementById('godeye-globe-container');
-  const flameEl = document.getElementById('flame-physics-canvas');
+  const flameEl = document.querySelector('#home-flame-slot canvas') || document.querySelector('#lab-flame-slot canvas') || document.getElementById('flame-physics-canvas');
   if (tabId === 'tab-godeye') {
     const labGlobe = document.getElementById('lab-globe-slot');
     const labFlame = document.getElementById('lab-flame-slot');

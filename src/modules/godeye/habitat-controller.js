@@ -6,6 +6,7 @@
 import habitatData from '../../data/reference/habitat-nodes.json' with { type: 'json' };
 import psiInvestigations from '../../data/reference/psi-investigations.json' with { type: 'json' };
 import { setFlameVisualMode } from './flame-chamber.js';
+import { switchEnvironment } from './orbital-globe.js';
 import { applySimPreset } from '../flammability-simulator/presets.js';
 import { switchMainTab } from '../../app/router.js';
 
@@ -15,6 +16,9 @@ export function selectHabitatNode(nodeKey) {
   const hab = habitatData[nodeKey];
   if (!hab) return;
   currentHabitatKey = nodeKey;
+
+  // Switch 3D WebGL Environment Scene (ISS Earth orbit vs Moon Habitat vs Mars Habitat)
+  switchEnvironment(nodeKey);
 
   // Update button active states
   document.querySelectorAll('.habitat-node-btn').forEach(btn => {
@@ -32,6 +36,10 @@ export function selectHabitatNode(nodeKey) {
   if (hudTarget) hudTarget.textContent = hab.name;
   const hudGrav = document.getElementById('hud-gravity');
   if (hudGrav) hudGrav.textContent = `${hab.gravity}g`;
+  const hudEnvTitle = document.getElementById('hud-env-title');
+  if (hudEnvTitle) {
+    hudEnvTitle.textContent = nodeKey === 'ISS' ? 'ISS (Current)' : hab.name;
+  }
 
   // Update Habitat Telemetry Card
   const titleEl = document.getElementById('hab-selected-title') || document.getElementById('hab-panel-name');
