@@ -53,16 +53,16 @@ function renderTerminalOutput(terminal, title, badge, rawContent) {
 
   terminal.innerHTML = `
     <div class="space-y-4">
-      <div class="flex items-center justify-between border-b border-white/[0.08] pb-2">
-        <span class="font-sans font-bold text-sm text-sky-400">${escapeHtml(title)}</span>
-        <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/15 border border-indigo-500/30 text-indigo-300">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+        <span class="font-sans font-bold text-sm text-purple-700">${escapeHtml(title)}</span>
+        <span class="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-purple-100 border border-purple-200 text-purple-700 font-semibold">
           ${escapeHtml(badge)}
         </span>
       </div>
-      <div class="text-xs text-slate-300 space-y-3 font-sans">
+      <div class="text-xs text-slate-700 space-y-3 font-sans leading-relaxed">
         ${formattedContent}
       </div>
-      <div class="pt-2 border-t border-slate-800 flex items-center justify-between text-[10px] font-mono text-slate-500">
+      <div class="pt-2 border-t border-slate-200 flex items-center justify-between text-[10px] font-mono text-slate-400">
         <span>GROUNDED IN NASA PSI PUBLIC DATASETS</span>
         <span>STATUS: SYNTHESIZED VERIFIED</span>
       </div>

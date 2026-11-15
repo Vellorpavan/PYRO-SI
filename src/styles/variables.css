@@ -1,53 +1,55 @@
 /* =============================================================================
-   PYRO-SI — Aerospace Precision Design System Tokens
+   PYRO-SI — White / Lavender & Royal Purple Design System
    NASA Space Apps Challenge 2026 — Flame in Freefall
-   Benchmarked against NASA Eyes, ESA SSA, CERN, Nature Science, Linear
+   Visual Reference: Premium Scientific Space Intelligence Platform
    ============================================================================= */
 
 :root {
-  /* Canvas & Elevation Hierarchy */
-  --canvas-void:          #080C14; /* Deep neutral void behind 3D canvases & charts */
-  --canvas-base:          #0B101B; /* Default application canvas */
-  --surface-base:         #111827; /* Primary card & panel container */
-  --surface-raised:       #182235; /* Elevated components, headers, active chips */
-  --surface-overlay:      #1F2B42; /* Modal dialogs, floating tooltips */
-  --surface-sunken:       #0A0F1A; /* Inset metric panels, slider wells, code boxes */
+  /* Canvas & Elevation Hierarchy (Light White/Lavender Palette) */
+  --canvas-base:          #F3F4F9; /* Soft serene lavender/white canvas */
+  --canvas-subtle:        #EAEBF4; /* Deeper canvas shade */
+  --surface-base:         #FFFFFF; /* Crisp pure white cards and panels */
+  --surface-raised:       #F8FAFC; /* Elevated hover layers */
+  --surface-sunken:       #F1F5F9; /* Inset metric wells and inputs */
+  --surface-dark:         #0A0F1D; /* Dark containers for 3D/2D space canvases */
 
-  /* Hairline Borders & Dividers */
-  --border-subtle:        rgba(255, 255, 255, 0.08);
-  --border-default:       rgba(255, 255, 255, 0.12);
-  --border-strong:        rgba(255, 255, 255, 0.22);
-  --border-focus:         #0284C7; /* Sky-600 */
+  /* Hairline Borders */
+  --border-subtle:        #F1F5F9;
+  --border-default:       #E2E8F0; /* Clean slate-200 boundary */
+  --border-medium:        #CBD5E1; /* slate-300 */
+  --border-focus:         #7C3AED; /* Purple-600 focus ring */
 
-  /* Scientific Accents (High-Contrast, Meaningful Semantics) */
-  --accent-cyan:          #38BDF8; /* Sky-400: Primary telemetry, spatial navigation */
-  --accent-cyan-subtle:   rgba(56, 189, 248, 0.10);
-  --accent-amber:         #F59E0B; /* Amber-500: Thermal, combustion, partial-g */
-  --accent-amber-subtle:  rgba(245, 158, 11, 0.10);
-  --accent-emerald:       #10B981; /* Emerald-500: Nominal status, verified data */
-  --accent-emerald-subtle:rgba(16, 185, 129, 0.10);
-  --accent-rose:          #EF4444; /* Red-500: Flammability hazard, warning */
-  --accent-rose-subtle:   rgba(239, 68, 68, 0.12);
-  --accent-indigo:        #6366F1; /* Indigo-500: Empirical simulation, AI copilot */
-  --accent-indigo-subtle: rgba(99, 102, 241, 0.10);
+  /* Primary Brand Purple */
+  --primary-purple:       #6D28D9; /* Royal Purple */
+  --primary-purple-hover: #5B21B6; /* Darker Purple */
+  --primary-purple-light: #EDE9FE; /* Soft lavender tint */
+  --primary-purple-text:  #6D28D9;
+
+  /* Scientific Accent Colors */
+  --accent-cyan:          #0284C7; /* Sky blue */
+  --accent-amber:         #D97706; /* Flame amber */
+  --accent-emerald:       #059669; /* Success/verified emerald */
+  --accent-rose:          #DC2626; /* Hazard coral */
 
   /* Typography Colors */
-  --text-primary:         #F8FAFC; /* Slate-50: Main headings & primary readouts */
-  --text-secondary:       #94A3B8; /* Slate-400: Labels, secondary descriptions */
-  --text-muted:           #64748B; /* Slate-500: Units, metadata, timestamps */
-  --text-disabled:        #475569; /* Slate-600: Inactive states */
+  --text-primary:         #0F172A; /* Slate-900: High-contrast primary headings */
+  --text-secondary:       #475569; /* Slate-600: Informative body copy */
+  --text-muted:           #64748B; /* Slate-500: Metadata, captions */
+  --text-inverse:         #FFFFFF; /* White text on dark/purple elements */
 
   /* Radii */
-  --radius-sm:            4px;
-  --radius-md:            8px;
-  --radius-lg:            12px;
-  --radius-xl:            16px;
+  --radius-sm:            6px;
+  --radius-md:            10px;
+  --radius-lg:            14px;
+  --radius-xl:            20px;
+  --radius-2xl:           24px;
 
-  /* Typography Fonts */
+  /* Font Families */
   --font-sans:            'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono:            'JetBrains Mono', 'IBM Plex Mono', monospace;
 
-  /* Transitions */
-  --transition-fast:      150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-normal:    250ms cubic-bezier(0.4, 0, 0.2, 1);
+  /* Shadows */
+  --shadow-sm:            0 1px 2px 0 rgba(15, 23, 42, 0.05);
+  --shadow-md:            0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
+  --shadow-lg:            0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
 }

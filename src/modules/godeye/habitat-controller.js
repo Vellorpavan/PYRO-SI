@@ -18,13 +18,13 @@ export function selectHabitatNode(nodeKey) {
 
   // Update button active states
   document.querySelectorAll('.habitat-node-btn').forEach(btn => {
-    btn.classList.remove('bg-sky-500', 'text-slate-950', 'border-sky-400', 'bg-cyanHud', 'text-space');
-    btn.classList.add('bg-surface-raised', 'text-slate-200');
+    btn.classList.remove('bg-[#6D28D9]', 'bg-sky-500', 'text-white', 'text-slate-950', 'border-sky-400', 'bg-cyanHud', 'text-space', 'shadow-sm');
+    btn.classList.add('bg-slate-100', 'text-slate-700');
   });
   const activeBtn = document.getElementById('node-btn-' + nodeKey);
   if (activeBtn) {
-    activeBtn.classList.remove('bg-surface-raised', 'text-slate-200');
-    activeBtn.classList.add('bg-sky-500', 'text-slate-950', 'border-sky-400');
+    activeBtn.classList.remove('bg-slate-100', 'text-slate-700');
+    activeBtn.classList.add('bg-[#6D28D9]', 'text-white', 'shadow-sm');
   }
 
   // Update Top HUD Bar
@@ -64,10 +64,15 @@ export function selectHabitatNode(nodeKey) {
   if (o2El) o2El.textContent = `${hab.o2}%`;
   const pressEl = document.getElementById('hab-press-val') || document.getElementById('hab-psi');
   if (pressEl) pressEl.textContent = `${hab.pressure} psi`;
-  const gravEl = document.getElementById('hab-grav-val') || document.getElementById('hab-g');
+  const gravEl = document.getElementById('hab-grav-val');
   if (gravEl) gravEl.textContent = hab.gravityDisplay;
-  const flowEl = document.getElementById('hab-flow-val') || document.getElementById('hab-flow');
+  const gravMini = document.getElementById('hab-g');
+  if (gravMini) gravMini.textContent = `${hab.gravity} g`;
+
+  const flowEl = document.getElementById('hab-flow-val');
   if (flowEl) flowEl.textContent = hab.flowDisplay;
+  const flowMini = document.getElementById('hab-flow');
+  if (flowMini) flowMini.textContent = `${hab.flow} cm/s`;
   const protoEl = document.getElementById('hab-suppression-proto');
   if (protoEl) protoEl.textContent = hab.suppressionProtocol;
 

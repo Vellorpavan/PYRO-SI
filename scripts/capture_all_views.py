@@ -14,6 +14,12 @@ OUTPUT_DIR = "/Users/pavan/Desktop/PYRO-SI/screenshots"
 
 views = [
     {
+        "name": "00_home_dashboard.png",
+        "url": "http://localhost:8089/index.html?tab=tab-home",
+        "width": 1440,
+        "height": 900
+    },
+    {
         "name": "01_lab_workspace_globe.png",
         "url": "http://localhost:8089/index.html?tab=tab-godeye&studio=globe",
         "width": 1440,
@@ -51,7 +57,7 @@ views = [
     },
     {
         "name": "06_mobile_layout.png",
-        "url": "http://localhost:8089/index.html?tab=tab-godeye",
+        "url": "http://localhost:8089/index.html?tab=tab-home",
         "width": 390,
         "height": 844
     }

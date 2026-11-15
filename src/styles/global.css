@@ -1,6 +1,6 @@
 /* =============================================================================
    PYRO-SI — Global Styles & Reset
-   Aerospace Scientific Laboratory Standard
+   White / Lavender & Royal Purple Aerospace Design System
    ============================================================================= */
 
 @import './variables.css';
@@ -15,7 +15,7 @@ html {
   font-size: 16px;
   overflow-x: clip;
   scroll-behavior: smooth;
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
@@ -29,27 +29,27 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Accessibility: Focus Visible */
+/* Accessibility Focus Visible */
 :focus-visible {
-  outline: 2px solid var(--accent-cyan);
+  outline: 2px solid var(--primary-purple);
   outline-offset: 2px;
 }
 
-/* Scrollbars */
+/* Custom Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--canvas-void);
+  background: var(--canvas-base);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: #CBD5E1;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.28);
+  background: #94A3B8;
 }

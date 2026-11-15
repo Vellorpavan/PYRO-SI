@@ -57,14 +57,24 @@ export function setFlameVisualMode(mode) {
 
   // Update button active state
   document.querySelectorAll('.flame-mode-btn, .flame-mode-pill').forEach(btn => {
-    btn.classList.remove('active-mode', 'bg-sky-400/20', 'text-sky-400', 'border-sky-400/50', 'bg-cyanHud/20', 'text-cyanHud', 'border-cyanHud/50', 'font-bold');
-    btn.classList.add('bg-surface-raised', 'text-slate-300');
+    btn.classList.remove('active-mode', 'bg-purple-50', 'text-purple-700', 'border-purple-200', 'bg-sky-400/20', 'text-sky-400', 'border-sky-400/50', 'bg-cyanHud/20', 'text-cyanHud', 'border-cyanHud/50', 'font-bold');
+    btn.classList.add('text-slate-600', 'hover:bg-slate-100');
+    const dot = btn.querySelector('span:first-child');
+    if (dot) {
+      dot.classList.remove('bg-purple-600');
+      dot.classList.add('bg-slate-300');
+    }
   });
 
   const activeBtn = document.getElementById('flame-mode-' + mode);
   if (activeBtn) {
-    activeBtn.classList.add('active-mode', 'bg-sky-400/20', 'text-sky-400', 'border-sky-400/50', 'font-bold');
-    activeBtn.classList.remove('bg-surface-raised', 'text-slate-300');
+    activeBtn.classList.add('active-mode', 'bg-purple-50', 'text-purple-700', 'border', 'border-purple-200', 'font-semibold');
+    activeBtn.classList.remove('text-slate-600', 'hover:bg-slate-100');
+    const dot = activeBtn.querySelector('span:first-child');
+    if (dot) {
+      dot.classList.remove('bg-slate-300');
+      dot.classList.add('bg-purple-600');
+    }
   }
 
   const badge = document.getElementById('flame-regime-badge');

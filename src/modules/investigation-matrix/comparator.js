@@ -1,6 +1,7 @@
 /**
  * PSI Investigation Comparator
  * Handles side-by-side technical comparison of up to 3 investigations.
+ * Light / White Lavender + Royal Purple Theme
  */
 
 import psiInvestigations from '../../data/reference/psi-investigations.json' with { type: 'json' };
@@ -45,7 +46,6 @@ export function renderComparisonTable() {
     .map(id => psiInvestigations.find(s => s.id === id || s.code === id || s.psiId === id))
     .filter(Boolean);
 
-  // Auto-synthesized similarity/difference notes
   const uniqueRacks = [...new Set(studies.map(s => s.rack))];
   const uniqueFuels = [...new Set(studies.map(s => s.fuelType))];
   const similarityNote = uniqueRacks.length === 1
@@ -57,69 +57,69 @@ export function renderComparisonTable() {
     : `Diverse fuel regimes (${uniqueFuels.join(', ')}), cross-validating gas vs liquid vs solid flame physics.`;
 
   let html = `
-    <div class="mb-3 p-3 rounded-lg bg-panelLight/80 border border-cyanHud/20 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs">
+    <div class="mb-4 p-4 rounded-xl bg-purple-50/70 border border-purple-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs">
       <div class="space-y-1">
-        <div class="text-[11px] font-mono text-cyanHud flex items-center gap-1.5">
+        <div class="text-xs font-mono text-purple-700 font-bold flex items-center gap-1.5">
           <i class="fa-solid fa-wand-magic-sparkles"></i>
           <span>COMPARATIVE SYNTHESIS & EXPERIMENTAL COMPATIBILITY</span>
         </div>
-        <p class="text-slate-300">${escapeHtml(similarityNote)}</p>
-        <p class="text-slate-400 font-mono text-[11px]">${escapeHtml(diffNote)}</p>
+        <p class="text-slate-700">${escapeHtml(similarityNote)}</p>
+        <p class="text-slate-500 font-mono text-[11px]">${escapeHtml(diffNote)}</p>
       </div>
-      <button onclick="window.resetDefaultComparison()" class="px-3 py-1.5 rounded bg-space border border-slate-700 text-[11px] font-mono text-slate-300 hover:border-cyanHud hover:text-cyanHud whitespace-nowrap">
-        <i class="fa-solid fa-rotate-left mr-1"></i>RESET DEFAULTS
+      <button onclick="window.resetDefaultComparison()" class="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-mono text-slate-700 hover:border-purple-600 hover:text-purple-700 whitespace-nowrap shadow-sm transition">
+        <i class="fa-solid fa-rotate-left mr-1"></i>Reset Defaults
       </button>
     </div>
 
-    <div class="overflow-x-auto">
-      <table class="w-full text-left text-xs font-mono border-collapse">
+    <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm">
+      <table class="w-full text-left text-xs border-collapse bg-white">
         <thead>
-          <tr class="bg-space border-b border-cyanHud/30 text-cyanHud">
-            <th class="p-2.5 w-32 border-r border-slate-800">PARAMETER</th>
+          <tr class="bg-slate-50 border-b border-slate-200 text-slate-700 font-mono">
+            <th class="p-3.5 w-36 border-r border-slate-200 font-bold">PARAMETER</th>
             ${studies.map(s => `
-              <th class="p-2.5 min-w-[200px] border-r border-slate-800 last:border-r-0">
+              <th class="p-3.5 min-w-[220px] border-r border-slate-200 last:border-r-0">
                 <div class="flex items-center justify-between gap-2">
                   <div class="flex items-center gap-1.5">
-                    <span class="text-sky-400 font-mono text-[10px] bg-sky-400/10 px-1 rounded">${escapeHtml(s.psiId || s.id)}</span>
-                    <span class="font-sans font-bold text-white text-xs">${escapeHtml(s.code)}</span>
+                    <span class="text-purple-700 font-mono text-xs font-bold bg-purple-100 px-1.5 py-0.5 rounded">${escapeHtml(s.psiId || s.id)}</span>
+                    <span class="font-bold text-slate-900 text-sm font-sans">${escapeHtml(s.code)}</span>
                   </div>
-                  <button onclick="window.toggleCompareStudy('${escapeHtml(s.id)}')" class="text-slate-400 hover:text-crimsonAlert p-1" title="Remove from comparison">
+                  <button onclick="window.toggleCompareStudy('${escapeHtml(s.id)}')" class="text-slate-400 hover:text-rose-600 p-1" title="Remove from comparison">
                     <i class="fa-solid fa-xmark"></i>
                   </button>
                 </div>
-                <div class="text-[10px] text-slate-400 font-normal truncate">${escapeHtml(s.title)}</div>
+                <div class="text-xs text-slate-500 font-normal truncate mt-0.5 font-sans">${escapeHtml(s.title)}</div>
               </th>
             `).join('')}
           </tr>
         </thead>
-        <tbody class="divide-y divide-slate-800/80 text-[11px]">
-          <tr class="hover:bg-panelLight/40">
-            <td class="p-2.5 font-bold text-slate-400 bg-space/60 border-r border-slate-800">FACILITY / RACK</td>
-            ${studies.map(s => `<td class="p-2.5 border-r border-slate-800 last:border-r-0 text-white">${escapeHtml(s.rackFull)}</td>`).join('')}
+        <tbody class="divide-y divide-slate-100 text-xs">
+          <tr class="hover:bg-slate-50/60">
+            <td class="p-3 font-mono font-semibold text-slate-500 bg-slate-50/40 border-r border-slate-200">FACILITY / RACK</td>
+            ${studies.map(s => `<td class="p-3 border-r border-slate-200 last:border-r-0 text-slate-900 font-medium">${escapeHtml(s.rackFull)}</td>`).join('')}
           </tr>
-          <tr class="hover:bg-panelLight/40">
-            <td class="p-2.5 font-bold text-slate-400 bg-space/60 border-r border-slate-800">FUEL FORM</td>
-            ${studies.map(s => `<td class="p-2.5 border-r border-slate-800 last:border-r-0 text-cyanHud font-semibold">${escapeHtml(s.fuelType)}</td>`).join('')}
+          <tr class="hover:bg-slate-50/60">
+            <td class="p-3 font-mono font-semibold text-slate-500 bg-slate-50/40 border-r border-slate-200">FUEL FORM</td>
+            ${studies.map(s => `<td class="p-3 border-r border-slate-200 last:border-r-0 text-purple-700 font-mono font-bold">${escapeHtml(s.fuelType)}</td>`).join('')}
           </tr>
-          <tr class="hover:bg-panelLight/40">
-            <td class="p-2.5 font-bold text-slate-400 bg-space/60 border-r border-slate-800">DATA SIZE & VER</td>
-            ${studies.map(s => `<td class="p-2.5 border-r border-slate-800 last:border-r-0 text-slate-200 font-mono">${escapeHtml(s.dataSize || 'N/A')} (${escapeHtml(s.version || 'v1')})</td>`).join('')}
+          <tr class="hover:bg-slate-50/60">
+            <td class="p-3 font-mono font-semibold text-slate-500 bg-slate-50/40 border-r border-slate-200">DATA SIZE</td>
+            ${studies.map(s => `<td class="p-3 border-r border-slate-200 last:border-r-0 text-slate-800 font-mono">${escapeHtml(s.dataSize || 'N/A')} (${escapeHtml(s.version || 'v1')})</td>`).join('')}
           </tr>
-          <tr class="hover:bg-panelLight/40">
-            <td class="p-2.5 font-bold text-slate-400 bg-space/60 border-r border-slate-800">CLASSIFICATION</td>
-            ${studies.map(s => `<td class="p-2.5 border-r border-slate-800 last:border-r-0 text-emerald-400 font-mono text-[10px]">${escapeHtml(s.resourceClassification || 'Experimental data')}</td>`).join('')}
+          <tr class="hover:bg-slate-50/60">
+            <td class="p-3 font-mono font-semibold text-slate-500 bg-slate-50/40 border-r border-slate-200">CLASSIFICATION</td>
+            ${studies.map(s => `<td class="p-3 border-r border-slate-200 last:border-r-0 text-emerald-700 font-medium">${escapeHtml(s.resourceClassification || 'Experimental data')}</td>`).join('')}
           </tr>
-          <tr class="hover:bg-panelLight/40">
-            <td class="p-2.5 font-bold text-slate-400 bg-space/60 border-r border-slate-800">FLOW REGIME</td>
-            ${studies.map(s => `<td class="p-2.5 border-r border-slate-800 last:border-r-0 text-amber-300">${escapeHtml(s.airflowRange)}</td>`).join('')}
+          <tr class="hover:bg-slate-50/60">
+            <td class="p-3 font-mono font-semibold text-slate-500 bg-slate-50/40 border-r border-slate-200">FLOW REGIME</td>
+            ${studies.map(s => `<td class="p-3 border-r border-slate-200 last:border-r-0 text-amber-700 font-mono">${escapeHtml(s.airflowRange)}</td>`).join('')}
           </tr>
-          <tr class="hover:bg-panelLight/40">
-            <td class="p-2.5 font-bold text-slate-400 bg-space/60 border-r border-slate-800">PRIMARY VARIABLES</td>
-            ${studies.map(s => `<td class="p-2.5 border-r border-slate-800 last:border-r-0 text-slate-300 font-sans">${escapeHtml(s.variables)}</td>`).join('')}
+          <tr class="hover:bg-slate-50/60">
+            <td class="p-3 font-mono font-semibold text-slate-500 bg-slate-50/40 border-r border-slate-200">PRIMARY VARIABLES</td>
+            ${studies.map(s => `<td class="p-3 border-r border-slate-200 last:border-r-0 text-slate-600">${escapeHtml(s.variables)}</td>`).join('')}
           </tr>
-          <tr class="hover:bg-panelLight/40">
-            <td class="p-2.5 font-bold text-slate-400 bg-space/60 border-r border-slate-800">CORE SUMMARY</td>
-            ${studies.map(s => `<td class="p-2.5 border-r border-slate-800 last:border-r-0 text-slate-300 font-sans text-xs leading-relaxed">${escapeHtml(s.summary)}</td>`).join('')}
+          <tr class="hover:bg-slate-50/60">
+            <td class="p-3 font-mono font-semibold text-slate-500 bg-slate-50/40 border-r border-slate-200">CORE SUMMARY</td>
+            ${studies.map(s => `<td class="p-3 border-r border-slate-200 last:border-r-0 text-slate-600 leading-relaxed">${escapeHtml(s.summary)}</td>`).join('')}
           </tr>
         </tbody>
       </table>

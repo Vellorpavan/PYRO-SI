@@ -1,11 +1,12 @@
 /**
  * PSI Investigation Matrix Renderer
  * Filters, ranks, and renders investigation cards in the grid.
+ * Light / White Lavender + Royal Purple Theme
  */
 
 import psiInvestigations from '../../data/reference/psi-investigations.json' with { type: 'json' };
 import { computeInvestigationScore } from './ranker.js';
-import { getSelectedCompareIds, toggleCompareStudy } from './comparator.js';
+import { getSelectedCompareIds } from './comparator.js';
 import { escapeHtml } from '../../utils/dom.js';
 
 export function getWeightsFromInputs() {
@@ -56,35 +57,31 @@ export function renderPsiMatrix() {
   if (!grid) return;
   grid.innerHTML = '';
 
+  const countLabel = document.getElementById('psi-count-label');
+  if (countLabel) countLabel.textContent = scored.length;
+
   scored.forEach((inv, index) => {
     const isSelected = selectedCompareIds.includes(inv.id) || selectedCompareIds.includes(inv.psiId);
-    const rackBadgeColor = inv.rack === 'CIR'
-      ? 'bg-cyanHud/15 border-cyanHud/40 text-cyanHud'
-      : inv.rack === 'MSG'
-        ? 'bg-emeraldSafe/15 border-emeraldSafe/40 text-emeraldSafe'
-        : inv.rack === 'CYGNUS'
-          ? 'bg-flameAmber/15 border-flameAmber/40 text-flameAmber'
-          : 'bg-violet-500/15 border-violet-500/40 text-violet-300';
 
     const card = document.createElement('div');
-    card.className = `hud-panel rounded-xl p-4 flex flex-col justify-between gap-3.5 transition-all hover:border-slate-500 ${isSelected ? 'border-sky-400 ring-1 ring-sky-400/40' : ''}`;
+    card.className = `p-5 rounded-2xl bg-white border transition-all shadow-sm flex flex-col justify-between gap-4 ${isSelected ? 'border-purple-600 ring-2 ring-purple-600/20' : 'border-slate-200 hover:border-purple-300 hover:shadow-md'}`;
     card.innerHTML = `
-      <div class="space-y-2.5">
+      <div class="space-y-3">
         <div class="flex items-start justify-between gap-2">
           <div class="flex items-center gap-1.5 flex-wrap">
-            <span class="font-mono text-[11px] font-bold px-2 py-0.5 rounded ${rackBadgeColor}">
+            <span class="font-mono text-xs font-bold px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-700 border border-purple-200">
               <i class="fa-solid fa-microchip mr-1"></i>${escapeHtml(inv.rack)}
             </span>
-            <span class="font-mono text-[11px] text-slate-300 bg-space px-2 py-0.5 rounded border border-slate-700">
+            <span class="font-mono text-xs text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full border border-slate-200">
               ${escapeHtml(inv.fuelType)}
             </span>
-            <span class="font-mono text-[10px] text-sky-400 bg-sky-400/10 px-1.5 py-0.5 rounded border border-sky-400/30 font-bold">
+            <span class="font-mono text-[11px] text-purple-600 font-bold">
               ${escapeHtml(inv.psiId || inv.id)}
             </span>
           </div>
           <div class="text-right">
-            <span class="text-[9px] font-mono text-slate-400 block tracking-tight">PRIORITY</span>
-            <span class="telemetry-num font-bold text-sm ${inv.calculatedScore >= 90 ? 'text-sky-400' : inv.calculatedScore >= 80 ? 'text-emerald-400' : 'text-slate-300'}">
+            <span class="text-[10px] font-mono text-slate-400 block uppercase font-medium">Priority</span>
+            <span class="font-mono font-bold text-base ${inv.calculatedScore >= 90 ? 'text-purple-700' : inv.calculatedScore >= 80 ? 'text-emerald-600' : 'text-slate-700'}">
               ${inv.calculatedScore}%
             </span>
           </div>
@@ -92,50 +89,50 @@ export function renderPsiMatrix() {
 
         <div>
           <div class="flex items-center gap-2 flex-wrap">
-            <span class="text-sky-400 font-mono text-xs font-bold">#${index + 1}</span>
-            <h3 class="font-sans font-bold text-sm text-white">
+            <span class="text-purple-600 font-mono text-xs font-bold">#${index + 1}</span>
+            <h4 class="font-bold text-base text-slate-900">
               ${escapeHtml(inv.code)}
-            </h3>
+            </h4>
             ${inv.verified ? `
-              <span class="provenance-badge-verified" title="Verified in NASA Physical Sciences Informatics Database">
-                <i class="fa-solid fa-circle-check"></i>PSI FLIGHT VERIFIED
+              <span class="badge-flight-data">
+                <i class="fa-solid fa-circle-check text-[9px]"></i>Flight Data
               </span>
             ` : `
-              <span class="provenance-badge-concept" title="Planned Artemis concept; awaiting LUCI/FM2 deployment">
-                <i class="fa-solid fa-clock"></i>CONCEPT ONLY
+              <span class="px-2.5 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-600 text-[11px] font-mono font-medium">
+                Planned CLPS
               </span>
             `}
           </div>
-          <p class="text-xs text-slate-300 font-sans mt-0.5 line-clamp-1">${escapeHtml(inv.title)}</p>
+          <p class="text-xs text-slate-600 font-medium mt-0.5">${escapeHtml(inv.title)}</p>
         </div>
 
-        <div class="p-2 rounded bg-space/70 border border-slate-800 text-[10px] font-mono space-y-1">
-          <div class="flex justify-between text-slate-400">
-            <span>FLIGHT DATA: <strong class="text-white">${escapeHtml(inv.dataSize || 'N/A')}</strong></span>
-            <span>STATUS: <strong class="text-slate-200">${escapeHtml(inv.version || 'Archived')}</strong></span>
+        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono space-y-1 text-slate-600">
+          <div class="flex justify-between">
+            <span>Data Volume: <strong class="text-slate-900">${escapeHtml(inv.dataSize || 'N/A')}</strong></span>
+            <span>Release: <strong class="text-slate-900">${escapeHtml(inv.version || 'Archived')}</strong></span>
           </div>
-          <div class="text-emerald-400 truncate">
-            <i class="fa-solid fa-database mr-1"></i>${escapeHtml(inv.resourceClassification || 'Experimental data')}
+          <div class="text-emerald-700 truncate font-sans text-[11px] font-medium pt-0.5">
+            <i class="fa-solid fa-database mr-1 text-emerald-600"></i>${escapeHtml(inv.resourceClassification || 'Experimental data')}
           </div>
         </div>
 
-        <p class="text-xs text-slate-400 font-sans leading-relaxed line-clamp-3">
+        <p class="text-xs text-slate-600 leading-relaxed line-clamp-3">
           ${escapeHtml(inv.summary)}
         </p>
       </div>
 
-      <div class="space-y-2 pt-2 border-t border-slate-800/80">
-        <div class="grid grid-cols-2 gap-1 text-[10px] font-mono text-slate-400">
-          <div><span class="text-slate-500">FLOW:</span> ${escapeHtml(inv.airflowRange.split(' ')[0])} cm/s</div>
-          <div><span class="text-slate-500">DOI:</span> ${escapeHtml(inv.doi || 'NASA PSI')}</div>
+      <div class="space-y-3 pt-3 border-t border-slate-100">
+        <div class="grid grid-cols-2 gap-2 text-xs font-mono text-slate-500">
+          <div><span class="text-slate-400">Flow:</span> ${escapeHtml(inv.airflowRange.split(' ')[0])} cm/s</div>
+          <div class="truncate"><span class="text-slate-400">DOI:</span> ${escapeHtml(inv.doi || 'NASA PSI')}</div>
         </div>
 
         <div class="flex items-center gap-2">
-          <button onclick="window.toggleCompareStudy('${escapeHtml(inv.id)}')" class="flex-1 py-1.5 px-2 rounded text-xs font-mono font-semibold transition-all flex items-center justify-center gap-1.5 ${isSelected ? 'bg-sky-400 text-slate-950 font-bold' : 'bg-panelLight text-slate-200 border border-slate-700 hover:border-sky-400'}">
+          <button onclick="window.toggleCompareStudy('${escapeHtml(inv.id)}')" class="flex-1 py-2 px-3 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1.5 ${isSelected ? 'bg-purple-700 text-white font-bold shadow-sm' : 'bg-slate-100 text-slate-700 border border-slate-200 hover:bg-purple-50 hover:text-purple-700'}">
             <i class="fa-solid ${isSelected ? 'fa-check' : 'fa-code-compare'}"></i>
-            <span>${isSelected ? 'IN COMPARATOR' : 'COMPARE'}</span>
+            <span>${isSelected ? 'In Comparator' : 'Add to Compare'}</span>
           </button>
-          <a href="${escapeHtml(inv.psiUrl || 'https://psi.nasa.gov/physci/repo/search?q=combustion')}" target="_blank" rel="noopener noreferrer" class="p-1.5 px-2.5 rounded bg-space border border-slate-700 text-slate-400 hover:text-sky-400 hover:border-sky-400 text-xs font-mono" title="Open verified record on NASA repository">
+          <a href="${escapeHtml(inv.psiUrl || 'https://psi.nasa.gov/physci/repo/search?q=combustion')}" target="_blank" rel="noopener noreferrer" class="p-2 px-3 rounded-xl bg-slate-100 border border-slate-200 text-slate-600 hover:text-purple-700 hover:bg-purple-50 text-xs transition" title="Open record on NASA PSI repository">
             <i class="fa-solid fa-arrow-up-right-from-square"></i>
           </a>
         </div>
