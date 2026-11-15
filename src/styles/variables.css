@@ -1,0 +1,64 @@
+/* =============================================================================
+   GODEYE // PYRO-SI — Design Tokens (Hallmark / Refero / Apple Standard)
+   NASA Space Apps Challenge 2026 — Flame in Freefall
+   ============================================================================= */
+
+:root {
+  /* Color Palette — Space Tactical & Combustion Telemetry */
+  --color-space: #06080E;
+  --color-space-deep: #030407;
+  --color-space-surface: #090D18;
+  --color-panel: rgba(13, 19, 34, 0.88);
+  --color-panel-solid: #0D1322;
+  --color-panel-light: #131C31;
+  --color-panel-lighter: #1A2642;
+
+  /* Tactical Accents */
+  --color-cyan-hud: #00F0FF;
+  --color-cyan-hud-dim: rgba(0, 240, 255, 0.15);
+  --color-cyan-hud-border: rgba(0, 240, 255, 0.28);
+  --color-cyan-hud-glow: rgba(0, 240, 255, 0.4);
+
+  --color-flame-amber: #FF6B00;
+  --color-flame-amber-dim: rgba(255, 107, 0, 0.15);
+  --color-flame-amber-border: rgba(255, 107, 0, 0.35);
+  --color-flame-amber-glow: rgba(255, 107, 0, 0.45);
+
+  --color-crimson-alert: #FF2A54;
+  --color-crimson-dim: rgba(255, 42, 84, 0.15);
+  --color-crimson-border: rgba(255, 42, 84, 0.4);
+
+  --color-emerald-safe: #00E676;
+  --color-emerald-dim: rgba(0, 230, 118, 0.15);
+  --color-emerald-border: rgba(0, 230, 118, 0.35);
+
+  --color-violet-si: #A855F7;
+  --color-violet-dim: rgba(168, 85, 247, 0.15);
+  --color-violet-border: rgba(168, 85, 247, 0.4);
+
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-display: 'Orbitron', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Borders & Radii */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-hud: 0 8px 32px rgba(0, 0, 0, 0.55), inset 0 0 18px rgba(0, 240, 255, 0.04);
+  --shadow-hud-amber: 0 8px 32px rgba(0, 0, 0, 0.55), inset 0 0 18px rgba(255, 107, 0, 0.05);
+  --shadow-glow-cyan: 0 0 16px rgba(0, 240, 255, 0.35);
+  --shadow-glow-amber: 0 0 16px rgba(255, 107, 0, 0.35);
+
+  /* Transitions — Spring Physics / Apple Motion */
+  --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 250ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-slow: 400ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Layout Boundaries */
+  --max-content-width: 1600px;
+}

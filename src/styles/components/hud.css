@@ -1,0 +1,88 @@
+/* =============================================================================
+   GODEYE // PYRO-SI — HUD Component Styles
+   ============================================================================= */
+
+.hud-panel {
+  background: var(--color-panel);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-cyan-hud-border);
+  box-shadow: var(--shadow-hud);
+  position: relative;
+}
+
+.hud-panel::before {
+  content: '';
+  position: absolute;
+  top: -1px; left: -1px;
+  width: 10px; height: 10px;
+  border-top: 2px solid var(--color-cyan-hud);
+  border-left: 2px solid var(--color-cyan-hud);
+  pointer-events: none;
+}
+
+.hud-panel::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; right: -1px;
+  width: 10px; height: 10px;
+  border-bottom: 2px solid var(--color-cyan-hud);
+  border-right: 2px solid var(--color-cyan-hud);
+  pointer-events: none;
+}
+
+.hud-panel-amber {
+  border-color: var(--color-flame-amber-border);
+  box-shadow: var(--shadow-hud-amber);
+}
+
+.hud-panel-amber::before {
+  border-top-color: var(--color-flame-amber);
+  border-left-color: var(--color-flame-amber);
+}
+
+.hud-panel-amber::after {
+  border-bottom-color: var(--color-flame-amber);
+  border-right-color: var(--color-flame-amber);
+}
+
+.scanline-overlay {
+  background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0, 240, 255, 0.03) 50%, rgba(0, 240, 255, 0.03));
+  background-size: 100% 4px;
+  pointer-events: none;
+}
+
+/* Nav Tabs */
+.nav-tab-btn {
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.nav-tab-btn:hover {
+  transform: translateY(-1px);
+}
+
+.nav-tab-btn:active {
+  transform: translateY(0);
+}
+
+.active-tab {
+  background: rgba(0, 240, 255, 0.15) !important;
+  color: var(--color-cyan-hud) !important;
+  border-color: rgba(0, 240, 255, 0.6) !important;
+  box-shadow: var(--shadow-glow-cyan) !important;
+}
+
+/* Habitat Switcher Buttons */
+.habitat-node-btn {
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.habitat-node-btn:hover {
+  transform: translateY(-1px);
+}
+
+.habitat-node-btn:active {
+  transform: translateY(0);
+}

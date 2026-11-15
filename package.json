@@ -1,0 +1,28 @@
+{
+  "name": "pyro-si",
+  "version": "2026.4.0",
+  "description": "GODEYE // PYRO-SI — SI-Powered Microgravity Combustion & Orbital Habitat Fire Safety Intelligence for NASA Space Apps 2026",
+  "type": "module",
+  "main": "src/app/main.js",
+  "scripts": {
+    "start": "npx serve -l 3000 .",
+    "dev": "npx serve -l 3000 .",
+    "test": "node tests/test-runner.js",
+    "test:watch": "node --watch tests/test-runner.js",
+    "lint": "echo 'Checking file syntax...' && node --check src/app/main.js"
+  },
+  "keywords": [
+    "nasa-space-apps",
+    "microgravity-combustion",
+    "psi",
+    "flame-in-freefall",
+    "fire-safety",
+    "threejs",
+    "orbital-mechanics"
+  ],
+  "author": "Team whoami (NASA Space Apps Challenge 2026)",
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "^14.2.4"
+  }
+}

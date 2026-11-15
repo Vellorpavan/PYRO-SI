@@ -1,0 +1,67 @@
+{
+  "incidents": [
+    {
+      "id": "apollo-1",
+      "mission": "Apollo 1 (AS-204)",
+      "date": "January 27, 1967",
+      "location": "Launch Complex 34 (1.0g Ground Test)",
+      "atmosphere": "100% O₂ at 16.7 psia (115 kPa) pure oxygen at elevated sea-level pressure",
+      "igniter": "Electrical arc in vulnerable wire bundle beneath left seat command console",
+      "rootCause": "Materials tested as flame-resistant in normal air (21% O₂, 14.7 psi) became explosive flash-combustibles in 100% pressurized oxygen. Flammable Velcro, nylon nets, and ethylene glycol coolant leaks enabled rapid fire growth in under 15 seconds.",
+      "outcome": "Tragic loss of astronauts Grissom, White, and Chaffee. NASA instituted strict NASA-STD-6001 materials flammability screening and reduced pre-launch pad test atmospheres to 60/40 O₂/N₂ blends."
+    },
+    {
+      "id": "apollo-13",
+      "mission": "Apollo 13",
+      "date": "April 13, 1970",
+      "location": "Cislunar Space (Freefall / Zero-g)",
+      "atmosphere": "Cryogenic supercritical pure Oxygen Tank 2 in Service Module (SM)",
+      "igniter": "Exposed Teflon insulation on internal fan wiring sparked during tank stirring routine",
+      "rootCause": "High-pressure oxygen accelerated Teflon polymer combustion, causing rapid pressure spike (>1000 psi) that blew the external Service Module panel off.",
+      "outcome": "Loss of oxygen supply and fuel cells. Successful crew return via Lunar Module lifeboat. Redesigned cryogenic tanks with stainless steel conduit and isolated heating circuits."
+    },
+    {
+      "id": "mir-1997",
+      "mission": "Mir Space Station Fire",
+      "date": "February 23, 1997",
+      "location": "Kvant-1 Module (Microgravity µg)",
+      "atmosphere": "21% O₂ at 14.7 psi (Standard space station atmosphere)",
+      "igniter": "Solid Fuel Oxygen Generator (TGK 'Vika' / potassium chlorate candle) malfunction",
+      "rootCause": "Chemical thermal runaway ignited mechanical housing. Liquid molten metal and chemical slag spewed into the cabin for over 14 minutes, generating toxic smoke and obscuring visibility.",
+      "outcome": "Crew donned gas masks and extinguished with foam/water mist extinguishers. Highlighted critical need for non-toxic fire suppression and microgravity particulate air filtration."
+    },
+    {
+      "id": "artemis-ii-smoke",
+      "mission": "Artemis II Environmental Verification",
+      "date": "2024–2026 Test Campaign",
+      "location": "Exploration Atmosphere Ground Simulator & Orion ECLSS Chamber",
+      "atmosphere": "34% O₂ at 8.2 psi (Exploration Atmosphere baseline)",
+      "igniter": "High-power avionics lithium battery thermal runaway test",
+      "rootCause": "Verification tests demonstrated that smoke aerosol particles in elevated oxygen and reduced pressure behave differently, confirming NASA SAME/DAFT findings that standard terrestrial optical smoke detectors can fail to detect fine soot chains.",
+      "outcome": "Mandated dual-wavelength laser particulate scattering detectors and localized high-pressure nitrogen injection ports on deep space habitats."
+    }
+  ],
+  "spinoffs": [
+    {
+      "id": "water-mist",
+      "title": "Ultrafine Water Mist Suppression Systems",
+      "origin": "ISS CIR & Halon Replacement Research",
+      "description": "To replace toxic Halon 1301 on spacecraft without drenching avionics, NASA developed micro-droplet mist nozzles (30–80 µm droplets). In zero-g, mist droplets vaporize instantly, removing heat through massive latent heat of vaporization.",
+      "earthApplication": "De-facto fire protection standard across commercial aviation cabins, historic archives, museum vaults, semiconductor cleanrooms, and data centers where conventional water sprinklers would destroy millions in hardware."
+    },
+    {
+      "id": "smoke-detectors",
+      "title": "Dual-Wavelength Laser Particulate Detectors",
+      "origin": "NASA SAME & DAFT Investigations (MSG)",
+      "description": "Terrestrial smoke detectors triggered constant false alarms in space due to air currents, dust, and unique soot agglomeration. NASA engineered multi-angle optical scattering sensors distinguishing soot chains from inert dust.",
+      "earthApplication": "Deployed in high-dust industrial environments, mining ventilation shafts, smart cities, and advanced wildfire early-warning monitoring arrays across California, Europe, and Australia."
+    },
+    {
+      "id": "firefighter-turnout",
+      "title": "PBI & Polyimide High-Temperature Thermal Textiles",
+      "origin": "Apollo Post-Fire Materials Screening & Space Shuttle Thermal Shields",
+      "description": "Following Apollo 1 and Space Shuttle tile thermal testing, NASA invested heavily in high-performance aromatic polymers including Polybenzimidazole (PBI) and polyimide composite fabrics resistant to burning in high-oxygen atmospheres.",
+      "earthApplication": "Forms the outer protective shell of structural firefighter turnout gear worldwide, race-car driver safety suits, tactical military flight suits, and industrial welding barriers protecting millions of lives daily."
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "coolflames": {
+    "title": "Low-Temperature 'Cool Flames' & Invisible Microgravity Hazards",
+    "badge": "FLEX / CFI / ACME (CIR)",
+    "content": "During the Flame Extinguishment Experiment (FLEX & FLEX-2) and Cool Flames Investigation (CFI) inside the Combustion Integrated Rack's Multi-user Droplet Combustion Apparatus (MDCA), heptane and decane fuel droplets appeared to extinguish from radiative heat loss—yet the droplet continued shrinking rapidly!\n\nKey Findings:\n• Invisible Combustion: The flame transitioned into a low-temperature 'cool flame' burning at only 500–800 K (compared to typical hot flames at 1500–2000 K). There was virtually no visible light emission and negligible soot.\n• Chemical Pathway: Governed by low-temperature hydrocarbon peroxy-radical oxidation kinetics rather than conventional thermal chain-branching.\n• Critical Safety Hazard: An astronaut could believe a fire is completely out while cool flame combustion silently continues. Introducing a fresh ventilation draft can trigger sudden, explosive hot re-ignition without warning."
+  },
+  "saffire": {
+    "title": "Saffire I–VI: Large-Scale Spacecraft Fire Safety Demonstrations",
+    "badge": "Cygnus Uncrewed Egress",
+    "content": "NASA's Spacecraft Fire Safety Demonstration (Saffire) addressed the ultimate question: How does a real, large-scale structural fire behave inside an actual spacecraft module?\n\nKey Findings:\n• Scale Matters: Prior glovebox experiments were restricted to small samples (<10 cm). Saffire burned massive 1.0 m x 0.4 m fabric panels (cotton/fiberglass blends and PMMA acrylic) inside Cygnus cargo vehicles after departing the ISS.\n• Flame Growth: Upward/downward flame spread in low-speed forced ventilation (10–30 cm/s) does not self-extinguish. The flame establishes a wide, creeping pyrolysis front that rapidly consumes available oxygen while producing dense toxic CO and smoke.\n• Cabin Pressure Transients: Large fires cause localized thermal expansion and pressure spikes that can overwhelm life support relief valves before the fire exhausts itself."
+  },
+  "cir": {
+    "title": "Combustion Integrated Rack (CIR) & Multi-user Apparatus (MDCA)",
+    "badge": "ISS US Destiny Lab",
+    "content": "The Combustion Integrated Rack (CIR) is NASA's flagship microgravity combustion research facility on the ISS, managed by NASA Glenn Research Center.\n\nKey Capabilities:\n• 100-liter sealed combustion chamber with diagnostic optics and mass flow controllers.\n• Hosted two major modular inserts: (a) ACME (6 gaseous flame studies: BRE, CFI-G, E-FIELD, Coflow, s-Flame, SRT) and (b) MDCA (Multi-user Droplet Combustion Apparatus for liquid droplets in FLEX, FLEX-2, and CFI).\n• Diagnostic Suite: 5 high-speed intensified cameras, PLIF laser sheet optics, chemiluminescence spectrometers, radiometers, and precision gas replenishment/scrubbing systems."
+  },
+  "moon": {
+    "title": "Artemis Lunar Base Flammability & Partial-G Acceleration",
+    "badge": "Exploration Atmosphere (0.16g)",
+    "content": "Artemis habitats will operate at NASA's 'Exploration Atmosphere'—34% O₂ at 8.2 psi (56.5 kPa)—to eliminate the need for lengthy astronaut decompression pre-breathe cycles before EVA spacewalks.\n\nKey Risks:\n• Flammability Explosion: 34% O₂ significantly lowers material Limiting Oxygen Index (LOI). Materials classified as non-flammable on Earth (21% O₂) burn vigorously in lunar habitat air.\n• The 1/6g Penalty: In 0.16g, buoyant convection is too weak to blow the flame out, but just strong enough to continuously supply fresh oxygen into the reaction zone (unlike 0g where flames choke on their own combustion products). Experiments in ACME CFI-G demonstrated that flame spread rates can actually peak at intermediate partial gravities (~0.15–0.3g)!"
+  },
+  "suppress": {
+    "title": "Microgravity Fire Suppression Protocols & Agent Dynamics",
+    "badge": "NASA-STD-3001 Guidelines",
+    "content": "Fire suppression in space cannot rely on terrestrial gravity-dependent firefighting techniques:\n\nOperational Protocols:\n• Immediate Air Isolation: The primary immediate action is shutting off cabin ventilation to stop forced airflow drafts that feed the flame.\n• Fine Water Mist vs CO₂: Carbon Dioxide (CO₂) extinguishers displace oxygen but can suffocate astronauts in enclosed volumes without scrubbers. Ultrafine Water Mist (<50 µm droplets) absorbs immense heat via vaporization without toxic asphyxiation risks or electronics damage.\n• Electric Field Suppression: Advanced investigations like ACME E-FIELD show promise for solid-state, non-chemical fire extinguishment by manipulating ionized flame gases with localized high-voltage grids."
+  }
+}
