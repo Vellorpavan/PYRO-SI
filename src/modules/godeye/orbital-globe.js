@@ -12,6 +12,7 @@ let scene, camera, renderer, controls;
 let earthOrbitGroup, lunarGroup, marsGroup, evaGroup;
 let earthMesh, cloudsMesh, issModelGroup, issOrbitLine;
 let marsBeaconLight, lunarEarthMesh, astronautGroup;
+let evaEarthMesh, evaCloudsMesh, evaAstronautObj, evaIssExteriorObj;
 let activeEnvironment = 'ISS';
 let clockTick = 0;
 let animationFrameId = null;
@@ -355,52 +356,171 @@ function createProceduralMarsFallback() {
  * ============================================================================
  */
 function buildEVASpacewalkEnvironment() {
-  // Harsh Space Sunlight & Blue Earthshine from below
-  const evaSun = new THREE.DirectionalLight(0xffffff, 2.8);
-  evaSun.position.set(6, 4, 5);
+  // 1. Harsh Direct Space Sunlight & Upward Blue Earthshine
+  const evaSun = new THREE.DirectionalLight(0xffffff, 3.4);
+  evaSun.position.set(8, 6, 7);
+  evaSun.castShadow = true;
   evaGroup.add(evaSun);
 
-  const earthAlbedo = new THREE.DirectionalLight(0x0284c7, 1.2);
-  earthAlbedo.position.set(0, -5, 2);
+  const earthAlbedo = new THREE.DirectionalLight(0x38bdf8, 1.4);
+  earthAlbedo.position.set(0, -6, 2);
   evaGroup.add(earthAlbedo);
 
-  const evaAmb = new THREE.AmbientLight(0xffffff, 0.5);
+  const astronautFrontLight = new THREE.DirectionalLight(0xffedd5, 1.8);
+  astronautFrontLight.position.set(2.0, 1.0, 4.0);
+  evaGroup.add(astronautFrontLight);
+
+  const evaAmb = new THREE.AmbientLight(0xffffff, 0.55);
   evaGroup.add(evaAmb);
 
-  // Blue Marble Earth Visible in Orbit Below
-  const earthBelowGeom = new THREE.SphereGeometry(3.5, 48, 48);
+  // 2. Cinematic Large-Scale Earth in Orbit Below
+  const earthRadius = 15.0;
+  const earthGeom = new THREE.SphereGeometry(earthRadius, 64, 64);
   const textureLoader = new THREE.TextureLoader();
-  const earthBelowTex = textureLoader.load('./assets/textures/earth_day.jpg');
-  earthBelowTex.encoding = THREE.sRGBEncoding;
+  const dayTex = textureLoader.load('./assets/textures/earth_day.jpg');
+  dayTex.encoding = THREE.sRGBEncoding;
+  const specTex = textureLoader.load('./assets/textures/earth_spec.jpg');
+  const cloudsTex = textureLoader.load('./assets/textures/earth_clouds.png');
 
-  const earthBelowMat = new THREE.MeshPhongMaterial({
-    color: 0x1d4ed8,
-    map: earthBelowTex,
+  const earthMat = new THREE.MeshPhongMaterial({
+    map: dayTex,
+    specularMap: specTex,
     specular: new THREE.Color(0x38bdf8),
-    shininess: 25
+    shininess: 35
   });
-  const earthBelowMesh = new THREE.Mesh(earthBelowGeom, earthBelowMat);
-  earthBelowMesh.position.set(0, -5.2, -1.5);
-  evaGroup.add(earthBelowMesh);
+  evaEarthMesh = new THREE.Mesh(earthGeom, earthMat);
+  evaEarthMesh.position.set(0, -15.8, -4.5);
+  evaGroup.add(evaEarthMesh);
 
-  // Astronaut Mounting Group
+  // Blue Atmospheric Limb Glow
+  const atmosGeom = new THREE.SphereGeometry(earthRadius * 1.006, 64, 64);
+  const atmosMat = new THREE.MeshBasicMaterial({
+    color: 0x38bdf8,
+    transparent: true,
+    opacity: 0.22,
+    blending: THREE.AdditiveBlending,
+    side: THREE.BackSide
+  });
+  const atmosMesh = new THREE.Mesh(atmosGeom, atmosMat);
+  evaEarthMesh.add(atmosMesh);
+
+  // Rotating Cloud Layer
+  const cloudsGeom = new THREE.SphereGeometry(earthRadius * 1.008, 64, 64);
+  const cloudsMat = new THREE.MeshStandardMaterial({
+    map: cloudsTex,
+    transparent: true,
+    opacity: 0.55,
+    blending: THREE.NormalBlending
+  });
+  evaCloudsMesh = new THREE.Mesh(cloudsGeom, cloudsMat);
+  evaEarthMesh.add(evaCloudsMesh);
+
+  // 3. Mount Astronaut & ISS Exterior Group
   astronautGroup = new THREE.Group();
+  astronautGroup.position.set(0.15, -0.3, 0.0);
   evaGroup.add(astronautGroup);
 
-  // Load Blender 5.4 Astronaut EVA Model (EMU spacesuit, gold visor, PLSS, airlock, tether)
+  // 4. Load Detailed Blender 5.4 GLB Asset (Official NASA EMU + ISS Quest Airlock & Modules)
   if (typeof THREE.GLTFLoader !== 'undefined') {
     const loader = new THREE.GLTFLoader();
     loader.load(
       './assets/models/astronaut_eva.glb',
       (gltf) => {
         const model = gltf.scene;
-        model.scale.set(0.75, 0.75, 0.75);
-        model.position.set(0, -0.2, 0);
+        model.scale.set(1.0, 1.0, 1.0);
+        model.position.set(0, 0, 0);
+
+        function upgradeEVAMaterial(mat) {
+          if (!mat) return mat;
+          const name = mat.name || '';
+          if (name.includes('Visor') || name.includes('astnt1_2') || name.includes('EVA_Gold_Visor')) {
+            return new THREE.MeshStandardMaterial({
+              color: 0xf59e0b,
+              metalness: 0.98,
+              roughness: 0.05,
+              emissive: 0xb45309,
+              emissiveIntensity: 0.55
+            });
+          }
+          if (name.includes('Orthofabric') || name.includes('astnt1_1') || name.includes('EVA_Orthofabric_White')) {
+            return new THREE.MeshStandardMaterial({
+              color: 0xf8fafc,
+              metalness: 0.06,
+              roughness: 0.45
+            });
+          }
+          if (name.includes('Handrail') || name.includes('ISS_EVA_Handrail_Yellow')) {
+            return new THREE.MeshStandardMaterial({
+              color: 0xfacc15,
+              metalness: 0.88,
+              roughness: 0.18,
+              emissive: 0xa16207,
+              emissiveIntensity: 0.5
+            });
+          }
+          if (name.includes('Solar') || name.includes('Photovoltaic')) {
+            return new THREE.MeshStandardMaterial({
+              color: 0x0284c7,
+              metalness: 0.92,
+              roughness: 0.15
+            });
+          }
+          if (name.includes('Tether')) {
+            return new THREE.MeshStandardMaterial({
+              color: 0xef4444,
+              roughness: 0.35,
+              emissive: 0x7f1d1d,
+              emissiveIntensity: 0.2
+            });
+          }
+          if (name.includes('Radiator')) {
+            return new THREE.MeshStandardMaterial({
+              color: 0xf1f5f9,
+              metalness: 0.2,
+              roughness: 0.4
+            });
+          }
+          if (name.includes('Hatch') || name.includes('MLI')) {
+            return new THREE.MeshStandardMaterial({
+              color: 0xeab308,
+              metalness: 0.95,
+              roughness: 0.1
+            });
+          }
+          if (name.includes('Aluminum') || name.includes('MMOD')) {
+            return new THREE.MeshStandardMaterial({
+              color: 0x94a3b8,
+              metalness: 0.75,
+              roughness: 0.3
+            });
+          }
+          return mat;
+        }
+
+        // Enhance PBR materials across all components
+        model.traverse((child) => {
+          if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+            if (Array.isArray(child.material)) {
+              child.material = child.material.map(upgradeEVAMaterial);
+            } else if (child.material) {
+              child.material = upgradeEVAMaterial(child.material);
+            }
+          }
+        });
+
+        evaAstronautObj = model.getObjectByName('NASA_EMU_Astronaut') || model.getObjectByName('astronaut1');
+        evaIssExteriorObj = model.getObjectByName('ISS_Station_Exterior');
+
         astronautGroup.add(model);
-        console.log('[3D Engine] Loaded Blender astronaut_eva.glb successfully');
+        console.log('[3D Engine] Loaded high-fidelity astronaut_eva.glb with full ISS exterior successfully');
       },
       undefined,
-      () => createProceduralEVAFallback()
+      (err) => {
+        console.warn('[3D Engine] Fallback to procedural EVA model:', err);
+        createProceduralEVAFallback();
+      }
     );
   } else {
     createProceduralEVAFallback();
@@ -498,12 +618,24 @@ export function switchEnvironment(envKey) {
     }
   } else if (envKey === 'SUIT' || envKey === 'EVA') {
     scene.fog = null; // LEO Vacuum
-    camera.position.set(0, 0.5, 3.2);
+    camera.position.set(1.5, 0.1, 3.4);
     if (controls) {
-      controls.target.set(0, 0.4, 0);
-      controls.minDistance = 1.4;
-      controls.maxDistance = 8.0;
+      controls.target.set(0.3, -0.6, -0.35);
+      controls.minDistance = 0.6;
+      controls.maxDistance = 10.0;
     }
+  }
+
+  // Toggle EVA-specific focus buttons in UI
+  const btnFocusAst = document.getElementById('btn-focus-astronaut');
+  const btnFocusIss = document.getElementById('btn-focus-iss');
+  if (btnFocusAst) {
+    if (envKey === 'SUIT' || envKey === 'EVA') btnFocusAst.classList.remove('hidden');
+    else btnFocusAst.classList.add('hidden');
+  }
+  if (btnFocusIss) {
+    if (envKey === 'SUIT' || envKey === 'EVA') btnFocusIss.classList.remove('hidden');
+    else btnFocusIss.classList.add('hidden');
   }
 
   if (controls) controls.update();
@@ -546,14 +678,42 @@ function updateEnvironmentTelemetry(speed) {
 
   } else if (activeEnvironment === 'SUIT' || activeEnvironment === 'EVA') {
     if (envTitle) envTitle.textContent = 'EVA Spacewalk (Quest Airlock)';
-    if (altVal) altVal.textContent = 'Suit: 100% O₂ at 4.3 psi (29.6 kPa)';
-    if (velVal) velVal.textContent = 'Grav: 0.00001g (Freefall µg)';
-    if (coordVal) coordVal.textContent = 'Rel: X+1.2m, Y-0.8m (LVLH Frame)';
+    if (altVal) altVal.textContent = 'Orbit: 408 km LEO | 51.6° Inc (Space Vacuum: 0 psi)';
+    if (velVal) velVal.textContent = 'Vel: 7.66 km/s | Grav: 0.00001g (Freefall µg)';
+    if (coordVal) coordVal.textContent = 'LVLH Rel Frame: X+1.2m, Y-0.8m, Z+0.3m (Airlock Interface)';
   }
 }
 
 export function resetGlobeCamera() {
   switchEnvironment(activeEnvironment);
+}
+
+export function focusAstronaut() {
+  if (!camera || !controls) return;
+  camera.position.set(0.9, -0.2, 2.0);
+  controls.target.set(0.3, -0.6, -0.35);
+  controls.update();
+}
+
+export function focusISS() {
+  if (!camera || !controls) return;
+  camera.position.set(-2.8, 1.8, 3.8);
+  controls.target.set(-1.8, 0.0, -1.6);
+  controls.update();
+}
+
+export function zoomIn() {
+  if (!camera || !controls) return;
+  const dir = new THREE.Vector3().subVectors(controls.target, camera.position).normalize();
+  camera.position.addScaledVector(dir, 0.5);
+  controls.update();
+}
+
+export function zoomOut() {
+  if (!camera || !controls) return;
+  const dir = new THREE.Vector3().subVectors(controls.target, camera.position).normalize();
+  camera.position.addScaledVector(dir, -0.5);
+  controls.update();
 }
 
 export function setCameraPerspective(mode) {
@@ -569,8 +729,7 @@ export function setCameraPerspective(mode) {
       camera.position.set(0, 0.9, 2.9);
       controls.target.set(0, 0.25, 0);
     } else if (activeEnvironment === 'SUIT' || activeEnvironment === 'EVA') {
-      camera.position.set(0, 0.35, 1.7);
-      controls.target.set(0, 0.3, 0);
+      focusAstronaut();
     }
   } else {
     resetGlobeCamera();
@@ -584,6 +743,17 @@ if (typeof window !== 'undefined') {
   window.setEarthRotationSpeed = setEarthRotationSpeed;
   window.resetGlobeCamera = resetGlobeCamera;
   window.setCameraPerspective = setCameraPerspective;
+  window.focusAstronaut = focusAstronaut;
+  window.focusISS = focusISS;
+  window.zoomIn = zoomIn;
+  window.zoomOut = zoomOut;
+  window._godeye = {
+    get scene() { return scene; },
+    get camera() { return camera; },
+    get controls() { return controls; },
+    get evaGroup() { return evaGroup; },
+    get astronautGroup() { return astronautGroup; }
+  };
 }
 
 export function handleGlobeResize() {
@@ -651,12 +821,25 @@ function animateGodEye3D() {
     }
   }
 
-  // 4. EVA Dynamics: Astronaut gently floats and sways on safety tether
+  // 4. EVA Dynamics: Astronaut gently floats in zero-g; background Earth & clouds rotate
   if (evaGroup && evaGroup.visible) {
-    if (astronautGroup) {
-      astronautGroup.position.y = Math.sin(clockTick * 0.8) * 0.05;
-      astronautGroup.rotation.z = Math.sin(clockTick * 0.5) * 0.04;
-      astronautGroup.rotation.y = Math.cos(clockTick * 0.4) * 0.05;
+    if (evaAstronautObj) {
+      if (!evaAstronautObj.userData.basePos) {
+        evaAstronautObj.userData.basePos = evaAstronautObj.position.clone();
+        evaAstronautObj.userData.baseRot = evaAstronautObj.rotation.clone();
+      }
+      const bp = evaAstronautObj.userData.basePos;
+      const br = evaAstronautObj.userData.baseRot;
+      evaAstronautObj.position.y = bp.y + Math.sin(clockTick * 0.7) * 0.025;
+      evaAstronautObj.position.x = bp.x + Math.cos(clockTick * 0.5) * 0.015;
+      evaAstronautObj.rotation.z = br.z + Math.sin(clockTick * 0.4) * 0.02;
+      evaAstronautObj.rotation.y = br.y + Math.cos(clockTick * 0.3) * 0.025;
+    }
+    if (evaEarthMesh) {
+      evaEarthMesh.rotation.y += 0.0006;
+    }
+    if (evaCloudsMesh) {
+      evaCloudsMesh.rotation.y += 0.0009;
     }
   }
 

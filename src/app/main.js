@@ -3,7 +3,7 @@
  * Bootstraps all modules, event listeners, and services.
  */
 
-import { initGodEyeGlobe, animateGodEyeGlobe, resetGlobeCamera, switchEnvironment, setEarthRotationSpeed, setCameraPerspective } from '../modules/godeye/orbital-globe.js';
+import { initGodEyeGlobe, animateGodEyeGlobe, resetGlobeCamera, switchEnvironment, setEarthRotationSpeed, setCameraPerspective, focusAstronaut, focusISS, zoomIn, zoomOut } from '../modules/godeye/orbital-globe.js';
 import { initFlameCanvas, setFlameVisualMode } from '../modules/godeye/flame-chamber.js';
 import { selectHabitatNode, loadHabitatIntoSimulator } from '../modules/godeye/habitat-controller.js';
 import { renderPsiMatrix, updateSiWeights } from '../modules/investigation-matrix/matrix-renderer.js';
@@ -24,6 +24,10 @@ window.switchEnvironment = switchEnvironment;
 window.switchGodEyeEnvironment = switchEnvironment;
 window.setEarthRotationSpeed = setEarthRotationSpeed;
 window.setCameraPerspective = setCameraPerspective;
+window.focusAstronaut = focusAstronaut;
+window.focusISS = focusISS;
+window.zoomIn = zoomIn;
+window.zoomOut = zoomOut;
 window.setFlameVisualMode = setFlameVisualMode;
 window.updateSiWeights = updateSiWeights;
 window.renderPsiMatrix = renderPsiMatrix;

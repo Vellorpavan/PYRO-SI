@@ -1,13 +1,31 @@
 /**
  * PSI Investigation Matrix Renderer
- * Filters, ranks, and renders investigation cards in the grid.
+ * Filters, ranks, and renders dynamic investigation cards in the grid.
  * Light / White Lavender + Royal Purple Theme
+ * 
+ * SCIENTIFIC GOVERNANCE:
+ * - Supports dynamic, extensible catalogues (no fixed 10-investigation ceiling).
+ * - Separates verified scientific metadata from downloadable experimental assets.
+ * - Displays verifiable provenance and original NASA identifiers.
  */
 
-import psiInvestigations from '../../data/reference/psi-investigations.json' with { type: 'json' };
+import defaultInvestigations from '../../data/reference/psi-investigations.json' with { type: 'json' };
 import { computeInvestigationScore } from './ranker.js';
 import { getSelectedCompareIds } from './comparator.js';
 import { escapeHtml } from '../../utils/dom.js';
+
+let activeCatalogue = [...defaultInvestigations];
+
+export function setInvestigationCatalogue(newRecords) {
+  if (Array.isArray(newRecords) && newRecords.length > 0) {
+    activeCatalogue = [...newRecords];
+    renderPsiMatrix();
+  }
+}
+
+export function getInvestigationCatalogue() {
+  return activeCatalogue;
+}
 
 export function getWeightsFromInputs() {
   const wLunar = parseFloat(document.getElementById('w-lunar')?.value || 90);
@@ -39,7 +57,11 @@ export function renderPsiMatrix() {
   const weights = getWeightsFromInputs();
   const selectedCompareIds = getSelectedCompareIds();
 
-  const scored = psiInvestigations
+  // Update Hero Stat Counter dynamically
+  const heroCount = document.getElementById('hero-psi-count');
+  if (heroCount) heroCount.textContent = activeCatalogue.length;
+
+  const scored = activeCatalogue
     .map(inv => ({
       ...inv,
       calculatedScore: computeInvestigationScore(inv, weights)
@@ -47,7 +69,7 @@ export function renderPsiMatrix() {
     .filter(inv => {
       const matchesRack = rackFilter === 'ALL' || inv.rack === rackFilter;
       const matchesFuel = fuelFilter === 'ALL' || inv.fuelType === fuelFilter;
-      const textBlob = `${inv.psiId} ${inv.code} ${inv.title} ${inv.rackFull} ${inv.fuelDetails} ${inv.sensors} ${inv.summary} ${inv.resourceClassification}`.toLowerCase();
+      const textBlob = `${inv.psiId || ''} ${inv.code || ''} ${inv.title || ''} ${inv.rackFull || ''} ${inv.fuelDetails || ''} ${inv.sensors || ''} ${inv.summary || ''} ${inv.resourceClassification || ''}`.toLowerCase();
       const matchesSearch = !query || textBlob.includes(query);
       return matchesRack && matchesFuel && matchesSearch;
     })
@@ -58,10 +80,39 @@ export function renderPsiMatrix() {
   grid.innerHTML = '';
 
   const countLabel = document.getElementById('psi-count-label');
-  if (countLabel) countLabel.textContent = scored.length;
+  if (countLabel) countLabel.textContent = `${scored.length} of ${activeCatalogue.length}`;
 
   scored.forEach((inv, index) => {
     const isSelected = selectedCompareIds.includes(inv.id) || selectedCompareIds.includes(inv.psiId);
+    const vStatus = inv.provenance?.verificationStatus || (inv.verified ? 'VERIFIED_DATASET' : 'UNFLOWN_PLANNED');
+    const isUnflown = vStatus === 'UNFLOWN_FRONTIER' || vStatus === 'UNFLOWN_PLANNED' || !inv.verified;
+    const recordsCount = inv.verifiedMetadata?.numericalRecordsCount || 0;
+
+    let badgeHtml = `
+      <span class="badge-flight-data">
+        <i class="fa-solid fa-circle-check text-[9px]"></i>Flight Data
+      </span>
+    `;
+
+    if (isUnflown) {
+      badgeHtml = `
+        <span class="px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-[11px] font-mono font-medium">
+          <i class="fa-solid fa-clock mr-1"></i>Unflown Planned
+        </span>
+      `;
+    } else if (vStatus === 'VERIFIED_METADATA_ONLY') {
+      badgeHtml = `
+        <span class="px-2.5 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-[11px] font-mono font-medium">
+          <i class="fa-solid fa-camera mr-1"></i>Metadata / Video
+        </span>
+      `;
+    } else if (vStatus === 'FACILITY_REFERENCE') {
+      badgeHtml = `
+        <span class="px-2.5 py-0.5 rounded-full bg-slate-100 border border-slate-300 text-slate-700 text-[11px] font-mono font-medium">
+          <i class="fa-solid fa-book mr-1"></i>Facility Reference
+        </span>
+      `;
+    }
 
     const card = document.createElement('div');
     card.className = `p-5 rounded-2xl bg-white border transition-all shadow-sm flex flex-col justify-between gap-4 ${isSelected ? 'border-purple-600 ring-2 ring-purple-600/20' : 'border-slate-200 hover:border-purple-300 hover:shadow-md'}`;
@@ -70,17 +121,17 @@ export function renderPsiMatrix() {
         <div class="flex items-start justify-between gap-2">
           <div class="flex items-center gap-1.5 flex-wrap">
             <span class="font-mono text-xs font-bold px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-700 border border-purple-200">
-              <i class="fa-solid fa-microchip mr-1"></i>${escapeHtml(inv.rack)}
+              <i class="fa-solid fa-microchip mr-1"></i>${escapeHtml(inv.rack || 'RACK')}
             </span>
             <span class="font-mono text-xs text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full border border-slate-200">
-              ${escapeHtml(inv.fuelType)}
+              ${escapeHtml(inv.fuelType || 'Fuel')}
             </span>
             <span class="font-mono text-[11px] text-purple-600 font-bold">
               ${escapeHtml(inv.psiId || inv.id)}
             </span>
           </div>
           <div class="text-right">
-            <span class="text-[10px] font-mono text-slate-400 block uppercase font-medium">Priority</span>
+            <span class="text-[10px] font-mono text-slate-400 block uppercase font-medium">Relevance</span>
             <span class="font-mono font-bold text-base ${inv.calculatedScore >= 90 ? 'text-purple-700' : inv.calculatedScore >= 80 ? 'text-emerald-600' : 'text-slate-700'}">
               ${inv.calculatedScore}%
             </span>
@@ -93,26 +144,19 @@ export function renderPsiMatrix() {
             <h4 class="font-bold text-base text-slate-900">
               ${escapeHtml(inv.code)}
             </h4>
-            ${inv.verified ? `
-              <span class="badge-flight-data">
-                <i class="fa-solid fa-circle-check text-[9px]"></i>Flight Data
-              </span>
-            ` : `
-              <span class="px-2.5 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-600 text-[11px] font-mono font-medium">
-                Planned CLPS
-              </span>
-            `}
+            ${badgeHtml}
           </div>
           <p class="text-xs text-slate-600 font-medium mt-0.5">${escapeHtml(inv.title)}</p>
         </div>
 
-        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono space-y-1 text-slate-600">
-          <div class="flex justify-between">
-            <span>Data Volume: <strong class="text-slate-900">${escapeHtml(inv.dataSize || 'N/A')}</strong></span>
-            <span>Release: <strong class="text-slate-900">${escapeHtml(inv.version || 'Archived')}</strong></span>
+        <!-- Distinct Separation: Verified Metadata vs Downloadable Assets -->
+        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono space-y-1.5 text-slate-600">
+          <div class="flex justify-between items-center text-[11px]">
+            <span><i class="fa-solid fa-server mr-1 text-slate-400"></i>Archive Volume: <strong class="text-slate-900">${escapeHtml(inv.downloadableAssets?.serverArchiveVolume || inv.dataSize || 'N/A')}</strong></span>
+            <span><i class="fa-solid fa-table-list mr-1 text-purple-600"></i>Data: <strong class="text-slate-900">${recordsCount > 0 ? `${recordsCount} Runs` : 'Imagery/Logs'}</strong></span>
           </div>
-          <div class="text-emerald-700 truncate font-sans text-[11px] font-medium pt-0.5">
-            <i class="fa-solid fa-database mr-1 text-emerald-600"></i>${escapeHtml(inv.resourceClassification || 'Experimental data')}
+          <div class="text-emerald-700 truncate font-sans text-[11px] font-medium pt-0.5 border-t border-slate-200/60">
+            <i class="fa-solid fa-certificate mr-1 text-emerald-600"></i>${escapeHtml(inv.resourceClassification || 'Experimental data')}
           </div>
         </div>
 
@@ -123,7 +167,7 @@ export function renderPsiMatrix() {
 
       <div class="space-y-3 pt-3 border-t border-slate-100">
         <div class="grid grid-cols-2 gap-2 text-xs font-mono text-slate-500">
-          <div><span class="text-slate-400">Flow:</span> ${escapeHtml(inv.airflowRange.split(' ')[0])} cm/s</div>
+          <div><span class="text-slate-400">Flow:</span> ${escapeHtml((inv.airflowRange || '0').split(' ')[0])} cm/s</div>
           <div class="truncate"><span class="text-slate-400">DOI:</span> ${escapeHtml(inv.doi || 'NASA PSI')}</div>
         </div>
 

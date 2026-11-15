@@ -1,7 +1,12 @@
 /**
  * Partial-G Flammability Bounding Curve Chart
- * 2D Canvas rendering of flame spread rate vs gravity regimes (0g to 1.0g).
- * Aerospace scientific standard with subpixel resolution & empirical confidence band.
+ * 2D Canvas rendering of flame spread rate across the gravitational continuum (0g to 1.0g).
+ * 
+ * SCIENTIFIC GOVERNANCE & EPISTEMIC BOUNDARIES:
+ * - EXPLORATORY THEORETICAL CONTINUUM based on low-buoyancy combustion theory (T'ien et al., 1999; Ferkul et al., 2001).
+ * - NOT an empirical confidence envelope; empirical ±14% claims have been excised.
+ * - The shaded corridor represents exploratory theoretical parametric variance across low-flow boundary layer regimes.
+ * - In-situ flight validation across long-duration partial gravities awaits the NASA Artemis FM2 / LUCI payload.
  */
 
 export function drawPartialGChart(o2, psi, flow, currentG) {
@@ -25,11 +30,11 @@ export function drawPartialGChart(o2, psi, flow, currentG) {
 
   const w = displayWidth;
   const h = displayHeight;
-  const padL = 46, padR = 24, padT = 24, padB = 36;
+  const padL = 46, padR = 24, padT = 28, padB = 40;
   const plotW = w - padL - padR;
   const plotH = h - padT - padB;
 
-  // Clear background (Deep Void)
+  // Clear background (Deep Space Void)
   ctx.fillStyle = '#06080C';
   ctx.fillRect(0, 0, w, h);
 
@@ -56,10 +61,10 @@ export function drawPartialGChart(o2, psi, flow, currentG) {
   ctx.textAlign = 'center';
   ctx.fillStyle = '#94A3B8';
   ctx.font = '9px "JetBrains Mono", monospace';
-  ctx.fillText('SPREAD RATE (mm/s)', 0, 0);
+  ctx.fillText('SPREAD PROXY (mm/s)', 0, 0);
   ctx.restore();
 
-  // Spread Rate function across gravity continuum
+  // Theoretical Spread Rate function across gravity continuum (T'ien / Ferkul low-buoyancy theory)
   function calcSpreadAtG(gVal) {
     const gPeakBoost = 1.0 + 0.55 * Math.exp(-Math.pow((gVal - 0.16) / 0.18, 2));
     const flowEffect = flow === 0 && gVal === 0 ? 0.3 : 1.0 + Math.min(0.4, flow / 45);
@@ -69,11 +74,11 @@ export function drawPartialGChart(o2, psi, flow, currentG) {
 
   const maxSpread = 10.0;
 
-  // 1. Conceptual Empirical Bounding Corridor (±14% illustrative envelope prior to direct in-situ flight data)
+  // 1. Exploratory Theoretical Parameter Variance Band (Low-buoyancy analytical bounds)
   ctx.beginPath();
   for (let i = 0; i <= 50; i++) {
     const gStep = i / 50;
-    const rateUpper = calcSpreadAtG(gStep) * 1.14;
+    const rateUpper = calcSpreadAtG(gStep) * 1.15;
     const x = padL + gStep * plotW;
     const y = Math.max(padT, padT + plotH - (rateUpper / maxSpread) * plotH);
     if (i === 0) ctx.moveTo(x, y);
@@ -81,16 +86,16 @@ export function drawPartialGChart(o2, psi, flow, currentG) {
   }
   for (let i = 50; i >= 0; i--) {
     const gStep = i / 50;
-    const rateLower = calcSpreadAtG(gStep) * 0.86;
+    const rateLower = calcSpreadAtG(gStep) * 0.85;
     const x = padL + gStep * plotW;
     const y = Math.min(padT + plotH, padT + plotH - (rateLower / maxSpread) * plotH);
     ctx.lineTo(x, y);
   }
   ctx.closePath();
-  ctx.fillStyle = 'rgba(245, 158, 11, 0.08)';
+  ctx.fillStyle = 'rgba(168, 85, 247, 0.09)'; // Purple-tinted theoretical corridor
   ctx.fill();
 
-  // 2. Main Bounding Curve Path
+  // 2. Main Theoretical Continuum Curve
   ctx.beginPath();
   for (let i = 0; i <= 50; i++) {
     const gStep = i / 50;
@@ -100,26 +105,32 @@ export function drawPartialGChart(o2, psi, flow, currentG) {
     if (i === 0) ctx.moveTo(x, y);
     else ctx.lineTo(x, y);
   }
-  ctx.strokeStyle = '#F59E0B';
+  ctx.strokeStyle = '#A855F7'; // Royal Purple theoretical curve
   ctx.lineWidth = 2.0;
   ctx.stroke();
 
   // 3. Subtle Area Fill under Curve
   const fillGrad = ctx.createLinearGradient(0, padT, 0, padT + plotH);
-  fillGrad.addColorStop(0, 'rgba(245, 158, 11, 0.20)');
-  fillGrad.addColorStop(1, 'rgba(245, 158, 11, 0.01)');
+  fillGrad.addColorStop(0, 'rgba(168, 85, 247, 0.18)');
+  fillGrad.addColorStop(1, 'rgba(168, 85, 247, 0.01)');
   ctx.lineTo(padL + plotW, padT + plotH);
   ctx.lineTo(padL, padT + plotH);
   ctx.closePath();
   ctx.fillStyle = fillGrad;
   ctx.fill();
 
-  // 4. Key Gravity Landmarks
+  // 4. Theoretical Model Label at top of chart
+  ctx.fillStyle = '#C084FC';
+  ctx.font = '9px "JetBrains Mono", monospace';
+  ctx.textAlign = 'right';
+  ctx.fillText('EXPLORATORY MODEL: T\'ien & Ferkul (Low Buoyancy)', padL + plotW, padT - 8);
+
+  // 5. Key Planetary Gravity Landmarks
   const landmarks = [
     { g: 0.00, label: '0g ISS', col: '#38BDF8' },
-    { g: 0.16, label: '0.16g Moon', col: '#F43F5E' },
-    { g: 0.38, label: '0.38g Mars', col: '#818CF8' },
-    { g: 1.00, label: '1g Earth', col: '#10B981' }
+    { g: 0.166, label: '0.166g Moon', col: '#F43F5E' },
+    { g: 0.38, label: '0.38g Mars', col: '#FB923C' },
+    { g: 1.00, label: '1.0g Earth', col: '#10B981' }
   ];
 
   landmarks.forEach(lm => {
@@ -142,15 +153,16 @@ export function drawPartialGChart(o2, psi, flow, currentG) {
 
     ctx.fillStyle = lm.col;
     ctx.textAlign = 'center';
+    ctx.font = '9px "JetBrains Mono", monospace';
     ctx.fillText(lm.label, x, padT + plotH + 16);
   });
 
-  // 5. Current Simulator Position Marker
+  // 6. Current Simulator State Indicator
   const curX = padL + currentG * plotW;
   const curRate = calcSpreadAtG(currentG);
   const curY = padT + plotH - (curRate / maxSpread) * plotH;
 
-  ctx.fillStyle = '#38BDF8';
+  ctx.fillStyle = '#A855F7';
   ctx.beginPath();
   ctx.arc(curX, curY, 6, 0, Math.PI * 2);
   ctx.fill();
@@ -158,13 +170,13 @@ export function drawPartialGChart(o2, psi, flow, currentG) {
   ctx.lineWidth = 2;
   ctx.stroke();
 
-  // Marker Tooltip
+  // Current State Marker Tooltip
   ctx.fillStyle = '#FFFFFF';
   ctx.font = 'bold 10px "JetBrains Mono", monospace';
-  const text = `${curRate.toFixed(2)} mm/s`;
-  const textX = Math.min(Math.max(curX, padL + 30), padL + plotW - 40);
+  const text = `${curRate.toFixed(2)} mm/s [THEORETICAL PROXY]`;
+  const textX = Math.min(Math.max(curX, padL + 65), padL + plotW - 65);
   ctx.textAlign = 'center';
-  ctx.fillText(text, textX, curY - 9);
+  ctx.fillText(text, textX, curY - 10);
 
   ctx.restore();
 }

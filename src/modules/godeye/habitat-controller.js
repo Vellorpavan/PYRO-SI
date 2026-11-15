@@ -62,26 +62,36 @@ export function selectHabitatNode(nodeKey) {
   const hazDesc = document.getElementById('globe-overlay-hazard-desc');
   if (hazDesc) hazDesc.textContent = hab.primaryHazard;
 
-  const riskScoreEl = document.getElementById('hab-risk-score');
-  if (riskScoreEl) riskScoreEl.textContent = `${hab.hazardLevel}`;
-  const riskDescEl = document.getElementById('hab-risk-desc');
-  if (riskDescEl) riskDescEl.textContent = hab.primaryHazard;
-
   // Metrics Readouts
   const o2El = document.getElementById('hab-o2-val') || document.getElementById('hab-o2');
-  if (o2El) o2El.textContent = `${hab.o2}%`;
   const pressEl = document.getElementById('hab-press-val') || document.getElementById('hab-psi');
-  if (pressEl) pressEl.textContent = `${hab.pressure} psi`;
   const gravEl = document.getElementById('hab-grav-val');
-  if (gravEl) gravEl.textContent = hab.gravityDisplay;
   const gravMini = document.getElementById('hab-g');
-  if (gravMini) gravMini.textContent = `${hab.gravity} g`;
-
   const flowEl = document.getElementById('hab-flow-val');
-  if (flowEl) flowEl.textContent = hab.flowDisplay;
   const flowMini = document.getElementById('hab-flow');
-  if (flowMini) flowMini.textContent = `${hab.flow} cm/s`;
   const protoEl = document.getElementById('hab-suppression-proto');
+  const riskScoreEl = document.getElementById('hab-risk-score');
+  const riskDescEl = document.getElementById('hab-risk-desc');
+
+  if (nodeKey === 'SUIT' || nodeKey === 'EVA') {
+    if (o2El) o2El.textContent = '100%';
+    if (pressEl) pressEl.textContent = '4.3 psi (Suit)';
+    if (gravMini) gravMini.textContent = '0.00001 g';
+    if (flowMini) flowMini.textContent = '28 cm/s';
+    if (riskScoreEl) riskScoreEl.textContent = 'EVA Hazard — Localized Suit Loop';
+    if (riskDescEl) {
+      riskDescEl.innerHTML = '<strong class="text-slate-800">Space Vacuum (0 psi, 0g)</strong> outside; <strong class="text-rose-600">100% O₂ at 4.3 psi</strong> inside EMU suit loop; <strong class="text-purple-700">ISS Cabin: 21% O₂ at 14.7 psi</strong>. Flammability hazard is restricted strictly to the astronaut suit breathing loop.';
+    }
+  } else {
+    if (o2El) o2El.textContent = `${hab.o2}%`;
+    if (pressEl) pressEl.textContent = `${hab.pressure} psi`;
+    if (gravMini) gravMini.textContent = `${hab.gravity} g`;
+    if (flowMini) flowMini.textContent = `${hab.flow} cm/s`;
+    if (riskScoreEl) riskScoreEl.textContent = `${hab.name} — ${hab.hazardLevel}`;
+    if (riskDescEl) riskDescEl.textContent = hab.primaryHazard;
+  }
+  if (gravEl) gravEl.textContent = hab.gravityDisplay;
+  if (flowEl) flowEl.textContent = hab.flowDisplay;
   if (protoEl) protoEl.textContent = hab.suppressionProtocol;
 
   // Sync Flame Mode with Habitat Gravity & Atmosphere

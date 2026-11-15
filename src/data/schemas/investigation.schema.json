@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "NASA PSI Investigation Record",
+  "title": "NASA PSI Investigation Record with Provenance",
   "type": "object",
   "required": [
     "id",
@@ -20,15 +20,16 @@
     "smokeDetWeight",
     "suppressionWeight",
     "resourceClassification",
-    "psiUrl"
+    "psiUrl",
+    "provenance"
   ],
   "properties": {
-    "id": { "type": "string" },
-    "psiId": { "type": "string" },
-    "code": { "type": "string" },
-    "title": { "type": "string" },
-    "rack": { "type": "string", "enum": ["CIR", "MSG", "CYGNUS", "LUNAR"] },
-    "rackFull": { "type": "string" },
+    "id": { "type": "string", "description": "Canonical database identifier (e.g. PSI-25)" },
+    "psiId": { "type": "string", "description": "Official NASA PSI Investigation ID" },
+    "code": { "type": "string", "description": "Investigation mission acronym (e.g. BASS-II)" },
+    "title": { "type": "string", "description": "Official NASA investigation title" },
+    "rack": { "type": "string", "enum": ["CIR", "MSG", "CYGNUS", "EXPRESS", "LUNAR", "MULTI"] },
+    "rackFull": { "type": "string", "description": "Full formal flight hardware facility name" },
     "fuelType": { "type": "string" },
     "fuelDetails": { "type": "string" },
     "airflowRange": { "type": "string" },
@@ -65,6 +66,64 @@
     "doi": { "type": "string" },
     "psiUrl": { "type": "string", "format": "uri" },
     "verified": { "type": "boolean" },
-    "provenanceNote": { "type": "string" }
+    "provenanceNote": { "type": "string" },
+    "verifiedMetadata": {
+      "type": "object",
+      "properties": {
+        "gravityTested": { "type": "string" },
+        "flightPlatform": { "type": "string" },
+        "principalInvestigator": { "type": "string" },
+        "primaryPublicationDOI": { "type": "string" },
+        "numericalRecordsCount": { "type": "integer" }
+      }
+    },
+    "downloadableAssets": {
+      "type": "object",
+      "properties": {
+        "serverArchiveVolume": { "type": "string" },
+        "curatedLocalRecords": { "type": "string" },
+        "accessTier": { "type": "string" },
+        "downloadProtocol": { "type": "string" },
+        "machineReadableFormats": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "source",
+        "recordId",
+        "documentLocation",
+        "unit",
+        "extractionMethod",
+        "verificationStatus",
+        "lastVerificationDate"
+      ],
+      "properties": {
+        "source": { "type": "string" },
+        "recordId": { "type": "string" },
+        "documentLocation": { "type": "string" },
+        "unit": { "type": ["string", "null"] },
+        "extractionMethod": { "type": "string" },
+        "verificationStatus": {
+          "type": "string",
+          "enum": [
+            "VERIFIED",
+            "PROVISIONAL",
+            "UNFLOWN_FRONTIER",
+            "VERIFIED_DATASET",
+            "VERIFIED_METADATA_ONLY",
+            "PROVISIONAL_PROXY",
+            "UNFLOWN_PLANNED",
+            "FACILITY_REFERENCE",
+            "UNVERIFIED"
+          ]
+        },
+        "lastVerificationDate": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    }
   }
 }

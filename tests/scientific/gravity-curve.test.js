@@ -10,13 +10,13 @@ export function runGravityCurveTests(assert) {
     return Math.max(0.2, 1.6 * gPeakBoost * flowEffect * o2Factor);
   }
 
-  // Test 1: Intermediate partial-gravity peak (ACME CFI-G characteristic observation)
+  // Test 1: Intermediate partial-gravity peak (T'ien / Ferkul low-buoyancy theoretical model)
   const spread0g = calcSpreadAtG(0.0);
   const spreadMoon = calcSpreadAtG(0.16);
   const spreadEarth = calcSpreadAtG(1.0);
 
   assert(spreadMoon > spread0g, `Lunar partial gravity (0.16g: ${spreadMoon.toFixed(2)}) should exhibit accelerated flame spread relative to quiescent zero-g (0g: ${spread0g.toFixed(2)})`);
-  assert(spreadMoon > spreadEarth, `Lunar partial gravity (0.16g: ${spreadMoon.toFixed(2)}) peaks above Earth 1g buoyant spread (${spreadEarth.toFixed(2)}) per ACME CFI-G peak model`);
+  assert(spreadMoon > spreadEarth, `Lunar partial gravity (0.16g: ${spreadMoon.toFixed(2)}) peaks above Earth 1g buoyant spread (${spreadEarth.toFixed(2)}) per T'ien/Ferkul low-buoyancy theoretical model`);
 
   // Test 2: Flame spread positive non-zero floor
   assert(spread0g > 0.1, 'Flame spread in 0g must remain positive');

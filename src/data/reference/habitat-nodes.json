@@ -27,7 +27,7 @@
     "hazardLevel": "EXTREME",
     "hazardColor": "text-crimsonAlert",
     "hazardBadge": "bg-crimsonAlert/15 border-crimsonAlert/50 text-crimsonAlert",
-    "primaryHazard": "Elevated 34% O₂ Exploration Atmosphere drastically lowers material ignition thresholds. Low gravity creates an unstable buoyant plume (ACME CFI-G) that spreads faster than in 1g.",
+    "primaryHazard": "Elevated 34% O₂ Exploration Atmosphere drastically lowers material ignition thresholds. Low gravity creates an unstable buoyant plume (T'ien / Ferkul low-buoyancy model) that can spread faster than in 1g due to reduced convective cooling.",
     "topStudies": ["PSI-159", "NASA-FM2", "PSI-98"],
     "suppressionProtocol": "Rapid partial depressurization (<5.0 psi) + Nitrogen purge cascade. Avoid fine water mist if electro-dust risk is elevated."
   },
@@ -49,19 +49,19 @@
   },
   "SUIT": {
     "name": "EVA Spacewalk (Quest Airlock)",
-    "rackFocus": "Extravehicular Mobility Unit Secondary Oxygen Pack & PLSS",
+    "rackFocus": "EMU Secondary Oxygen Pack, PLSS & Airlock Interface",
     "gravity": 0.00001,
-    "gravityDisplay": "0.00001g (Microgravity Freefall)",
+    "gravityDisplay": "0.00001g (Microgravity Freefall in LEO)",
     "o2": 100.0,
     "pressure": 4.3,
     "flow": 28.0,
-    "flowDisplay": "25 – 35 cm/s (Helmet ventilation sweep)",
+    "flowDisplay": "28 cm/s (Internal suit sweep; External: Space Vacuum 0 psi)",
     "hazardLevel": "CRITICAL",
     "hazardColor": "text-rose-600",
     "hazardBadge": "bg-rose-50 border-rose-300 text-rose-700",
-    "primaryHazard": "Pure 100% O₂ at 4.3 psi (29.6 kPa). Standard flame-resistant materials burn vigorously in pure oxygen if ignited by static electricity or mechanical friction.",
+    "primaryHazard": "External: Deep-space vacuum (0 psi, 0g). Internal: Pure 100% O₂ at 4.3 psi (29.6 kPa) in EMU spacesuit loop. Flammability hazard is restricted to the internal suit atmosphere and airlock ingress/egress transfer.",
     "topStudies": ["PSI-25", "PSI-20", "PSI-107"],
-    "suppressionProtocol": "Immediate emergency suit nitrogen purge cascade + emergency airlock ingress."
+    "suppressionProtocol": "Emergency suit nitrogen purge cascade + emergency airlock ingress & repressurization."
   },
   "MARS": {
     "name": "Mars Surface Habitat & Mars Ascent Vehicle (MAV)",
