@@ -29,3 +29,9 @@ build/
 # Test Coverage
 coverage/
 .nyc_output/
+
+# Python Caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/

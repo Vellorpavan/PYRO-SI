@@ -8,6 +8,8 @@
     "start": "npx serve -l 3000 .",
     "dev": "npx serve -l 3000 .",
     "test": "node tests/test-runner.js",
+    "test:backend": "python3 tests/run_backend_tests.py",
+    "test:all": "node tests/test-runner.js && python3 tests/run_backend_tests.py",
     "test:watch": "node --watch tests/test-runner.js",
     "lint": "echo 'Checking file syntax...' && node --check src/app/main.js"
   },

@@ -4,7 +4,7 @@
 **Challenge:** NASA Space Apps Challenge 2026 — *Flame in Freefall*  
 **Date:** November 15, 2026  
 **Document Identifier:** NASA-PYRO-ROADMAP-001  
-**Version:** 4.6 (Phase 2.2.4.2 Ignition Citation & Runtime Contract Correction Completed — FROZEN)  
+**Version:** 4.7 (Phase 2.3.1 NASA Data API Discovery & Source Verification Completed)  
 **Governance Standard:** NASA Systems Engineering Handbook (SP-2016-6105)
 
 ---
@@ -111,7 +111,14 @@ To ensure **GODEYE // PYRO-SI** achieves absolute scientific credibility while f
 │   below LOI is software artifact not combustion; provide verified numerical tests.     │
 │ • Reclassify SIBAL hypoxic override (0.2 mm/s below 10% O2) as UNVERIFIED heuristic.   │
 │ • Complete verification suite: 17 suites, 848 passing tests (100% green, 0 failures). │
-│ • SCIENTIFIC BASELINE OFFICIALLY FROZEN FOR PHASE 3 GATE REVIEW.                       │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ PHASE 2.3.1: NASA Data API Discovery & Source Verification (COMPLETED)                 │
+│ • Investigate Parse.bot scraper API (328daab1-12f9-4464-b73d-b5e0c392bfe7).            │
+│ • Verify live connectivity and HTTP 401 X-API-Key enforcement via probe.               │
+│ • Safeguard credentials; report missing PARSE_API_KEY without fabricating data.        │
+│ • Author resilient Python client (backend/ingestion/parse_api_client.py) & CLI tool.   │
+│ • Implement 7-Criterion NASA Source Verification & 12-Field Data Availability Matrix.  │
+│ • Author 12 Python backend tests (100% green); preserve 17 scientific suites (848 tests│
 ├────────────────────────────────────────────────────────────────────────────────────────┤
 │ PHASE 3: AI Research Co-Pilot RAG Architecture Integration (NEXT PHASE — AWAITING GATE)│
 │ • Replace static substring keyword routing with authentic Retrieval-Augmented          │
@@ -241,13 +248,24 @@ To ensure **GODEYE // PYRO-SI** achieves absolute scientific credibility while f
   - Expanded test harness to 17 suites, **848 passing assertions** (100% green, 0 failures).
   - Authored `docs/PHASE_2_2_4_2_RUNTIME_AND_IGNITION_CORRECTION.md` and `tests/scientific/phase-2-2-4-2-validation-report.md`.
   - Reaffirmed scientific baseline freeze and explicit flight qualification scope disclaimer.
+- [x] **Task 15: Phase 2.3.1 NASA Data API Discovery & Source Verification:**
+  - Investigated Parse.bot scraper API endpoint (`https://api.parse.bot/scraper/328daab1-12f9-4464-b73d-b5e0c392bfe7/list_data_resources`).
+  - Executed live server probes: confirmed server reachability and strict enforcement of `X-API-Key` (HTTP 401 on missing/invalid key).
+  - Enforced strict credential privacy: verified `PARSE_API_KEY` is not exposed or committed; recorded `MISSING_API_KEY` status without fabricating mock data as real.
+  - Authored production-grade Python client in `backend/ingestion/parse_api_client.py` with configurable timeout, error handling, credential masking, dynamic schema detection, NASA source classifier, and data availability auditor.
+  - Authored CLI tool in `scripts/data-ingestion/inspect_parse_api.py`.
+  - Established 7-Criterion NASA Source Verification Protocol (5 tiers: `VERIFIED_NASA_SOURCE` to `NON_RELEVANT`) and 12-Field Combustion Data Availability Matrix (`AVAILABLE`, `MISSING`, `INFERRED`, `UNVERIFIED`).
+  - Authored 12 Python unit and contract tests in `tests/backend/test_parse_api_client.py` and runner in `tests/run_backend_tests.py` (12/12 passing).
+  - Added `test:backend` and `test:all` scripts to `package.json`.
+  - Preserved all 17 Node.js scientific verification suites (848 passing assertions, 0 failures).
+  - Authored `docs/PHASE_2_3_1_API_DISCOVERY_REPORT.md`, `docs/NASA_API_RESPONSE_SCHEMA.md`, and `docs/NASA_DATA_SOURCE_VERIFICATION_MATRIX.md`.
 
 ---
 
 ## 3. Next Phase Gates
 
 ```
-Phase 1 (Complete) ➔ Phase 1.1 (Complete) ➔ Phase 2 (Complete) ➔ Phase 2.1 (Complete) ➔ Phase 2.2 (Complete) ➔ Phase 2.2.1 (Complete) ➔ Phase 2.2.2 (Complete) ➔ Phase 2.2.3 (Complete) ➔ Phase 2.2.4 (Complete) ➔ Phase 2.2.4.1 (Complete) ➔ Phase 2.2.4.2 (Complete & FROZEN) ➔ [AWAITING USER GATE APPROVAL] ➔ Phase 3 (Gemini RAG Integration)
+Phase 1 (Complete) ➔ Phase 1.1 (Complete) ➔ Phase 2 (Complete) ➔ Phase 2.1 (Complete) ➔ Phase 2.2 (Complete) ➔ Phase 2.2.1 (Complete) ➔ Phase 2.2.2 (Complete) ➔ Phase 2.2.3 (Complete) ➔ Phase 2.2.4 (Complete) ➔ Phase 2.2.4.1 (Complete) ➔ Phase 2.2.4.2 (Complete & FROZEN) ➔ Phase 2.3.1 (Complete) ➔ [AWAITING USER GATE APPROVAL FOR PHASE 2.3.2] ➔ Phase 3 (Gemini RAG Integration)
 ```
 
-No Phase 3 code or Gemini RAG integration will commence without explicit user review and authorization.
+No Phase 2.3.2 ingestion implementation or Phase 3 Gemini RAG integration will commence without explicit user review and authorization.
