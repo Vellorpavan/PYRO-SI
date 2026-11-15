@@ -48,20 +48,20 @@
     "suppressionProtocol": "Automated Cygnus-heritage Saffire rapid-damping dampers + high-pressure water mist injectors."
   },
   "SUIT": {
-    "name": "xEMU Planetary & Deep Space EVA Suit",
-    "rackFocus": "Extravehicular Mobility Unit Secondary Oxygen Pack",
-    "gravity": 0.0,
-    "gravityDisplay": "0.00g to 0.16g (Variable EVA Mission)",
+    "name": "EVA Spacewalk (Quest Airlock)",
+    "rackFocus": "Extravehicular Mobility Unit Secondary Oxygen Pack & PLSS",
+    "gravity": 0.00001,
+    "gravityDisplay": "0.00001g (Microgravity Freefall)",
     "o2": 100.0,
     "pressure": 4.3,
     "flow": 28.0,
-    "flowDisplay": "25 – 35 cm/s (High-velocity helmet helmet ventilation sweep)",
+    "flowDisplay": "25 – 35 cm/s (Helmet ventilation sweep)",
     "hazardLevel": "CRITICAL",
-    "hazardColor": "text-crimsonAlert",
-    "hazardBadge": "bg-crimsonAlert/20 border-crimsonAlert text-crimsonAlert",
-    "primaryHazard": "Pure 100% O₂ environment. Even materials certified flame-resistant on Earth (like Nomex) can propagate flash-fires if sparked by static electricity or mechanical friction.",
+    "hazardColor": "text-rose-600",
+    "hazardBadge": "bg-rose-50 border-rose-300 text-rose-700",
+    "primaryHazard": "Pure 100% O₂ at 4.3 psi (29.6 kPa). Standard flame-resistant materials burn vigorously in pure oxygen if ignited by static electricity or mechanical friction.",
     "topStudies": ["PSI-25", "PSI-20", "PSI-107"],
-    "suppressionProtocol": "Emergency suit emergency nitrogen blowdown purge + rapid umbilical re-docking."
+    "suppressionProtocol": "Immediate emergency suit nitrogen purge cascade + emergency airlock ingress."
   },
   "MARS": {
     "name": "Mars Surface Habitat & Mars Ascent Vehicle (MAV)",

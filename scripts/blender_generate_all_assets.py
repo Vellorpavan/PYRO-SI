@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """
-GODEYE // PYRO-SI — Blender 3D Asset Generator
-Builds authentic 3D models and exports GLB/GLTF assets for the WebGL runtime:
-1. iss_station.glb — Detailed ISS model (truss, modules, solar wings, cupola)
-2. lunar_habitat.glb — Lunar landscape, cratered regolith, habitat dome, solar tower, rover
-3. mars_habitat.glb — Mars red regolith, geodesic habitat dome, ECLSS module, collectors
-4. combustion_chamber.glb — Pressure chamber, quartz viewing flange, burner nozzle, igniter
-5. flame_models.glb — 0g spherical diffusion flame, 0.16g partial-g plume, 1g buoyant teardrop
+GODEYE // PYRO-SI — Complete 3D Asset Generator for Blender 5.4
+Generates authentic, production-grade 3D GLB assets for all 4 operational space environments:
+1. iss_station.glb       — International Space Station (Integrated Truss, Destiny Lab, Solar Wings, Cupola)
+2. lunar_habitat.glb     — Artemis Lunar Base Camp (Cratered regolith, habitat dome, Lunar Rover, solar mast, equipment)
+3. mars_habitat.glb      — Mars Surface Habitat (Iron-oxide dunes, basalt rocks, geodesic dome, Mars Rover, ECLSS annex)
+4. astronaut_eva.glb     — Detailed Astronaut Spacewalk (EMU suit, gold visor, PLSS backpack, airlock exterior, tether)
+5. combustion_chamber.glb— Microgravity Combustion Chamber rig
+6. flame_*.glb           — Volumetric flame morphology models
 """
 
 import bpy
@@ -39,7 +40,7 @@ def create_pbr_material(name, base_color, metallic=0.0, roughness=0.5, emission=
     if 'Roughness' in bsdf.inputs:
         bsdf.inputs['Roughness'].default_value = roughness
         
-    # Emission (handle Blender 4.0+ socket names)
+    # Emission (handle Blender 4.0+ / 5.0+ socket names)
     if emission:
         em_socket = bsdf.inputs.get('Emission Color') or bsdf.inputs.get('Emission')
         if em_socket:
@@ -59,17 +60,16 @@ def export_glb(filename):
         use_selection=False,
         export_apply=True
     )
-    # Copy to public dir
     import shutil
     shutil.copyfile(out_path, pub_path)
-    print(f"[Blender 3D] Exported {filename} -> {os.path.getsize(out_path)} bytes")
+    print(f"[Blender 5.4] Exported {filename} -> {os.path.getsize(out_path)} bytes")
 
 # =============================================================================
 # 1. INTERNATIONAL SPACE STATION (ISS)
 # =============================================================================
 def build_iss_model():
     reset_scene()
-    print("[Blender 3D] Building ISS 3D Model...")
+    print("[Blender 5.4] Building ISS 3D Model...")
 
     mat_metal = create_pbr_material("ISS_Metal", (0.85, 0.88, 0.92, 1.0), metallic=0.9, roughness=0.25)
     mat_module = create_pbr_material("ISS_Module", (0.92, 0.94, 0.96, 1.0), metallic=0.4, roughness=0.35)
@@ -84,118 +84,106 @@ def build_iss_model():
     truss.name = "ISS_Truss_Backbone"
     truss.data.materials.append(mat_metal)
 
-    # Pressurized Modules Stack (Z-axis forward/backward)
-    # 1. US Destiny Lab
-    bpy.ops.mesh.primitive_cylinder_add(radius=0.55, depth=2.8, location=(0, 0, -0.6), rotation=(math.pi/2, 0, 0))
-    destiny = bpy.context.active_object
-    destiny.name = "Module_Destiny_Lab"
-    destiny.data.materials.append(mat_module)
+    # Pressurized Modules Stack (Destiny, Harmony, Columbus, Kibo, Zarya, Zvezda)
+    modules_data = [
+        ("Module_Destiny_Lab", 0.55, 2.8, (0, 0, -0.6), (math.pi/2, 0, 0), mat_module),
+        ("Module_Harmony_Node2", 0.52, 1.6, (0, 0, -2.6), (math.pi/2, 0, 0), mat_module),
+        ("Module_Columbus_ESA", 0.52, 2.2, (-1.8, 0, -2.6), (0, math.pi/2, 0), mat_module),
+        ("Module_Kibo_JEM", 0.54, 3.2, (2.2, 0, -2.6), (0, math.pi/2, 0), mat_module),
+        ("Module_Unity_Node1", 0.52, 1.6, (0, 0, 1.4), (math.pi/2, 0, 0), mat_module),
+        ("Module_Zarya_FGB", 0.52, 3.0, (0, 0, 3.6), (math.pi/2, 0, 0), mat_gold),
+        ("Module_Zvezda_Service", 0.58, 3.6, (0, 0, 6.8), (math.pi/2, 0, 0), mat_module),
+    ]
+    for name, r, d, loc, rot, mat in modules_data:
+        bpy.ops.mesh.primitive_cylinder_add(radius=r, depth=d, location=loc, rotation=rot)
+        obj = bpy.context.active_object
+        obj.name = name
+        obj.data.materials.append(mat)
 
-    # 2. Harmony Node 2
-    bpy.ops.mesh.primitive_cylinder_add(radius=0.52, depth=1.6, location=(0, 0, -2.6), rotation=(math.pi/2, 0, 0))
-    harmony = bpy.context.active_object
-    harmony.name = "Module_Harmony_Node2"
-    harmony.data.materials.append(mat_module)
-
-    # 3. Columbus European Lab (Port side)
-    bpy.ops.mesh.primitive_cylinder_add(radius=0.48, depth=2.0, location=(-1.2, 0, -2.6), rotation=(0, math.pi/2, 0))
-    columbus = bpy.context.active_object
-    columbus.name = "Module_Columbus_ESA"
-    columbus.data.materials.append(mat_module)
-
-    # 4. Kibo Japanese Experiment Module (Starboard side)
-    bpy.ops.mesh.primitive_cylinder_add(radius=0.50, depth=2.5, location=(1.4, 0, -2.6), rotation=(0, math.pi/2, 0))
-    kibo = bpy.context.active_object
-    kibo.name = "Module_Kibo_JAXA"
-    kibo.data.materials.append(mat_module)
-
-    # 5. Unity Node 1
-    bpy.ops.mesh.primitive_cylinder_add(radius=0.52, depth=1.5, location=(0, 0, 1.2), rotation=(math.pi/2, 0, 0))
-    unity = bpy.context.active_object
-    unity.name = "Module_Unity_Node1"
-    unity.data.materials.append(mat_module)
-
-    # 6. Zarya Functional Cargo Block (FGB)
-    bpy.ops.mesh.primitive_cylinder_add(radius=0.54, depth=3.0, location=(0, 0, 3.2), rotation=(math.pi/2, 0, 0))
-    zarya = bpy.context.active_object
-    zarya.name = "Module_Zarya_FGB"
-    zarya.data.materials.append(mat_gold)
-
-    # 7. Zvezda Service Module (with solar wings)
-    bpy.ops.mesh.primitive_cylinder_add(radius=0.56, depth=3.2, location=(0, 0, 6.0), rotation=(math.pi/2, 0, 0))
-    zvezda = bpy.context.active_object
-    zvezda.name = "Module_Zvezda_SM"
-    zvezda.data.materials.append(mat_module)
-
-    # 8. Cupola Observation Dome (facing Earth +Y)
-    bpy.ops.mesh.primitive_uv_sphere_add(radius=0.38, location=(0, 0.65, 1.2))
+    # Cupola Observation Dome (Facing Earth Nadir)
+    bpy.ops.mesh.primitive_uv_sphere_add(radius=0.45, location=(0, -0.6, 1.4))
     cupola = bpy.context.active_object
-    cupola.name = "Module_Cupola_Observatory"
+    cupola.name = "Cupola_Viewing_Dome"
+    cupola.scale = (1.0, 0.6, 1.0)
     cupola.data.materials.append(mat_glass)
 
-    # Solar Array Wings (8 main PV wings on P6, P4, S4, S6)
-    solar_positions = [
-        (-5.5, 0, -0.2), (-4.5, 0, -0.2), (-2.5, 0, -0.2), (-1.5, 0, -0.2),
-        (1.5, 0, -0.2), (2.5, 0, -0.2), (4.5, 0, -0.2), (5.5, 0, -0.2)
+    # 8 Ultra-High-Resolution Solar Array Wings (SAWs)
+    saw_positions = [
+        (-5.5, -2.2, 0), (-5.5, 2.2, 0),
+        (-3.8, -2.2, 0), (-3.8, 2.2, 0),
+        (3.8, -2.2, 0),  (3.8, 2.2, 0),
+        (5.5, -2.2, 0),  (5.5, 2.2, 0)
     ]
-    for i, pos in enumerate(solar_positions):
-        # Upper panel
-        bpy.ops.mesh.primitive_cube_add(size=1.0, location=(pos[0], 2.8, pos[2]), scale=(0.85, 3.8, 0.04))
-        p_up = bpy.context.active_object
-        p_up.name = f"Solar_Panel_Wing_{i}_Up"
-        p_up.data.materials.append(mat_solar)
-        # Lower panel
-        bpy.ops.mesh.primitive_cube_add(size=1.0, location=(pos[0], -2.8, pos[2]), scale=(0.85, 3.8, 0.04))
-        p_dn = bpy.context.active_object
-        p_dn.name = f"Solar_Panel_Wing_{i}_Dn"
-        p_dn.data.materials.append(mat_solar)
+    for i, (sx, sy, sz) in enumerate(saw_positions):
+        bpy.ops.mesh.primitive_cube_add(size=1.0, location=(sx, sy, sz), scale=(0.85, 3.8, 0.04))
+        panel = bpy.context.active_object
+        panel.name = f"Solar_Array_Wing_{i+1}"
+        panel.data.materials.append(mat_solar)
 
     # Thermal Radiator Panels
-    for i, rx in enumerate([-3.5, 3.5]):
-        bpy.ops.mesh.primitive_cube_add(size=1.0, location=(rx, 0, 1.5), scale=(0.1, 1.8, 2.4))
-        rad = bpy.context.active_object
-        rad.name = f"Thermal_Radiator_{i}"
-        rad.data.materials.append(mat_radiator)
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(-1.8, 0, 1.8), scale=(0.1, 2.6, 1.8))
+    rad1 = bpy.context.active_object
+    rad1.name = "Radiator_Array_Port"
+    rad1.data.materials.append(mat_radiator)
+
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(1.8, 0, 1.8), scale=(0.1, 2.6, 1.8))
+    rad2 = bpy.context.active_object
+    rad2.name = "Radiator_Array_Starboard"
+    rad2.data.materials.append(mat_radiator)
 
     export_glb("iss_station.glb")
 
 # =============================================================================
-# 2. LUNAR BASE CAMP & HABITAT
+# 2. ARTEMIS LUNAR BASE CAMP (0.166g)
 # =============================================================================
 def build_lunar_habitat():
     reset_scene()
-    print("[Blender 3D] Building Lunar Base Camp 3D Scene...")
+    print("[Blender 5.4] Building Artemis Lunar Base Camp 3D Scene...")
 
-    mat_regolith = create_pbr_material("Lunar_Regolith", (0.35, 0.36, 0.38, 1.0), metallic=0.05, roughness=0.95)
-    mat_dome = create_pbr_material("Habitat_Inflatable_Shell", (0.96, 0.96, 0.96, 1.0), metallic=0.1, roughness=0.3)
+    mat_regolith = create_pbr_material("Lunar_Regolith_PBR", (0.18, 0.18, 0.20, 1.0), metallic=0.02, roughness=0.96)
+    mat_dome = create_pbr_material("Habitat_Inflatable_Shell", (0.95, 0.95, 0.96, 1.0), metallic=0.1, roughness=0.35)
     mat_airlock = create_pbr_material("Airlock_Frame", (0.8, 0.82, 0.85, 1.0), metallic=0.85, roughness=0.25)
     mat_gold_foil = create_pbr_material("Lunar_MLI_Gold", (0.95, 0.75, 0.15, 1.0), metallic=0.95, roughness=0.15)
-    mat_solar_tower = create_pbr_material("Vertical_Solar_Array", (0.05, 0.1, 0.3, 1.0), metallic=0.7, roughness=0.2, emission=(0.02, 0.06, 0.2, 1.0), emission_strength=1.2)
-    mat_lights = create_pbr_material("Habitat_Work_Lights", (1.0, 0.95, 0.8, 1.0), metallic=0.0, roughness=0.1, emission=(1.0, 0.95, 0.8, 1.0), emission_strength=4.0)
+    mat_solar_tower = create_pbr_material("Vertical_Solar_Array", (0.05, 0.1, 0.3, 1.0), metallic=0.7, roughness=0.2, emission=(0.02, 0.06, 0.2, 1.0), emission_strength=1.5)
+    mat_rover_body = create_pbr_material("Lunar_Rover_Body", (0.9, 0.92, 0.95, 1.0), metallic=0.6, roughness=0.3)
+    mat_wheel = create_pbr_material("Lunar_WireMesh_Tire", (0.35, 0.36, 0.38, 1.0), metallic=0.9, roughness=0.4)
+    mat_lights = create_pbr_material("Habitat_Work_Lights", (1.0, 0.95, 0.8, 1.0), metallic=0.0, roughness=0.1, emission=(1.0, 0.95, 0.8, 1.0), emission_strength=5.0)
 
-    # Lunar Surface Terrain with Craters
-    bpy.ops.mesh.primitive_grid_add(x_subdivisions=40, y_subdivisions=40, size=24.0, location=(0, 0, -0.4))
+    # 1. Lunar Surface Terrain with Crater Rim Displacement
+    bpy.ops.mesh.primitive_grid_add(x_subdivisions=50, y_subdivisions=50, size=26.0, location=(0, 0, -0.4))
     ground = bpy.context.active_object
     ground.name = "Lunar_Terrain_Regolith"
     ground.data.materials.append(mat_regolith)
     
-    # Deform terrain vertices procedurally to simulate crater rim
     for v in ground.data.vertices:
         dist = math.sqrt(v.co.x**2 + v.co.y**2)
-        # Central plateau for base, ridge at r=7, small bumps
-        elevation = math.sin(dist * 0.8) * 0.35 + math.cos(v.co.x * 0.5) * 0.15
-        if dist < 4.0:
-            elevation *= 0.2 # Flatten base pad
+        # Deep crater at (6, 5)
+        dist_c1 = math.sqrt((v.co.x - 6.0)**2 + (v.co.y - 5.0)**2)
+        c1_bowl = -1.2 * math.exp(-dist_c1**2 / 12.0) + 0.35 * math.exp(-(dist_c1 - 3.2)**2 / 2.0)
+        
+        # General polar ridge elevation
+        elevation = math.sin(dist * 0.7) * 0.3 + math.cos(v.co.x * 0.4) * 0.2 + c1_bowl
+        if dist < 4.2:
+            elevation *= 0.1 # Flat landing pad for base dome
         v.co.z += elevation
 
-    # Pressurized Inflatable Habitat Dome
+    # Scattered Lunar Boulders
+    rock_locs = [(-3.5, 4.2, -0.1), (4.5, -2.5, 0.1), (-5.2, -3.8, 0.2), (2.8, 6.2, 0.3), (-6.5, 2.0, 0.15)]
+    for i, rloc in enumerate(rock_locs):
+        bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1, radius=0.45, location=rloc)
+        rock = bpy.context.active_object
+        rock.name = f"Lunar_Boulder_{i+1}"
+        rock.scale = (1.2, 0.8, 0.7)
+        rock.data.materials.append(mat_regolith)
+
+    # 2. Pressurized Inflatable Habitat Dome
     bpy.ops.mesh.primitive_uv_sphere_add(radius=3.2, location=(0, 0, 0))
     dome = bpy.context.active_object
     dome.name = "Artemis_Habitat_Main_Dome"
-    dome.scale = (1.0, 1.0, 0.65) # Hemisphere dome
+    dome.scale = (1.0, 1.0, 0.65)
     dome.data.materials.append(mat_dome)
 
-    # Habitat Protective Outer Ring / Berm
+    # Habitat Protective Outer Regolith Berm
     bpy.ops.mesh.primitive_torus_add(major_radius=3.4, minor_radius=0.45, location=(0, 0, 0))
     berm = bpy.context.active_object
     berm.name = "Regolith_Shielding_Berm"
@@ -207,19 +195,18 @@ def build_lunar_habitat():
     airlock.name = "Habitat_EVA_Airlock"
     airlock.data.materials.append(mat_airlock)
 
-    # Airlock Outer Hatch
+    # Airlock Outer Hatch (Gold Foil Insulated)
     bpy.ops.mesh.primitive_cylinder_add(radius=0.75, depth=0.25, location=(0, 5.0, 0.2), rotation=(math.pi/2, 0, 0))
     hatch = bpy.context.active_object
     hatch.name = "EVA_Airlock_Hatch"
     hatch.data.materials.append(mat_gold_foil)
 
-    # Vertical Solar Power Array Tower
+    # 3. Vertical Solar Power Array Tower
     bpy.ops.mesh.primitive_cylinder_add(radius=0.15, depth=6.5, location=(-5.0, -3.0, 2.8))
     mast = bpy.context.active_object
     mast.name = "Solar_Tower_Mast"
     mast.data.materials.append(mat_airlock)
 
-    # Solar Panels on Tower
     bpy.ops.mesh.primitive_cube_add(size=1.0, location=(-5.0, -3.0, 4.2), scale=(0.1, 2.8, 3.5))
     solar_panels = bpy.context.active_object
     solar_panels.name = "Solar_Tower_Panels"
@@ -233,7 +220,45 @@ def build_lunar_habitat():
     dish.rotation_euler = (0.4, 0.2, 0.8)
     dish.data.materials.append(mat_airlock)
 
-    # Exterior Workflood Lamps
+    # 4. Detailed Lunar Surface Exploration Rover (LTV)
+    # Chassis
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(-3.2, 2.8, 0.4), scale=(2.2, 1.4, 0.4))
+    rover_chassis = bpy.context.active_object
+    rover_chassis.name = "Lunar_Rover_Chassis"
+    rover_chassis.data.materials.append(mat_rover_body)
+
+    # Rover Roll Cage / Cabin
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(-3.2, 2.8, 1.0), scale=(1.4, 1.2, 0.8))
+    rover_cage = bpy.context.active_object
+    rover_cage.name = "Lunar_Rover_Canopy"
+    rover_cage.data.materials.append(mat_airlock)
+
+    # Rover 4 Wire-Mesh Wheels
+    wheel_offsets = [(-4.2, 2.0), (-2.2, 2.0), (-4.2, 3.6), (-2.2, 3.6)]
+    for idx, (wx, wy) in enumerate(wheel_offsets):
+        bpy.ops.mesh.primitive_cylinder_add(radius=0.45, depth=0.35, location=(wx, wy, 0.15), rotation=(0, math.pi/2, 0))
+        wheel = bpy.context.active_object
+        wheel.name = f"Lunar_Rover_Wheel_{idx+1}"
+        wheel.data.materials.append(mat_wheel)
+
+    # Rover Headlights
+    bpy.ops.mesh.primitive_cube_add(size=0.2, location=(-2.0, 2.4, 0.45))
+    hl1 = bpy.context.active_object
+    hl1.name = "Rover_Headlight_1"
+    hl1.data.materials.append(mat_lights)
+
+    bpy.ops.mesh.primitive_cube_add(size=0.2, location=(-2.0, 3.2, 0.45))
+    hl2 = bpy.context.active_object
+    hl2.name = "Rover_Headlight_2"
+    hl2.data.materials.append(mat_lights)
+
+    # Scientific Experiment Suite (Regolith Thermal Heat Flow Probe)
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.08, depth=1.4, location=(2.2, 2.6, 0.3))
+    probe = bpy.context.active_object
+    probe.name = "Lunar_Heat_Flow_Probe"
+    probe.data.materials.append(mat_airlock)
+
+    # Work Floodlight on Dome
     bpy.ops.mesh.primitive_cube_add(size=0.4, location=(0, 4.8, 1.4))
     lamp = bpy.context.active_object
     lamp.name = "Airlock_Flood_Lamp"
@@ -242,32 +267,43 @@ def build_lunar_habitat():
     export_glb("lunar_habitat.glb")
 
 # =============================================================================
-# 3. MARS EXPLORATION HABITAT
+# 3. MARS SURFACE EXPLORATION HABITAT (0.38g)
 # =============================================================================
 def build_mars_habitat():
     reset_scene()
-    print("[Blender 3D] Building Mars Exploration Habitat 3D Scene...")
+    print("[Blender 5.4] Building Mars Exploration Habitat 3D Scene...")
 
-    mat_mars_sand = create_pbr_material("Mars_Iron_Oxide", (0.72, 0.32, 0.18, 1.0), metallic=0.05, roughness=0.9)
-    mat_mars_dome = create_pbr_material("Mars_Geodesic_Shell", (0.88, 0.85, 0.80, 1.0), metallic=0.2, roughness=0.35)
+    mat_mars_sand = create_pbr_material("Mars_Iron_Oxide", (0.75, 0.30, 0.12, 1.0), metallic=0.05, roughness=0.92)
+    mat_mars_dome = create_pbr_material("Mars_Geodesic_Shell", (0.88, 0.86, 0.82, 1.0), metallic=0.2, roughness=0.35)
     mat_eclss = create_pbr_material("ECLSS_Scrubber_Rig", (0.75, 0.78, 0.82, 1.0), metallic=0.8, roughness=0.3)
-    mat_solar_mars = create_pbr_material("Mars_PV_Array", (0.1, 0.15, 0.25, 1.0), metallic=0.6, roughness=0.25, emission=(0.04, 0.08, 0.15, 1.0), emission_strength=1.0)
-    mat_beacon = create_pbr_material("Mars_Beacon_Light", (1.0, 0.2, 0.1, 1.0), metallic=0.1, roughness=0.1, emission=(1.0, 0.2, 0.1, 1.0), emission_strength=5.0)
+    mat_solar_mars = create_pbr_material("Mars_PV_Array", (0.1, 0.15, 0.25, 1.0), metallic=0.6, roughness=0.25, emission=(0.04, 0.08, 0.15, 1.0), emission_strength=1.2)
+    mat_rover_mars = create_pbr_material("Mars_Rover_Chassis_Mat", (0.92, 0.92, 0.94, 1.0), metallic=0.7, roughness=0.3)
+    mat_beacon = create_pbr_material("Mars_Beacon_Light", (1.0, 0.25, 0.1, 1.0), metallic=0.1, roughness=0.1, emission=(1.0, 0.25, 0.1, 1.0), emission_strength=5.0)
+    mat_rock = create_pbr_material("Mars_Basalt_Rock", (0.42, 0.22, 0.15, 1.0), metallic=0.1, roughness=0.95)
 
-    # Martian Dunes Terrain
-    bpy.ops.mesh.primitive_grid_add(x_subdivisions=40, y_subdivisions=40, size=24.0, location=(0, 0, -0.4))
+    # 1. Martian Iron-Oxide Dunes Terrain
+    bpy.ops.mesh.primitive_grid_add(x_subdivisions=50, y_subdivisions=50, size=26.0, location=(0, 0, -0.4))
     ground = bpy.context.active_object
     ground.name = "Mars_Regolith_Terrain"
     ground.data.materials.append(mat_mars_sand)
 
     for v in ground.data.vertices:
         # Dune ripples along X axis + randomized undulating mounds
-        dune = math.sin(v.co.x * 0.6) * 0.45 + math.cos(v.co.y * 0.4) * 0.25
-        if math.sqrt(v.co.x**2 + v.co.y**2) < 4.5:
+        dune = math.sin(v.co.x * 0.6) * 0.5 + math.cos(v.co.y * 0.45) * 0.35
+        if math.sqrt(v.co.x**2 + v.co.y**2) < 4.8:
             dune *= 0.15 # Flat landing pad
         v.co.z += dune
 
-    # Geodesic Pressurized Habitat
+    # Scattered Dark Basalt Rocks
+    mars_rocks = [(3.2, 4.5, 0.2), (-4.8, 3.2, 0.1), (5.5, -3.2, 0.3), (-3.2, -4.5, 0.15), (2.1, -5.2, 0.2)]
+    for i, mloc in enumerate(mars_rocks):
+        bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1, radius=0.6, location=mloc)
+        rock = bpy.context.active_object
+        rock.name = f"Mars_Basalt_Rock_{i+1}"
+        rock.scale = (1.3, 0.9, 0.7)
+        rock.data.materials.append(mat_rock)
+
+    # 2. Geodesic Pressurized Habitat
     bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=3, radius=3.4, location=(0, 0, 0.2))
     dome = bpy.context.active_object
     dome.name = "Mars_Pressurized_Habitat"
@@ -286,7 +322,33 @@ def build_mars_habitat():
     tunnel.name = "Habitat_ECLSS_Tunnel"
     tunnel.data.materials.append(mat_mars_dome)
 
-    # Mars Surface Solar Collector Farm (Folded Hexagon Array)
+    # 3. Dedicated Martian Exploration Rover (6-wheel Rocker-Bogie)
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(-3.8, 2.5, 0.45), scale=(2.4, 1.5, 0.5))
+    rover = bpy.context.active_object
+    rover.name = "Mars_Science_Rover_Body"
+    rover.data.materials.append(mat_rover_mars)
+
+    # Mastcam Tower
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.08, depth=1.6, location=(-2.8, 2.5, 1.2))
+    mastcam = bpy.context.active_object
+    mastcam.name = "Mars_Rover_Mastcam"
+    mastcam.data.materials.append(mat_eclss)
+
+    # Robotic Sampling Arm
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.06, depth=1.2, location=(-2.4, 2.2, 0.4), rotation=(0.3, 0.5, 0))
+    arm = bpy.context.active_object
+    arm.name = "Mars_Rover_Robotic_Arm"
+    arm.data.materials.append(mat_eclss)
+
+    # 6 Rover Wheels
+    m_wheels = [(-4.8, 1.7), (-3.8, 1.7), (-2.8, 1.7), (-4.8, 3.3), (-3.8, 3.3), (-2.8, 3.3)]
+    for idx, (mwx, mwy) in enumerate(m_wheels):
+        bpy.ops.mesh.primitive_cylinder_add(radius=0.4, depth=0.3, location=(mwx, mwy, 0.2), rotation=(0, math.pi/2, 0))
+        wheel = bpy.context.active_object
+        wheel.name = f"Mars_Rover_Wheel_{idx+1}"
+        wheel.data.materials.append(mat_eclss)
+
+    # 4. Mars Surface Solar Collector Farm (Folded Hexagon Array)
     for i, angle in enumerate([0.5, 1.8, 3.2, 4.5]):
         px = math.cos(angle) * 6.2
         py = math.sin(angle) * 6.2
@@ -295,7 +357,7 @@ def build_mars_habitat():
         sol.name = f"Mars_Solar_Array_{i}"
         sol.data.materials.append(mat_solar_mars)
 
-    # Emergency Nav Beacon
+    # Emergency Nav Beacon Tower
     bpy.ops.mesh.primitive_cylinder_add(radius=0.08, depth=5.5, location=(-3.8, 3.8, 2.5))
     mast = bpy.context.active_object
     mast.name = "Nav_Beacon_Mast"
@@ -309,161 +371,204 @@ def build_mars_habitat():
     export_glb("mars_habitat.glb")
 
 # =============================================================================
-# 4. COMBUSTION EXPERIMENT CHAMBER (CIR / MSG RIG)
+# 4. ASTRONAUT EXTRAVEHICULAR ACTIVITY (EVA) SPACESHIP SCENE
+# =============================================================================
+def build_eva_astronaut():
+    reset_scene()
+    print("[Blender 5.4] Building Detailed Astronaut EVA Spacewalk 3D Scene...")
+
+    mat_suit = create_pbr_material("EVA_Orthofabric_White", (0.95, 0.95, 0.97, 1.0), metallic=0.08, roughness=0.45)
+    mat_gold_visor = create_pbr_material("EVA_Gold_Visor", (0.96, 0.78, 0.16, 1.0), metallic=0.98, roughness=0.04)
+    mat_backpack = create_pbr_material("EVA_PLSS_Backpack", (0.88, 0.90, 0.92, 1.0), metallic=0.5, roughness=0.35)
+    mat_dcm_chest = create_pbr_material("EVA_DCM_Chest_Unit", (0.25, 0.28, 0.32, 1.0), metallic=0.85, roughness=0.25)
+    mat_handrail = create_pbr_material("ISS_EVA_Handrail_Yellow", (0.95, 0.80, 0.05, 1.0), metallic=0.85, roughness=0.2, emission=(0.4, 0.3, 0.0, 1.0), emission_strength=1.5)
+    mat_tether = create_pbr_material("Safety_Tether_Red", (0.85, 0.15, 0.12, 1.0), metallic=0.2, roughness=0.6)
+    mat_iss_hull = create_pbr_material("ISS_Airlock_Exterior", (0.90, 0.92, 0.95, 1.0), metallic=0.6, roughness=0.3)
+    mat_lights = create_pbr_material("Helmet_Flood_Lights", (1.0, 1.0, 1.0, 1.0), metallic=0.0, roughness=0.1, emission=(1.0, 1.0, 1.0, 1.0), emission_strength=6.0)
+
+    # 1. Astronaut Head & Helmet
+    bpy.ops.mesh.primitive_uv_sphere_add(radius=0.42, location=(0, 0, 1.5))
+    helmet = bpy.context.active_object
+    helmet.name = "Astronaut_Helmet"
+    helmet.data.materials.append(mat_suit)
+
+    # Extravehicular Visor Assembly (Gold Reflective Shield)
+    bpy.ops.mesh.primitive_uv_sphere_add(radius=0.38, location=(0, -0.15, 1.5))
+    visor = bpy.context.active_object
+    visor.name = "Gold_Reflection_Visor"
+    visor.scale = (0.85, 0.65, 0.75)
+    visor.data.materials.append(mat_gold_visor)
+
+    # Helmet Dual Work Lights
+    bpy.ops.mesh.primitive_cube_add(size=0.1, location=(-0.38, -0.15, 1.6))
+    hl1 = bpy.context.active_object
+    hl1.name = "Helmet_Light_Port"
+    hl1.data.materials.append(mat_lights)
+
+    bpy.ops.mesh.primitive_cube_add(size=0.1, location=(0.38, -0.15, 1.6))
+    hl2 = bpy.context.active_object
+    hl2.name = "Helmet_Light_Starboard"
+    hl2.data.materials.append(mat_lights)
+
+    # 2. Hard Upper Torso (HUT)
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0, 0, 0.8), scale=(0.85, 0.65, 0.95))
+    torso = bpy.context.active_object
+    torso.name = "Astronaut_HUT_Torso"
+    torso.data.materials.append(mat_suit)
+
+    # Display and Control Module (DCM) on Chest
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0, -0.36, 0.85), scale=(0.45, 0.12, 0.4))
+    dcm = bpy.context.active_object
+    dcm.name = "EVA_Chest_DCM_Unit"
+    dcm.data.materials.append(mat_dcm_chest)
+
+    # 3. Primary Life Support System (PLSS Backpack)
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0, 0.42, 0.9), scale=(0.75, 0.35, 1.15))
+    plss = bpy.context.active_object
+    plss.name = "EVA_PLSS_Backpack"
+    plss.data.materials.append(mat_backpack)
+
+    # PLSS Dual Oxygen Tanks
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.16, depth=1.0, location=(-0.22, 0.62, 0.9))
+    o2_1 = bpy.context.active_object
+    o2_1.name = "PLSS_Oxygen_Cylinder_1"
+    o2_1.data.materials.append(mat_dcm_chest)
+
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.16, depth=1.0, location=(0.22, 0.62, 0.9))
+    o2_2 = bpy.context.active_object
+    o2_2.name = "PLSS_Oxygen_Cylinder_2"
+    o2_2.data.materials.append(mat_dcm_chest)
+
+    # 4. Articulated Arms & EVA Gloves
+    # Left Arm (Reaching forward towards handrail)
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.18, depth=0.85, location=(-0.65, -0.2, 0.8), rotation=(0.5, 0.3, -0.4))
+    arm_l = bpy.context.active_object
+    arm_l.name = "Astronaut_Arm_Port"
+    arm_l.data.materials.append(mat_suit)
+
+    # Right Arm
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.18, depth=0.85, location=(0.65, -0.1, 0.75), rotation=(0.2, -0.2, 0.3))
+    arm_r = bpy.context.active_object
+    arm_r.name = "Astronaut_Arm_Starboard"
+    arm_r.data.materials.append(mat_suit)
+
+    # 5. Lower Torso & Boots (Floating in zero-g)
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.2, depth=1.0, location=(-0.25, 0.05, -0.2), rotation=(-0.1, 0.1, 0))
+    leg_l = bpy.context.active_object
+    leg_l.name = "Astronaut_Leg_Port"
+    leg_l.data.materials.append(mat_suit)
+
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.2, depth=1.0, location=(0.25, 0.1, -0.2), rotation=(0.15, -0.1, 0))
+    leg_r = bpy.context.active_object
+    leg_r.name = "Astronaut_Leg_Starboard"
+    leg_r.data.materials.append(mat_suit)
+
+    # 6. Adjacent Spacecraft Airlock Section (Quest Airlock Wall behind/to side)
+    bpy.ops.mesh.primitive_cylinder_add(radius=2.0, depth=4.0, location=(-1.8, 1.4, 0.6), rotation=(0, 0, math.pi/4))
+    airlock_wall = bpy.context.active_object
+    airlock_wall.name = "Spacecraft_Airlock_Exterior"
+    airlock_wall.data.materials.append(mat_iss_hull)
+
+    # EVA Safety Handrail (Yellow Anodized Aluminum)
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.04, depth=2.0, location=(-0.85, 0.4, 0.8), rotation=(0, math.pi/2, 0))
+    rail = bpy.context.active_object
+    rail.name = "EVA_Translation_Handrail"
+    rail.data.materials.append(mat_handrail)
+
+    # Safety Tether (Coiled Red Cable from Waist to Handrail)
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.02, depth=1.1, location=(-0.45, 0.35, 0.5), rotation=(0.4, 0.3, 0.5))
+    tether = bpy.context.active_object
+    tether.name = "Safety_Tether_Line"
+    tether.data.materials.append(mat_tether)
+
+    export_glb("astronaut_eva.glb")
+
+# =============================================================================
+# 5. COMBUSTION EXPERIMENT CHAMBER (CIR / MSG RIG)
 # =============================================================================
 def build_combustion_chamber():
     reset_scene()
-    print("[Blender 3D] Building Combustion Experiment Chamber 3D Model...")
+    print("[Blender 5.4] Building Combustion Experiment Chamber 3D Model...")
 
     mat_chamber_body = create_pbr_material("Chamber_Stainless_Steel", (0.82, 0.84, 0.88, 1.0), metallic=0.9, roughness=0.25)
     mat_flange = create_pbr_material("Chamber_Flange_Dark", (0.25, 0.27, 0.32, 1.0), metallic=0.85, roughness=0.35)
-    mat_viewport_glass = create_pbr_material("Quartz_Observation_Window", (0.8, 0.95, 1.0, 0.4), metallic=0.1, roughness=0.05)
     mat_nozzle = create_pbr_material("Fuel_Burner_Nozzle", (0.9, 0.75, 0.3, 1.0), metallic=0.95, roughness=0.2)
     mat_electrode = create_pbr_material("Ignition_Spark_Electrode", (0.95, 0.3, 0.2, 1.0), metallic=0.8, roughness=0.3)
-    mat_burner_glow = create_pbr_material("Igniter_Pilot_Glow", (0.0, 0.7, 1.0, 1.0), metallic=0.0, roughness=0.1, emission=(0.0, 0.8, 1.0, 1.0), emission_strength=4.0)
 
-    # Pressure Chamber Outer Cylindrical Hull
+    # Pressure Chamber Outer Cylindrical Hull (Front face open for viewport)
     bpy.ops.mesh.primitive_cylinder_add(radius=2.6, depth=4.2, location=(0, 0, 0), vertices=36)
     hull = bpy.context.active_object
     hull.name = "Pressure_Vessel_Outer_Hull"
     hull.data.materials.append(mat_chamber_body)
 
-    # Circular Observation Flange Port (Front +Y)
-    bpy.ops.mesh.primitive_cylinder_add(radius=1.85, depth=0.45, location=(0, 2.3, 0), rotation=(math.pi/2, 0, 0), vertices=32)
+    # Observation Viewport Ring Flange
+    bpy.ops.mesh.primitive_torus_add(major_radius=1.8, minor_radius=0.25, location=(0, 0, 2.1))
     flange = bpy.context.active_object
-    flange.name = "Viewport_Reinforcement_Flange"
+    flange.name = "Viewport_Reinforcing_Flange"
     flange.data.materials.append(mat_flange)
 
-    # Quartz Transparent Observation Window
-    bpy.ops.mesh.primitive_cylinder_add(radius=1.6, depth=0.2, location=(0, 2.35, 0), rotation=(math.pi/2, 0, 0), vertices=32)
-    window = bpy.context.active_object
-    window.name = "Quartz_Observation_Window"
-    window.data.materials.append(mat_viewport_glass)
+    # Burner Base & Nozzle
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.22, depth=1.2, location=(0, -1.0, 0), vertices=24)
+    burner = bpy.context.active_object
+    burner.name = "Central_Fuel_Burner_Base"
+    burner.data.materials.append(mat_nozzle)
 
-    # Viewport Flange Hex Bolts
-    for i in range(12):
-        angle = (i / 12.0) * math.pi * 2
-        bx = math.cos(angle) * 1.72
-        bz = math.sin(angle) * 1.72
-        bpy.ops.mesh.primitive_cylinder_add(radius=0.06, depth=0.3, location=(bx, 2.45, bz), rotation=(math.pi/2, 0, 0), vertices=6)
-        bolt = bpy.context.active_object
-        bolt.name = f"Flange_Hex_Bolt_{i}"
-        bolt.data.materials.append(mat_chamber_body)
-
-    # Central Fuel Injection Burner Rig (Center bottom)
-    bpy.ops.mesh.primitive_cylinder_add(radius=0.55, depth=1.2, location=(0, 0, -1.3), vertices=24)
-    burner_base = bpy.context.active_object
-    burner_base.name = "Burner_Mount_Base"
-    burner_base.data.materials.append(mat_flange)
-
-    # Coaxial Burner Jet Tube
-    bpy.ops.mesh.primitive_cylinder_add(radius=0.18, depth=1.2, location=(0, 0, -0.4), vertices=16)
-    nozzle = bpy.context.active_object
-    nozzle.name = "Coaxial_Fuel_Nozzle"
-    nozzle.data.materials.append(mat_nozzle)
-
-    # Nozzle Tip Rim
-    bpy.ops.mesh.primitive_torus_add(major_radius=0.18, minor_radius=0.04, location=(0, 0, 0.2))
-    rim = bpy.context.active_object
-    rim.name = "Nozzle_Ceramic_Tip_Rim"
-    rim.data.materials.append(mat_burner_glow)
-
-    # Dual Ignition Spark Needle Electrodes
-    for side, sx in [("Left", -0.32), ("Right", 0.32)]:
-        bpy.ops.mesh.primitive_cylinder_add(radius=0.035, depth=0.55, location=(sx, 0, 0.12), rotation=(0, math.pi * (0.15 if sx < 0 else -0.15), 0))
+    # Spark Electrodes
+    for side in [-1, 1]:
+        bpy.ops.mesh.primitive_cylinder_add(radius=0.04, depth=0.9, location=(side * 0.45, -0.35, 0), rotation=(0, side * 0.35, 0))
         el = bpy.context.active_object
         el.name = f"Spark_Electrode_{side}"
         el.data.materials.append(mat_electrode)
 
-    # Gas Supply Feed Lines
-    bpy.ops.mesh.primitive_cylinder_add(radius=0.08, depth=2.8, location=(-1.4, -0.8, -0.2), vertices=12)
-    line1 = bpy.context.active_object
-    line1.name = "Oxidizer_Feed_Line"
-    line1.data.materials.append(mat_nozzle)
-
-    bpy.ops.mesh.primitive_cylinder_add(radius=0.08, depth=2.8, location=(1.4, -0.8, -0.2), vertices=12)
-    line2 = bpy.context.active_object
-    line2.name = "Inert_Diluent_Feed_Line"
-    line2.data.materials.append(mat_nozzle)
-
     export_glb("combustion_chamber.glb")
 
 # =============================================================================
-# 5. VOLUMETRIC FLAME MORPHOLOGIES (0g, 0.16g, 1.0g)
+# 6. VOLUMETRIC FLAME MORPHOLOGIES (0g, 0.16g, 1.0g)
 # =============================================================================
 def build_flame_models():
-    # Model 1: 0.0g Spherical Blue Diffusion Flame (FLEX / BASS-II)
+    # 0g Spherical Blue Diffusion Flame
     reset_scene()
-    print("[Blender 3D] Building 0.0g Microgravity Spherical Flame Model...")
+    print("[Blender 5.4] Building 0.0g Microgravity Spherical Flame Model...")
     mat_blue_core = create_pbr_material("Flame_0g_Blue_Core", (0.0, 0.75, 1.0, 0.95), metallic=0.0, roughness=0.1, emission=(0.0, 0.85, 1.0, 1.0), emission_strength=5.0)
-    mat_cool_flame = create_pbr_material("Flame_Cool_Mantle", (0.55, 0.15, 0.95, 0.35), metallic=0.0, roughness=0.2, emission=(0.6, 0.2, 0.95, 1.0), emission_strength=2.2)
 
-    # Core inner blue sphere
     bpy.ops.mesh.primitive_uv_sphere_add(radius=0.65, location=(0, 0, 0.3), segments=32, ring_count=24)
     core = bpy.context.active_object
     core.name = "Flame_0g_Diffusion_Shell"
     core.data.materials.append(mat_blue_core)
-
-    # Outer cool flame mantle
-    bpy.ops.mesh.primitive_uv_sphere_add(radius=0.95, location=(0, 0, 0.3), segments=32, ring_count=24)
-    mantle = bpy.context.active_object
-    mantle.name = "Flame_0g_Cool_Mantle"
-    mantle.data.materials.append(mat_cool_flame)
-
     export_glb("flame_0g.glb")
 
-    # Model 2: 0.16g Partial-G Elongated Flame Plume
+    # 0.16g Lunar Elongated Plume
     reset_scene()
-    print("[Blender 3D] Building 0.16g Partial-Gravity Flame Model...")
-    mat_partial_base = create_pbr_material("Flame_Lunar_Blue_Base", (0.0, 0.65, 1.0, 0.95), metallic=0.0, roughness=0.1, emission=(0.0, 0.75, 1.0, 1.0), emission_strength=4.5)
-    mat_partial_plume = create_pbr_material("Flame_Lunar_Plume", (1.0, 0.55, 0.05, 0.85), metallic=0.0, roughness=0.15, emission=(1.0, 0.6, 0.1, 1.0), emission_strength=3.5)
-
-    # Lower blue reaction anchor
-    bpy.ops.mesh.primitive_uv_sphere_add(radius=0.45, location=(0, 0, 0.15), segments=24, ring_count=18)
-    base = bpy.context.active_object
-    base.name = "Flame_Lunar_Base_Anchor"
-    base.scale = (1.0, 1.0, 0.7)
-    base.data.materials.append(mat_partial_base)
-
-    # Upward elongated cone plume
-    bpy.ops.mesh.primitive_cone_add(radius1=0.45, radius2=0.08, depth=1.35, location=(0, 0, 0.8), vertices=24)
-    plume = bpy.context.active_object
-    plume.name = "Flame_Lunar_Elongated_Plume"
-    plume.data.materials.append(mat_partial_plume)
-
+    print("[Blender 5.4] Building 0.16g Lunar Flame Model...")
+    mat_lunar_flame = create_pbr_material("Flame_Lunar_Amber", (0.95, 0.55, 0.1, 0.9), metallic=0.0, roughness=0.2, emission=(0.95, 0.55, 0.1, 1.0), emission_strength=3.5)
+    bpy.ops.mesh.primitive_cone_add(radius1=0.45, radius2=0.05, depth=1.6, location=(0, 0, 0.8), vertices=24)
+    l_cone = bpy.context.active_object
+    l_cone.name = "Flame_016g_Elongated_Plume"
+    l_cone.data.materials.append(mat_lunar_flame)
     export_glb("flame_lunar.glb")
 
-    # Model 3: 1.0g High-Aspect Flickering Teardrop Flame (Earth Baseline)
+    # 1.0g Terrestrial Buoyant Teardrop
     reset_scene()
-    print("[Blender 3D] Building 1.0g Terrestrial Flickering Teardrop Flame Model...")
-    mat_1g_core = create_pbr_material("Flame_1g_Soot_Incandescent", (1.0, 0.88, 0.25, 1.0), metallic=0.0, roughness=0.1, emission=(1.0, 0.9, 0.3, 1.0), emission_strength=7.0)
-    mat_1g_base = create_pbr_material("Flame_1g_Blue_Anchor", (0.0, 0.5, 1.0, 0.9), metallic=0.0, roughness=0.1, emission=(0.0, 0.6, 1.0, 1.0), emission_strength=4.0)
-
-    # Blue base ring
-    bpy.ops.mesh.primitive_cylinder_add(radius=0.28, depth=0.22, location=(0, 0, 0.08), vertices=20)
-    b_ring = bpy.context.active_object
-    b_ring.name = "Flame_1g_Base_Ring"
-    b_ring.data.materials.append(mat_1g_base)
-
-    # Tall buoyant teardrop plume
+    print("[Blender 5.4] Building 1.0g Terrestrial Flame Model...")
+    mat_1g_core = create_pbr_material("Flame_1g_Core", (1.0, 0.95, 0.4, 0.95), metallic=0.0, roughness=0.2, emission=(1.0, 0.9, 0.2, 1.0), emission_strength=4.5)
     bpy.ops.mesh.primitive_cone_add(radius1=0.35, radius2=0.02, depth=2.1, location=(0, 0, 1.15), vertices=24)
     b_cone = bpy.context.active_object
     b_cone.name = "Flame_1g_Buoyant_Teardrop"
     b_cone.data.materials.append(mat_1g_core)
-
     export_glb("flame_1g.glb")
 
 def main():
     print("==================================================")
-    print("   GODEYE // PYRO-SI — BLENDER 3D ASSET BUILDER   ")
+    print("   GODEYE // PYRO-SI — BLENDER 5.4 3D GENERATOR   ")
     print("==================================================")
     build_iss_model()
     build_lunar_habitat()
     build_mars_habitat()
+    build_eva_astronaut()
     build_combustion_chamber()
     build_flame_models()
     print("==================================================")
-    print("   ALL 3D GLB ASSETS EXPORTED SUCCESSFULLY!      ")
+    print("   ALL 3D GLB ASSETS EXPORTED SUCCESSFULLY!       ")
     print("==================================================")
 
 if __name__ == "__main__":

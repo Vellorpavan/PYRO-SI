@@ -93,7 +93,8 @@ export function setFlameVisualMode(mode) {
     }
   });
 
-  const activeBtn = document.getElementById('flame-mode-' + mode);
+  const btnId = (mode === 'mars' || mode === 'insideout') ? 'flame-mode-insideout' : ('flame-mode-' + mode);
+  const activeBtn = document.getElementById(btnId) || document.getElementById('flame-mode-' + mode);
   if (activeBtn) {
     activeBtn.classList.add('active-mode', 'bg-purple-50', 'text-purple-700', 'border', 'border-purple-200', 'font-semibold');
     activeBtn.classList.remove('text-slate-600', 'hover:bg-slate-100');

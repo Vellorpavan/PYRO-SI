@@ -84,12 +84,43 @@ export function selectHabitatNode(nodeKey) {
   const protoEl = document.getElementById('hab-suppression-proto');
   if (protoEl) protoEl.textContent = hab.suppressionProtocol;
 
-  // Sync Flame Mode with Habitat Gravity
+  // Sync Flame Mode with Habitat Gravity & Atmosphere
   if (nodeKey === 'ISS') setFlameVisualMode('0g');
   else if (nodeKey === 'MOON') setFlameVisualMode('lunar');
   else if (nodeKey === 'ARTEMIS') setFlameVisualMode('0g');
-  else if (nodeKey === 'SUIT') setFlameVisualMode('0g');
-  else if (nodeKey === 'MARS') setFlameVisualMode('lunar');
+  else if (nodeKey === 'SUIT' || nodeKey === 'EVA') setFlameVisualMode('0g');
+  else if (nodeKey === 'MARS') setFlameVisualMode('insideout');
+
+  // Update Hazard Pointer & Badge
+  const hazardPointer = document.querySelector('.flame-hazard-pointer');
+  const hazardBadge = document.getElementById('hab-hazard-badge-text');
+  if (hazardPointer) {
+    if (hab.hazardLevel === 'MODERATE') {
+      hazardPointer.style.left = '40%';
+      if (hazardBadge) {
+        hazardBadge.textContent = 'Moderate';
+        hazardBadge.className = 'px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-semibold text-[11px] border border-emerald-200';
+      }
+    } else if (hab.hazardLevel === 'HIGH') {
+      hazardPointer.style.left = '68%';
+      if (hazardBadge) {
+        hazardBadge.textContent = 'High (0.38g Plume)';
+        hazardBadge.className = 'px-2 py-0.5 rounded bg-amber-50 text-amber-700 font-semibold text-[11px] border border-amber-200';
+      }
+    } else if (hab.hazardLevel === 'EXTREME') {
+      hazardPointer.style.left = '88%';
+      if (hazardBadge) {
+        hazardBadge.textContent = 'Extreme (34% O₂)';
+        hazardBadge.className = 'px-2 py-0.5 rounded bg-rose-50 text-rose-700 font-semibold text-[11px] border border-rose-200';
+      }
+    } else if (hab.hazardLevel === 'CRITICAL') {
+      hazardPointer.style.left = '96%';
+      if (hazardBadge) {
+        hazardBadge.textContent = 'Critical (100% O₂)';
+        hazardBadge.className = 'px-2 py-0.5 rounded bg-rose-50 text-rose-700 font-semibold text-[11px] border border-rose-200';
+      }
+    }
+  }
 
   // Populate Top PSI Studies
   const listContainer = document.getElementById('hab-top-psi-list');

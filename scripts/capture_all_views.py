@@ -20,20 +20,56 @@ views = [
         "height": 900
     },
     {
-        "name": "00_home_dashboard_full.png",
-        "url": "http://localhost:8089/index.html?tab=tab-home",
-        "width": 1440,
-        "height": 1350
-    },
-    {
-        "name": "01_lab_workspace_globe.png",
-        "url": "http://localhost:8089/index.html?tab=tab-godeye&studio=globe",
+        "name": "01_env_iss.png",
+        "url": "http://localhost:8089/index.html?tab=tab-home&env=ISS",
         "width": 1440,
         "height": 900
     },
     {
-        "name": "01_lab_workspace_flame.png",
-        "url": "http://localhost:8089/index.html?tab=tab-godeye&studio=flame",
+        "name": "01_env_moon.png",
+        "url": "http://localhost:8089/index.html?tab=tab-home&env=MOON",
+        "width": 1440,
+        "height": 900
+    },
+    {
+        "name": "01_env_mars.png",
+        "url": "http://localhost:8089/index.html?tab=tab-home&env=MARS",
+        "width": 1440,
+        "height": 900
+    },
+    {
+        "name": "01_env_eva.png",
+        "url": "http://localhost:8089/index.html?tab=tab-home&env=SUIT",
+        "width": 1440,
+        "height": 900
+    },
+    {
+        "name": "01_flame_0g.png",
+        "url": "http://localhost:8089/index.html?tab=tab-home&flame=0g",
+        "width": 1440,
+        "height": 900
+    },
+    {
+        "name": "01_flame_lunar.png",
+        "url": "http://localhost:8089/index.html?tab=tab-home&flame=lunar",
+        "width": 1440,
+        "height": 900
+    },
+    {
+        "name": "01_flame_mars.png",
+        "url": "http://localhost:8089/index.html?tab=tab-home&flame=insideout",
+        "width": 1440,
+        "height": 900
+    },
+    {
+        "name": "01_flame_1g.png",
+        "url": "http://localhost:8089/index.html?tab=tab-home&flame=1g",
+        "width": 1440,
+        "height": 900
+    },
+    {
+        "name": "01_lab_workspace.png",
+        "url": "http://localhost:8089/index.html?tab=tab-godeye",
         "width": 1440,
         "height": 900
     },

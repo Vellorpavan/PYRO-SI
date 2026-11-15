@@ -3,7 +3,7 @@
  * Bootstraps all modules, event listeners, and services.
  */
 
-import { initGodEyeGlobe, animateGodEyeGlobe, resetGlobeCamera } from '../modules/godeye/orbital-globe.js';
+import { initGodEyeGlobe, animateGodEyeGlobe, resetGlobeCamera, switchEnvironment, setEarthRotationSpeed, setCameraPerspective } from '../modules/godeye/orbital-globe.js';
 import { initFlameCanvas, setFlameVisualMode } from '../modules/godeye/flame-chamber.js';
 import { selectHabitatNode, loadHabitatIntoSimulator } from '../modules/godeye/habitat-controller.js';
 import { renderPsiMatrix, updateSiWeights } from '../modules/investigation-matrix/matrix-renderer.js';
@@ -20,6 +20,10 @@ window.switchMainTab = switchMainTab;
 window.selectHabitatNode = selectHabitatNode;
 window.loadHabitatIntoSimulator = loadHabitatIntoSimulator;
 window.resetGlobeCamera = resetGlobeCamera;
+window.switchEnvironment = switchEnvironment;
+window.switchGodEyeEnvironment = switchEnvironment;
+window.setEarthRotationSpeed = setEarthRotationSpeed;
+window.setCameraPerspective = setCameraPerspective;
 window.setFlameVisualMode = setFlameVisualMode;
 window.updateSiWeights = updateSiWeights;
 window.renderPsiMatrix = renderPsiMatrix;
@@ -111,6 +115,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const targetTab = urlParams.get('tab');
   if (targetTab) {
     switchMainTab(targetTab);
+  }
+  const targetEnv = urlParams.get('env');
+  if (targetEnv) {
+    selectHabitatNode(targetEnv.toUpperCase());
+  }
+  const targetFlame = urlParams.get('flame');
+  if (targetFlame) {
+    setFlameVisualMode(targetFlame);
   }
   const targetStudio = urlParams.get('studio');
   if (targetStudio && window.switchLabStudio) {
