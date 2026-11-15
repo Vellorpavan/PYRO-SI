@@ -464,13 +464,13 @@ export function calculateFlammability({ o2, psi, flow, g, material = 'sibal' } =
           edgeCondition: 'Tested with hemmed or unhemmed edges per fabric specification (edge hemming mitigates edge fraying and premature upward flame channeling)',
           mounting: 'Vertical orientation in standard sample clamp frame',
           testAtmosphere: 'Tested at worst-case operational pressure and maximum operational oxygen concentration',
-          ignitionMethod: 'Standard chemical igniter conforming to ISO 14624-1 specifications referenced in NASA-STD-6001B Section 7.1 (burning duration 25 ± 5 s, flame temperature 1100 ± 90°C / 2000 ± 160°F, visible flame height 65 ± 6.5 mm). Note: Historical NASA Handbook NHB 8060.1B/C Test 1 specified 750 ± 50 cal (3138 ± 209 J). NASA-STD-6001B does NOT contain Section 7.1.3.1 or Appendix A.1.2 mandating 750 J.',
+          ignitionMethod: 'Standard chemical igniter conforming to ISO 14624-1 specifications referenced in NASA-STD-6001B Section 7.1 (burning duration 25 ± 5 s, flame temperature 1100 ± 90°C / 2000 ± 160°F, visible flame height 65 ± 6.5 mm) delivering calibrated thermal energy. Note: Historical NASA Handbook NHB 8060.1B/C Test 1 specified 750 ± 50 cal (3138 ± 209 J). NASA-STD-6001B does NOT contain Section 7.1.3.1 or Appendix A.1.2 mandating 750 J; the fixed 25 s dwell was previously referenced as a laboratory test configuration (LABORATORY_TEST_CONFIG_ONLY) and is not a universal NASA-STD-6001B requirement.',
           ignitionEnergyAudit: {
             historicalStandardEnergy: '750 ± 50 cal (3138 ± 209 J; NASA Handbook NHB 8060.1B/C Test 1 & NASA TM-104797; standard chemical igniter heat output)',
             standardDeliveredEnergy: 'Historical NASA standard specification: 750 ± 50 cal (often erroneously transcribed as 750 ± 50 J in secondary summaries). NASA-STD-6001B w/Change 3 does not contain Section 7.1.3.1 or Appendix A.1.2 specifying 750 J, but references ISO 14624-1.',
             currentActiveStandardSpecification: 'NASA-STD-6001B w/Change 3 Section 7.1 references ISO 14624-1, specifying burning duration 25 ± 5 s, flame temperature 1100 ± 90°C (2000 ± 160°F), and flame height 65 ± 6.5 mm; NASA-STD-6001B does NOT contain Section 7.1.3.1 or Appendix A.1.2 mandating 750 ± 50 J.',
             energyUnitsCorrection: 'The 750 value in historical NASA standards is in CALORIES (750 ± 50 cal), NOT Joules. Transcribing 750 cal as 750 J was a factor-of-4.184 unit error.',
-            energyDensityLiteratureClaim: '2000 kJ/m² (Energy fluence / heat flux from secondary literature; historically confused with the 2000 ± 160°F flame temperature; NOT an active standard clause; units kJ/m² are energy per area, NOT interchangeable with scalar energy in Joules)',
+            energyDensityLiteratureClaim: '2000 kJ/m² (Energy fluence / heat flux from secondary literature; historically confused with the 2000 ± 160°F flame temperature; NOT an active NASA-STD-6001B standard requirement clause; units kJ/m² are energy per area, NOT interchangeable with scalar energy in Joules)',
             gasBurnerAlternative: 'Alternative ignition source permitted under Section 7.1.3 only when authorized by test requestor; standard chemical igniter is the mandatory baseline for standard Test 1',
             quantitiesInterchangeable: false,
             status: 'REMOVED_CURRENT_STANDARD_VERIFICATION_CLAIM'
@@ -478,11 +478,12 @@ export function calculateFlammability({ o2, psi, flow, g, material = 'sibal' } =
           ignitionDwellVerification: {
             value_seconds: 25,
             standardRange_seconds: '25 ± 5 s',
-            status: 'VERIFIED_ISO_14624_1_AND_NHB_8060_1',
+            status: 'UNVERIFIED',
             wstfRecordProduced: false,
-            standardRequirement: true,
-            classification: 'VERIFIED_STANDARD_CHEMICAL_IGNITER_BURN_DURATION',
-            note: 'The 25 ± 5 second burning duration is explicitly specified in ISO 14624-1 Section 5.1 and NASA Handbook NHB 8060.1B/C Test 1 as the chemical igniter burning duration, referenced by NASA-STD-6001B Section 7.1. It is not an unrecorded WSTF operational anomaly.'
+            standardRequirement: false,
+            classification: 'UNVERIFIED_LABORATORY_ANECDOTE',
+            iso14624_reference: 'Chemical igniter burning duration in ISO 14624-1 Section 5.1 is 25 ± 5 s, referenced by NASA-STD-6001B Section 7.1; NASA-STD-6001B does not write an independent 25 s clause in its normative text.',
+            note: 'No official NASA White Sands Test Facility document title, record identifier, date, section, or source produced supporting a 25 s standard mandate. NASA-STD-6001B specifies calibrated energy delivery, not a 25 s dwell.'
           }
         },
         acceptanceCriteria: {
@@ -626,6 +627,10 @@ export function calculateFlammability({ o2, psi, flow, g, material = 'sibal' } =
       inputKey: 'o2',
       units: '% O2 by volume (mole percent)',
       referenceBaseline: '21.0% O2 nominal Earth atmospheric baseline',
+      softwareImplementationBounds: {
+        minFloor: 0.0,
+        defaultFallback: 21.0
+      },
       exactRuntimeExpression: 'const o2Ratio = Math.pow(Math.max(0.1, (o2Val - loi) / (21.0 - 15.5)), 1.35)',
       executionOrder: [
         '1. Input Sanitization: o2Val = Math.max(0.0, Number(o2) || (o2 === 0 ? 0.0 : 21.0)) clamps negative inputs to 0.0.',
