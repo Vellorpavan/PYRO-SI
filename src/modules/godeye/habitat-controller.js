@@ -73,7 +73,7 @@ export function selectHabitatNode(nodeKey) {
   if (listContainer) {
     listContainer.innerHTML = '';
     hab.topStudies.forEach(id => {
-      const st = psiInvestigations.find(item => item.id === id);
+      const st = psiInvestigations.find(item => item.id === id || item.code === id || item.psiId === id);
       if (!st) return;
       const card = document.createElement('div');
       card.className = 'p-2 rounded bg-space/80 border border-cyanHud/25 flex items-center justify-between gap-2 hover:border-cyanHud transition-all';

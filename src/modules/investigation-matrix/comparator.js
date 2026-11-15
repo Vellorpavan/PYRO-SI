@@ -6,7 +6,7 @@
 import psiInvestigations from '../../data/reference/psi-investigations.json' with { type: 'json' };
 import { escapeHtml } from '../../utils/dom.js';
 
-let selectedCompareIds = ['BASS-II', 'SAFFIRE', 'FLEX-CFI'];
+let selectedCompareIds = ['PSI-25', 'PSI-98', 'PSI-69'];
 
 export function getSelectedCompareIds() {
   return [...selectedCompareIds];
@@ -30,7 +30,7 @@ export function toggleCompareStudy(id) {
 }
 
 export function resetDefaultComparison() {
-  selectedCompareIds = ['BASS-II', 'SAFFIRE', 'FLEX-CFI'];
+  selectedCompareIds = ['PSI-25', 'PSI-98', 'PSI-69'];
   renderComparisonTable();
 }
 
@@ -41,7 +41,9 @@ export function renderComparisonTable() {
 
   if (countBadge) countBadge.textContent = `${selectedCompareIds.length}/3 SELECTED`;
 
-  const studies = selectedCompareIds.map(id => psiInvestigations.find(s => s.id === id)).filter(Boolean);
+  const studies = selectedCompareIds
+    .map(id => psiInvestigations.find(s => s.id === id || s.code === id || s.psiId === id))
+    .filter(Boolean);
 
   // Auto-synthesized similarity/difference notes
   const uniqueRacks = [...new Set(studies.map(s => s.rack))];
@@ -77,7 +79,10 @@ export function renderComparisonTable() {
             ${studies.map(s => `
               <th class="p-2.5 min-w-[200px] border-r border-slate-800 last:border-r-0">
                 <div class="flex items-center justify-between gap-2">
-                  <span class="font-display font-bold text-white text-xs">${escapeHtml(s.code)}</span>
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-cyanHud font-mono text-[10px] bg-cyanHud/10 px-1 rounded">${escapeHtml(s.psiId || s.id)}</span>
+                    <span class="font-display font-bold text-white text-xs">${escapeHtml(s.code)}</span>
+                  </div>
                   <button onclick="window.toggleCompareStudy('${escapeHtml(s.id)}')" class="text-slate-400 hover:text-crimsonAlert p-1" title="Remove from comparison">
                     <i class="fa-solid fa-xmark"></i>
                   </button>
@@ -97,8 +102,12 @@ export function renderComparisonTable() {
             ${studies.map(s => `<td class="p-2.5 border-r border-slate-800 last:border-r-0 text-cyanHud font-semibold">${escapeHtml(s.fuelType)}</td>`).join('')}
           </tr>
           <tr class="hover:bg-panelLight/40">
-            <td class="p-2.5 font-bold text-slate-400 bg-space/60 border-r border-slate-800">FUEL DETAILS</td>
-            ${studies.map(s => `<td class="p-2.5 border-r border-slate-800 last:border-r-0 text-slate-300 font-sans">${escapeHtml(s.fuelDetails)}</td>`).join('')}
+            <td class="p-2.5 font-bold text-slate-400 bg-space/60 border-r border-slate-800">DATA SIZE & VER</td>
+            ${studies.map(s => `<td class="p-2.5 border-r border-slate-800 last:border-r-0 text-slate-200 font-mono">${escapeHtml(s.dataSize || 'N/A')} (${escapeHtml(s.version || 'v1')})</td>`).join('')}
+          </tr>
+          <tr class="hover:bg-panelLight/40">
+            <td class="p-2.5 font-bold text-slate-400 bg-space/60 border-r border-slate-800">CLASSIFICATION</td>
+            ${studies.map(s => `<td class="p-2.5 border-r border-slate-800 last:border-r-0 text-emerald-400 font-mono text-[10px]">${escapeHtml(s.resourceClassification || 'Experimental data')}</td>`).join('')}
           </tr>
           <tr class="hover:bg-panelLight/40">
             <td class="p-2.5 font-bold text-slate-400 bg-space/60 border-r border-slate-800">FLOW REGIME</td>
@@ -109,11 +118,7 @@ export function renderComparisonTable() {
             ${studies.map(s => `<td class="p-2.5 border-r border-slate-800 last:border-r-0 text-slate-300 font-sans">${escapeHtml(s.variables)}</td>`).join('')}
           </tr>
           <tr class="hover:bg-panelLight/40">
-            <td class="p-2.5 font-bold text-slate-400 bg-space/60 border-r border-slate-800">SENSORS & OPTICS</td>
-            ${studies.map(s => `<td class="p-2.5 border-r border-slate-800 last:border-r-0 text-slate-300 font-sans">${escapeHtml(s.sensors)}</td>`).join('')}
-          </tr>
-          <tr class="hover:bg-panelLight/40">
-            <td class="p-2.5 font-bold text-slate-400 bg-space/60 border-r border-slate-800">CORE FINDING</td>
+            <td class="p-2.5 font-bold text-slate-400 bg-space/60 border-r border-slate-800">CORE SUMMARY</td>
             ${studies.map(s => `<td class="p-2.5 border-r border-slate-800 last:border-r-0 text-slate-300 font-sans text-xs leading-relaxed">${escapeHtml(s.summary)}</td>`).join('')}
           </tr>
         </tbody>

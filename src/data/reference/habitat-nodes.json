@@ -12,7 +12,7 @@
     "hazardColor": "text-emeraldSafe",
     "hazardBadge": "bg-emeraldSafe/10 border-emeraldSafe/40 text-emeraldSafe",
     "primaryHazard": "Diffusion-limited spherical flames; cool flame re-ignition (FLEX/CFI); soot accumulation in dead zones.",
-    "topStudies": ["BASS-II", "FLEX-CFI", "ACME-BRE"],
+    "topStudies": ["PSI-25", "PSI-69", "PSI-20"],
     "suppressionProtocol": "CO₂ fire extinguishers + Fine Water Mist port injectors; complete module ventilation isolation."
   },
   "MOON": {
@@ -28,7 +28,7 @@
     "hazardColor": "text-crimsonAlert",
     "hazardBadge": "bg-crimsonAlert/15 border-crimsonAlert/50 text-crimsonAlert",
     "primaryHazard": "Elevated 34% O₂ Exploration Atmosphere drastically lowers material ignition thresholds. Low gravity creates an unstable buoyant plume (ACME CFI-G) that spreads faster than in 1g.",
-    "topStudies": ["ACME-CFI-G", "LUCI", "SAFFIRE"],
+    "topStudies": ["PSI-159", "NASA-FM2", "PSI-98"],
     "suppressionProtocol": "Rapid partial depressurization (<5.0 psi) + Nitrogen purge cascade. Avoid fine water mist if electro-dust risk is elevated."
   },
   "ARTEMIS": {
@@ -44,7 +44,7 @@
     "hazardColor": "text-flameAmber",
     "hazardBadge": "bg-flameAmber/15 border-flameAmber/50 text-flameAmber",
     "primaryHazard": "Elevated O₂ (30%) under strict freefall conditions. Fire spreads rapidly along ventilation airflow lines without natural convection self-limiting.",
-    "topStudies": ["SAFFIRE", "BASS-II", "SAME"],
+    "topStudies": ["PSI-98", "PSI-25", "PSI-101"],
     "suppressionProtocol": "Automated Cygnus-heritage Saffire rapid-damping dampers + high-pressure water mist injectors."
   },
   "SUIT": {
@@ -60,7 +60,7 @@
     "hazardColor": "text-crimsonAlert",
     "hazardBadge": "bg-crimsonAlert/20 border-crimsonAlert text-crimsonAlert",
     "primaryHazard": "Pure 100% O₂ environment. Even materials certified flame-resistant on Earth (like Nomex) can propagate flash-fires if sparked by static electricity or mechanical friction.",
-    "topStudies": ["BASS-II", "ACME-BRE", "SPICE-SLICE"],
+    "topStudies": ["PSI-25", "PSI-20", "PSI-107"],
     "suppressionProtocol": "Emergency suit emergency nitrogen blowdown purge + rapid umbilical re-docking."
   },
   "MARS": {
@@ -76,7 +76,7 @@
     "hazardColor": "text-flameAmber",
     "hazardBadge": "bg-flameAmber/15 border-flameAmber/50 text-flameAmber",
     "primaryHazard": "Moderate gravity plume creates strong upward flame elongation. Perchlorate dust residues on suits could act as severe chemical oxidizers if ignited.",
-    "topStudies": ["ACME-CFI-G", "DAFT", "FLEX-CFI"],
+    "topStudies": ["PSI-159", "PSI-47", "PSI-69"],
     "suppressionProtocol": "Martian CO₂ atmospheric gas compression blanket purge + solid-state electric field dampers (ACME E-FIELD)."
   }
 }

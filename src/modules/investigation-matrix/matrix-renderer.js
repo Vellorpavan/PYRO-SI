@@ -46,7 +46,7 @@ export function renderPsiMatrix() {
     .filter(inv => {
       const matchesRack = rackFilter === 'ALL' || inv.rack === rackFilter;
       const matchesFuel = fuelFilter === 'ALL' || inv.fuelType === fuelFilter;
-      const textBlob = `${inv.code} ${inv.title} ${inv.rackFull} ${inv.fuelDetails} ${inv.sensors} ${inv.summary}`.toLowerCase();
+      const textBlob = `${inv.psiId} ${inv.code} ${inv.title} ${inv.rackFull} ${inv.fuelDetails} ${inv.sensors} ${inv.summary} ${inv.resourceClassification}`.toLowerCase();
       const matchesSearch = !query || textBlob.includes(query);
       return matchesRack && matchesFuel && matchesSearch;
     })
@@ -57,7 +57,7 @@ export function renderPsiMatrix() {
   grid.innerHTML = '';
 
   scored.forEach((inv, index) => {
-    const isSelected = selectedCompareIds.includes(inv.id);
+    const isSelected = selectedCompareIds.includes(inv.id) || selectedCompareIds.includes(inv.psiId);
     const rackBadgeColor = inv.rack === 'CIR'
       ? 'bg-cyanHud/15 border-cyanHud/40 text-cyanHud'
       : inv.rack === 'MSG'
@@ -78,9 +78,12 @@ export function renderPsiMatrix() {
             <span class="font-mono text-xs text-slate-300 bg-space px-2 py-0.5 rounded border border-slate-700">
               ${escapeHtml(inv.fuelType)}
             </span>
+            <span class="font-mono text-[10px] text-cyanHud bg-cyanHud/10 px-1.5 py-0.5 rounded border border-cyanHud/30 font-bold">
+              ${escapeHtml(inv.psiId || inv.id)}
+            </span>
           </div>
           <div class="text-right">
-            <span class="text-[10px] font-mono text-slate-400 block">RELEVANCE</span>
+            <span class="text-[9px] font-mono text-slate-400 block tracking-tight">PRIORITY RANK</span>
             <span class="font-display font-extrabold text-base ${inv.calculatedScore >= 90 ? 'text-cyanHud' : inv.calculatedScore >= 80 ? 'text-emeraldSafe' : 'text-slate-300'}">
               ${inv.calculatedScore}%
             </span>
@@ -88,10 +91,32 @@ export function renderPsiMatrix() {
         </div>
 
         <div>
-          <h3 class="font-display font-bold text-sm text-white flex items-center gap-2">
-            <span class="text-cyanHud">#${index + 1}</span> ${escapeHtml(inv.code)}
-          </h3>
+          <div class="flex items-center gap-2">
+            <span class="text-cyanHud font-mono text-xs font-bold">#${index + 1}</span>
+            <h3 class="font-display font-bold text-sm text-white">
+              ${escapeHtml(inv.code)}
+            </h3>
+            ${inv.verified ? `
+              <span class="text-[10px] font-mono text-emeraldSafe bg-emeraldSafe/10 border border-emeraldSafe/30 px-1.5 py-0.2 rounded" title="Verified in NASA PSI Database">
+                <i class="fa-solid fa-circle-check mr-0.5"></i>PSI VERIFIED
+              </span>
+            ` : `
+              <span class="text-[10px] font-mono text-amber-400 bg-amber-400/10 border border-amber-400/30 px-1.5 py-0.2 rounded" title="Planned Artemis concept; no dataset in PSI">
+                <i class="fa-solid fa-clock mr-0.5"></i>CONCEPT ONLY
+              </span>
+            `}
+          </div>
           <p class="text-xs text-slate-300 font-sans mt-0.5 line-clamp-1">${escapeHtml(inv.title)}</p>
+        </div>
+
+        <div class="p-2 rounded bg-space/70 border border-slate-800 text-[10px] font-mono space-y-1">
+          <div class="flex justify-between text-slate-400">
+            <span>DATA SIZE: <strong class="text-white">${escapeHtml(inv.dataSize || 'N/A')}</strong></span>
+            <span>STATUS: <strong class="text-slate-200">${escapeHtml(inv.version || 'Archived')}</strong></span>
+          </div>
+          <div class="text-emerald-400 truncate">
+            <i class="fa-solid fa-database mr-1"></i>${escapeHtml(inv.resourceClassification || 'Experimental data')}
+          </div>
         </div>
 
         <p class="text-xs text-slate-400 font-sans leading-relaxed line-clamp-3">
@@ -102,7 +127,7 @@ export function renderPsiMatrix() {
       <div class="space-y-2 pt-2 border-t border-slate-800/80">
         <div class="grid grid-cols-2 gap-1 text-[10px] font-mono text-slate-400">
           <div><span class="text-slate-500">FLOW:</span> ${escapeHtml(inv.airflowRange.split(' ')[0])} cm/s</div>
-          <div><span class="text-slate-500">DOI:</span> ${escapeHtml(inv.doi || 'NASA-PSI')}</div>
+          <div><span class="text-slate-500">DOI:</span> ${escapeHtml(inv.doi || 'NASA PSI')}</div>
         </div>
 
         <div class="flex items-center gap-2">
@@ -110,7 +135,7 @@ export function renderPsiMatrix() {
             <i class="fa-solid ${isSelected ? 'fa-check' : 'fa-code-compare'}"></i>
             <span>${isSelected ? 'IN COMPARATOR' : 'COMPARE'}</span>
           </button>
-          <a href="${escapeHtml(inv.psiUrl || 'https://psi.nasa.gov')}" target="_blank" rel="noopener noreferrer" class="p-1.5 px-2.5 rounded bg-space border border-slate-700 text-slate-400 hover:text-cyanHud hover:border-cyanHud text-xs font-mono" title="View on NASA PSI Repository">
+          <a href="${escapeHtml(inv.psiUrl || 'https://psi.nasa.gov/physci/repo/search?q=combustion')}" target="_blank" rel="noopener noreferrer" class="p-1.5 px-2.5 rounded bg-space border border-slate-700 text-slate-400 hover:text-cyanHud hover:border-cyanHud text-xs font-mono" title="Open verified record on NASA repository">
             <i class="fa-solid fa-arrow-up-right-from-square"></i>
           </a>
         </div>

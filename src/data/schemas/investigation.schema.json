@@ -4,6 +4,7 @@
   "type": "object",
   "required": [
     "id",
+    "psiId",
     "code",
     "title",
     "rack",
@@ -18,11 +19,12 @@
     "materialPrevWeight",
     "smokeDetWeight",
     "suppressionWeight",
-    "status",
-    "doi"
+    "resourceClassification",
+    "psiUrl"
   ],
   "properties": {
     "id": { "type": "string" },
+    "psiId": { "type": "string" },
     "code": { "type": "string" },
     "title": { "type": "string" },
     "rack": { "type": "string", "enum": ["CIR", "MSG", "CYGNUS", "LUNAR"] },
@@ -37,8 +39,32 @@
     "materialPrevWeight": { "type": "integer", "minimum": 0, "maximum": 100 },
     "smokeDetWeight": { "type": "integer", "minimum": 0, "maximum": 100 },
     "suppressionWeight": { "type": "integer", "minimum": 0, "maximum": 100 },
-    "status": { "type": "string" },
+    "dataSize": { "type": "string" },
+    "version": { "type": "string" },
+    "releaseDate": { "type": "string" },
+    "license": { "type": "string" },
+    "resourceClassification": {
+      "type": "string",
+      "enum": [
+        "Verified experimental numerical data",
+        "Experimental images or videos",
+        "Research publications",
+        "Technical reports",
+        "Investigation metadata",
+        "Ground-based experimental data",
+        "Numerical simulation or computational model",
+        "Planned / Conceptual (Non-Archived)",
+        "Unavailable or restricted resource"
+      ]
+    },
+    "availableProducts": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "downloadMethod": { "type": "string" },
     "doi": { "type": "string" },
-    "psiUrl": { "type": "string", "format": "uri" }
+    "psiUrl": { "type": "string", "format": "uri" },
+    "verified": { "type": "boolean" },
+    "provenanceNote": { "type": "string" }
   }
 }
