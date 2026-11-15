@@ -3,16 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GODEYE // PYRO-SI — Flame in Freefall | NASA Space Apps 2026 (Project: whoami)</title>
+  <title>PYRO-SI — Spacecraft Combustion Science & Fire Safety Intelligence | NASA Space Apps 2026</title>
+
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Three.js for GodEye 3D Orbital & Habitat Tactical Globe -->
+  <!-- Three.js for 3D Orbital Globe -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <!-- Google Fonts: Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <!-- FontAwesome Icons -->
+  <!-- FontAwesome 6 Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
   <script>
@@ -21,817 +22,812 @@
       theme: {
         extend: {
           colors: {
-            space: '#0B0E14',
-            panel: '#111622',
-            panelLight: '#182030',
-            panelDark: '#080B10',
-            cyanHud: '#38BDF8',
-            flameAmber: '#F59E0B',
-            crimsonAlert: '#F43F5E',
-            emeraldSafe: '#10B981',
-            violetSi: '#818CF8'
+            canvasVoid: '#080C14',
+            canvasBase: '#0B101B',
+            surfaceBase: '#111827',
+            surfaceRaised: '#182235',
+            surfaceSunken: '#0A0F1A',
+            accentSky: '#0284C7',
+            accentCyan: '#38BDF8',
+            accentAmber: '#F59E0B',
+            accentEmerald: '#10B981',
+            accentRose: '#EF4444'
           },
           fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace'],
-            display: ['Inter', 'sans-serif']
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            mono: ['JetBrains Mono', 'IBM Plex Mono', 'monospace']
           }
         }
       }
     }
   </script>
 
-  <!-- Modular Design System & HUD Stylesheet Links -->
+  <!-- Design System & Stylesheets -->
   <link rel="stylesheet" href="./src/styles/variables.css" />
   <link rel="stylesheet" href="./src/styles/global.css" />
   <link rel="stylesheet" href="./src/styles/components/hud.css" />
 </head>
-<body class="min-h-screen flex flex-col selection:bg-sky-500 selection:text-white">
+<body class="bg-[#0B101B] text-slate-100 min-h-screen flex flex-col font-sans selection:bg-sky-500 selection:text-white">
 
-  <!-- TOP COMPLIANCE & MISSION STATUS BANNER -->
-  <div class="bg-[#080B10] border-b border-white/[0.08] px-3.5 py-1.5 text-[11px] font-mono flex flex-wrap items-center justify-between gap-2 z-30">
-    <div class="flex items-center gap-2 text-slate-300">
-      <span class="inline-block w-2 h-2 rounded-full bg-emerald-400"></span>
-      <span class="font-bold tracking-wider text-sky-400">2026 NASA SPACE APPS CHALLENGE</span>
-      <span class="text-slate-600">//</span>
-      <span class="text-slate-300">CHALLENGE: FLAME IN FREEFALL</span>
-      <span class="hidden md:inline text-slate-600">|</span>
-      <span class="hidden md:inline text-amber-400 font-semibold">TEAM PROJECT: whoami</span>
-    </div>
-    <div class="flex items-center gap-2">
-      <span class="px-2 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 font-mono text-[10px]">
-        <i class="fa-solid fa-microchip mr-1"></i>SI-ASSISTED SCIENTIFIC TELEMETRY & SYNTHESIS // COMPLIANT NASA ARCHIVE INTERFACE
-      </span>
-    </div>
-  </div>
-
-  <!-- MAIN AEROSPACE COMMAND HEADER & TELEMETRY RAIL -->
-  <header class="bg-panel/95 backdrop-blur-md border-b border-white/[0.08] sticky top-0 z-20 px-4 py-3">
-    <div class="max-w-[1600px] mx-auto flex flex-col xl:flex-row items-start xl:items-center justify-between gap-3">
-      <!-- Brand Identity -->
+  <!-- =========================================================================
+       TOP APPLICATION HEADER & NAVIGATION BAR
+       ========================================================================= -->
+  <header class="bg-[#111827]/95 backdrop-blur-md border-b border-white/[0.08] sticky top-0 z-30 px-4 sm:px-6 py-2.5">
+    <div class="max-w-[1680px] mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+      
+      <!-- Brand & Project Identity -->
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-lg bg-surface-raised border border-white/[0.12] flex items-center justify-center text-sky-400 shadow-sm">
+        <div class="w-9 h-9 rounded-lg bg-sky-500/10 border border-sky-400/30 flex items-center justify-center text-sky-400">
           <i class="fa-solid fa-satellite-dish text-base"></i>
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <h1 class="font-sans font-extrabold text-base sm:text-lg tracking-tight text-white">
-              GODEYE <span class="text-sky-400 font-light">//</span> PYRO-SI <span class="text-[11px] font-mono font-medium text-amber-400 bg-amber-400/10 border border-amber-400/30 px-1.5 py-0.5 rounded">v2026.4</span>
-            </h1>
-            <span class="text-xs font-mono text-slate-400 hidden sm:inline">PROJECT: <strong class="text-white">whoami</strong></span>
+            <span class="font-bold text-base sm:text-lg tracking-tight text-white">PYRO-SI</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-sky-500/10 border border-sky-400/30 text-sky-400 font-mono">v2026.4</span>
+            <span class="hidden sm:inline-block text-xs text-slate-400">| NASA Space Apps Challenge 2026</span>
           </div>
-          <p class="text-xs text-slate-400 font-sans">Microgravity Combustion & Extraterrestrial Habitat Fire Safety Intelligence</p>
+          <p class="text-xs text-slate-400 hidden sm:block">Physical Sciences Combustion & Extraterrestrial Habitat Fire Safety</p>
         </div>
       </div>
 
-      <!-- Live ISS & Orbital Telemetry Ticker -->
-      <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 w-full xl:w-auto bg-space/90 border border-white/[0.08] rounded-lg p-2 font-mono text-xs">
-        <div class="px-2 border-r border-white/[0.08]">
-          <div class="text-[10px] text-slate-400">ISS ORBITAL POS</div>
-          <div id="hud-latlon" class="text-sky-400 font-semibold telemetry-num">24.81°N, 78.42°E</div>
-        </div>
-        <div class="px-2 sm:border-r border-white/[0.08]">
-          <div class="text-[10px] text-slate-400">ALTITUDE / VEL</div>
-          <div id="hud-altvel" class="text-white font-semibold telemetry-num">408.4 km / 7.66 km/s</div>
-        </div>
-        <div class="px-2 border-r border-white/[0.08]">
-          <div class="text-[10px] text-slate-400">ACTIVE GRAVITY</div>
-          <div id="hud-gravity" class="text-emerald-400 font-semibold telemetry-num">0.00001g (µg)</div>
-        </div>
-        <div class="px-2 sm:border-r border-white/[0.08]">
-          <div class="text-[10px] text-slate-400">PSI REPOSITORY</div>
-          <div class="text-amber-400 font-semibold telemetry-num">10 CORE STUDIES LIVE</div>
-        </div>
-        <div class="px-2 col-span-2 sm:col-span-1 flex items-center justify-between sm:justify-start gap-2">
-          <div>
-            <div class="text-[10px] text-slate-400">TARGET LOCK</div>
-            <div id="hud-target-name" class="text-sky-400 font-bold truncate">ISS (CIR / MSG)</div>
-          </div>
-        </div>
+      <!-- Navigation Tabs -->
+      <nav class="flex flex-wrap items-center gap-1">
+        <button onclick="switchMainTab('tab-godeye')" id="btn-tab-godeye" class="nav-tab-btn active-tab">
+          <i class="fa-solid fa-flask text-sky-400"></i>
+          <span>01. Lab Workspace</span>
+        </button>
+        <button onclick="switchMainTab('tab-psi')" id="btn-tab-psi" class="nav-tab-btn">
+          <i class="fa-solid fa-database text-slate-400"></i>
+          <span>02. Investigation Matrix</span>
+        </button>
+        <button onclick="switchMainTab('tab-simulator')" id="btn-tab-simulator" class="nav-tab-btn">
+          <i class="fa-solid fa-chart-line text-amber-400"></i>
+          <span>03. Flammability Simulator</span>
+        </button>
+        <button onclick="switchMainTab('tab-sicopilot')" id="btn-tab-sicopilot" class="nav-tab-btn">
+          <i class="fa-solid fa-book-bookmark text-indigo-400"></i>
+          <span>04. Research Co-Pilot</span>
+        </button>
+        <button onclick="switchMainTab('tab-submission')" id="btn-tab-submission" class="nav-tab-btn ml-1 border-amber-500/30 text-amber-400 hover:border-amber-400">
+          <i class="fa-solid fa-clipboard-check"></i>
+          <span>05. Submission Kit</span>
+        </button>
+      </nav>
+
+      <!-- Quick Telemetry Chip -->
+      <div class="hidden xl:flex items-center gap-2 px-2.5 py-1 rounded bg-[#0A0F1A] border border-white/[0.08] text-xs font-mono text-slate-300">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="text-slate-400">ISS Ephemeris:</span>
+        <span id="hud-altvel" class="text-white font-medium">408.4 km • 7.66 km/s</span>
       </div>
+
     </div>
-
-    <!-- Navigation Switcher Tabs (Segmented Control Rail) -->
-    <nav class="max-w-[1600px] mx-auto mt-3 pt-2 border-t border-white/[0.08] flex flex-wrap items-center gap-1.5 sm:gap-2">
-      <button onclick="switchMainTab('tab-godeye')" id="btn-tab-godeye" class="nav-tab-btn active-tab">
-        <i class="fa-solid fa-earth-americas text-sky-400"></i>
-        <span>01 // ORBITAL & FLAME LAB</span>
-      </button>
-      <button onclick="switchMainTab('tab-psi')" id="btn-tab-psi" class="nav-tab-btn">
-        <i class="fa-solid fa-database text-slate-400"></i>
-        <span>02 // PSI INVESTIGATION MATRIX</span>
-      </button>
-      <button onclick="switchMainTab('tab-simulator')" id="btn-tab-simulator" class="nav-tab-btn">
-        <i class="fa-solid fa-fire-flame-curved text-amber-400"></i>
-        <span>03 // FLAMMABILITY SIMULATOR</span>
-      </button>
-      <button onclick="switchMainTab('tab-sicopilot')" id="btn-tab-sicopilot" class="nav-tab-btn">
-        <i class="fa-solid fa-brain text-indigo-400"></i>
-        <span>04 // RESEARCH CO-PILOT</span>
-      </button>
-      <button onclick="switchMainTab('tab-submission')" id="btn-tab-submission" class="nav-tab-btn ml-auto border-amber-500/30 text-amber-400 hover:border-amber-400">
-        <i class="fa-solid fa-clipboard-check"></i>
-        <span>05 // SUBMISSION KIT</span>
-      </button>
-    </nav>
   </header>
 
-  <!-- MAIN WORKSPACE CONTAINER -->
-  <main class="flex-1 max-w-[1600px] w-full mx-auto p-3 sm:p-5 space-y-6">
+  <!-- Hidden elements to preserve telemetry updater compatibility -->
+  <div class="hidden" aria-hidden="true">
+    <span id="hud-latlon">24.81°N, 78.42°E</span>
+    <span id="hud-gravity">0.00001g (µg)</span>
+    <span id="hud-target-name">ISS (CIR / MSG)</span>
+  </div>
 
-    <!-- =====================================================================
-         MODULE 1: GODEYE 3D ORBITAL & HABITAT INTEL + LIVE FLAME PHYSICS LAB
-         ===================================================================== -->
-    <section id="tab-godeye" class="tab-section space-y-5">
-      <!-- Top Mission Context Banner -->
-      <div class="hud-panel rounded-xl p-4 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-        <div class="space-y-1">
-          <div class="flex items-center gap-2 text-xs font-mono text-sky-400 font-semibold">
-            <i class="fa-solid fa-crosshairs"></i>
-            <span>SPATIAL INTELLIGENCE & MICROGRAVITY COMBUSTION SYNTHESIS</span>
-          </div>
-          <h2 class="font-sans text-lg sm:text-xl font-bold text-white tracking-tight">
-            Extraterrestrial Habitat Selection & NASA PSI Flight Telemetry Link
-          </h2>
-          <p class="text-xs sm:text-sm text-slate-300 max-w-4xl leading-relaxed">
-            Unlike Earth (<span class="text-sky-400 font-mono">1.0g, 14.7 psi, 21% O₂</span>) where buoyant hot gases rise to form a flickering teardrop plume, flames in freefall rely purely on molecular diffusion and ventilation drafts—forming spherical blue or invisible "cool" flames. Meanwhile, lunar exploration atmospheres (<span class="text-amber-400 font-mono">0.16g, 10.2 psi, 30–34% O₂</span>) drastically accelerate solid material flame spread.
-          </p>
-        </div>
-        <!-- Quick Habitat Target Switcher Pills -->
-        <div class="flex flex-wrap gap-2 w-full lg:w-auto">
-          <button onclick="selectHabitatNode('ISS')" id="node-btn-ISS" class="habitat-node-btn px-3 py-2 rounded-lg font-mono text-xs font-bold bg-sky-500 text-slate-950 border border-sky-400 transition-all">
-            🛰️ ISS (CIR & MSG)
-          </button>
-          <button onclick="selectHabitatNode('MOON')" id="node-btn-MOON" class="habitat-node-btn px-3 py-2 rounded-lg font-mono text-xs font-bold bg-surface-raised text-slate-200 border border-white/[0.12] hover:border-sky-400 transition-all">
-            🌕 Lunar Base (34% O₂)
-          </button>
-          <button onclick="selectHabitatNode('ARTEMIS')" id="node-btn-ARTEMIS" class="habitat-node-btn px-3 py-2 rounded-lg font-mono text-xs font-bold bg-surface-raised text-slate-200 border border-white/[0.12] hover:border-sky-400 transition-all">
-            🚀 Artemis II / Gateway
-          </button>
-          <button onclick="selectHabitatNode('SUIT')" id="node-btn-SUIT" class="habitat-node-btn px-3 py-2 rounded-lg font-mono text-xs font-bold bg-surface-raised text-slate-200 border border-white/[0.12] hover:border-sky-400 transition-all">
-            👨‍🚀 EVA Suit (100% O₂)
-          </button>
-          <button onclick="selectHabitatNode('MARS')" id="node-btn-MARS" class="habitat-node-btn px-3 py-2 rounded-lg font-mono text-xs font-bold bg-surface-raised text-slate-200 border border-white/[0.12] hover:border-sky-400 transition-all">
-            🪐 Mars Habitat (0.38g)
-          </button>
-        </div>
-      </div>
+  <!-- =========================================================================
+       MAIN APPLICATION VIEWPORT
+       ========================================================================= -->
+  <main class="flex-1 max-w-[1680px] w-full mx-auto p-4 sm:p-6 space-y-6">
 
-      <!-- Main Viewport Grid: Left = GodEye 3D Globe | Center = Live Flame Chamber | Right = Habitat Telemetry -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        
-        <!-- LEFT 5 COLS: GODEYE 3D ORBITAL TACTICAL GLOBE -->
-        <div class="lg:col-span-5 hud-panel rounded-xl overflow-hidden flex flex-col min-h-[460px] lg:h-[580px]">
-          <div class="px-4 py-2.5 bg-surface-raised border-b border-white/[0.08] flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-sky-400"></span>
-              <span class="font-sans text-xs font-bold tracking-wider text-white">GODEYE // 3D ORBITAL SPATIAL TELEMETRY</span>
-            </div>
-            <div class="flex items-center gap-1.5">
-              <button onclick="resetGlobeCamera()" class="px-2 py-0.5 rounded bg-space border border-slate-700 text-[10px] font-mono text-slate-300 hover:border-sky-400 hover:text-sky-400">
-                <i class="fa-solid fa-rotate mr-1"></i>RESET CAM
+    <!-- =======================================================================
+         MODULE 1: LAB WORKSPACE (ORBITAL TRACKING & COMBUSTION PHYSICS)
+         ======================================================================= -->
+    <section id="tab-godeye" class="tab-section space-y-6">
+      
+      <!-- Workspace 2-Column Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- LEFT 7 COLS: THE INTERACTIVE SCIENTIFIC VISUALIZATION STUDIO -->
+        <div class="lg:col-span-7 hud-panel rounded-xl flex flex-col min-h-[580px] overflow-hidden">
+          
+          <!-- Studio Header & Segmented Mode Switcher -->
+          <div class="px-5 py-3 bg-[#182235] border-b border-white/[0.08] flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-1.5 bg-[#0A0F1A] p-1 rounded-lg border border-white/[0.08]">
+              <button id="studio-btn-globe" onclick="switchLabStudio('globe')" class="studio-segmented-pill active flex items-center gap-1.5">
+                <i class="fa-solid fa-earth-americas"></i>
+                <span>3D Orbital Tracking</span>
               </button>
-              <span class="text-[10px] font-mono text-sky-400 bg-sky-400/10 px-2 py-0.5 rounded border border-sky-400/30">DRAG TO ROTATE</span>
-            </div>
-          </div>
-
-          <!-- 3D Three.js Canvas Container -->
-          <div id="godeye-globe-container" role="region" aria-label="3D Orbital Globe and Space Habitat Visualization" class="relative flex-1 w-full bg-[#04060B] cursor-grab active:cursor-grabbing overflow-hidden">
-            <!-- Top-Left Live Target Overlay -->
-            <div class="absolute top-3 left-3 pointer-events-none bg-surface-base/90 border border-white/[0.12] rounded-lg p-2.5 font-mono text-[11px] space-y-1 max-w-[240px] shadow-lg backdrop-blur-md">
-              <div class="text-[10px] text-sky-400 font-bold flex items-center gap-1.5">
-                <i class="fa-solid fa-satellite"></i> ACTIVE TARGET LOCK
-              </div>
-              <div id="globe-overlay-title" class="text-white font-bold text-xs">ISS Destiny Lab (CIR & MSG)</div>
-              <div id="globe-overlay-coords" class="text-slate-400 text-[10px]">LEO 408 km | Inclination 51.6°</div>
-              <div id="globe-overlay-hazard" class="text-emerald-400 font-semibold text-[10px]">STATUS: NOMINAL (21% O₂, 14.7 psi)</div>
+              <button id="studio-btn-flame" onclick="switchLabStudio('flame')" class="studio-segmented-pill inactive flex items-center gap-1.5">
+                <i class="fa-solid fa-fire text-amber-400"></i>
+                <span>Combustion Physics Lab</span>
+              </button>
             </div>
 
-            <!-- Bottom Overlay Legend -->
-            <div class="absolute bottom-3 left-3 right-3 pointer-events-none flex flex-wrap items-center justify-between gap-2 bg-surface-base/90 border border-white/[0.08] rounded-lg px-3 py-1.5 font-mono text-[10px] backdrop-blur-md">
-              <span class="flex items-center gap-1.5 text-sky-400"><span class="w-2 h-2 rounded-full bg-sky-400"></span>ISS Orbit (LEO)</span>
-              <span class="flex items-center gap-1.5 text-amber-400"><span class="w-2 h-2 rounded-full bg-amber-400"></span>Lunar / Cislunar</span>
-              <span class="flex items-center gap-1.5 text-rose-400"><span class="w-2 h-2 rounded-full bg-rose-400"></span>High-O₂ Risk Zone</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- CENTER 4 COLS: REAL-TIME MICROGRAVITY & PARTIAL-G FLAME PHYSICS SIMULATOR -->
-        <div class="lg:col-span-4 hud-panel hud-panel-amber rounded-xl overflow-hidden flex flex-col min-h-[460px] lg:h-[580px]">
-          <div class="px-4 py-2.5 bg-surface-raised border-b border-amber-500/30 flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <i class="fa-solid fa-fire text-amber-400"></i>
-              <span class="font-sans text-xs font-bold tracking-wider text-white">CHAMBER CAM // LIVE FLAME MORPHOLOGY</span>
-            </div>
-            <span id="flame-regime-badge" class="provenance-badge-empirical">0.0g DIFFUSION</span>
-          </div>
-
-          <!-- Flame Regime Mode Buttons (Clean Segmented Rail) -->
-          <div class="grid grid-cols-4 gap-1 p-1.5 bg-space/95 border-b border-white/[0.08] font-mono text-[10px]">
-            <button onclick="setFlameVisualMode('0g')" id="flame-mode-0g" class="flame-mode-btn py-1.5 px-1 rounded bg-sky-400/15 text-sky-400 border border-sky-400/40 font-bold text-center">
-              0.0g ISS<br><span class="text-[9px] opacity-80">Spherical</span>
-            </button>
-            <button onclick="setFlameVisualMode('lunar')" id="flame-mode-lunar" class="flame-mode-btn py-1.5 px-1 rounded bg-surface-raised text-slate-300 border border-white/[0.08] hover:border-amber-400 text-center">
-              0.16g Moon<br><span class="text-[9px] opacity-80">34% O₂ Fast</span>
-            </button>
-            <button onclick="setFlameVisualMode('insideout')" id="flame-mode-insideout" class="flame-mode-btn py-1.5 px-1 rounded bg-surface-raised text-slate-300 border border-white/[0.08] hover:border-indigo-400 text-center">
-              CFI-G 85%<br><span class="text-[9px] opacity-80">Inside-Out</span>
-            </button>
-            <button onclick="setFlameVisualMode('1g')" id="flame-mode-1g" class="flame-mode-btn py-1.5 px-1 rounded bg-surface-raised text-slate-300 border border-white/[0.08] hover:border-emerald-400 text-center">
-              1.0g Earth<br><span class="text-[9px] opacity-80">Teardrop</span>
-            </button>
-          </div>
-
-          <!-- Interactive 2D Flame Physics Canvas -->
-          <div class="relative flex-1 bg-[#06080C] overflow-hidden">
-            <canvas id="flame-physics-canvas" class="w-full h-full block" role="img" aria-label="Real-time 2D combustion flame physics simulation in microgravity and partial gravity"></canvas>
-
-            <!-- Physics Vector Telemetry Overlay -->
-            <div class="absolute top-2.5 left-2.5 right-2.5 pointer-events-none flex justify-between items-start font-mono text-[10px]">
-              <div class="bg-surface-base/90 border border-white/[0.08] rounded p-2 space-y-0.5 backdrop-blur-md">
-                <div class="text-slate-400">FLAME GEOMETRY</div>
-                <div id="flame-geom-readout" class="text-sky-400 font-bold">Spherical Diffusion Front</div>
-                <div id="flame-temp-readout" class="text-amber-400">Peak T: ~1,380 K (Low Soot)</div>
-              </div>
-              <div class="bg-surface-base/90 border border-white/[0.08] rounded p-2 text-right space-y-0.5 backdrop-blur-md">
-                <div class="text-slate-400">O₂ TRANSPORT</div>
-                <div id="flame-transport-readout" class="text-emerald-400 font-bold">Isotropic Diffusion</div>
-                <div id="flame-coolflame-readout" class="text-indigo-300">Cool-Flame Stage: Active (FLEX)</div>
-              </div>
+              <button onclick="resetGlobeCamera()" class="px-2.5 py-1 rounded bg-[#0A0F1A] border border-slate-700 text-xs text-slate-300 hover:border-sky-400 hover:text-sky-400 transition">
+                <i class="fa-solid fa-rotate mr-1"></i>Reset Camera
+              </button>
+              <span id="flame-regime-badge" class="provenance-badge-empirical">0.0g DIFFUSION</span>
             </div>
           </div>
 
-          <!-- Bottom Physics Explanation Strip -->
-          <div id="flame-physics-caption" class="p-3 bg-surface-raised border-t border-white/[0.08] text-xs text-slate-300 font-mono leading-relaxed">
-            <strong class="text-sky-400">0.0g Microgravity (ISS CIR/MSG):</strong> Absence of buoyant convection creates a stationary spherical blue flame fed purely by molecular O₂ diffusion and slow ventilation co-flow.
+          <!-- VIEW A: 3D THREE.JS ORBITAL GLOBE CONTAINER -->
+          <div id="studio-view-globe" class="relative flex-1 w-full bg-[#04060B] min-h-[500px] cursor-grab active:cursor-grabbing overflow-hidden">
+            <div id="godeye-globe-container" class="w-full h-full" role="region" aria-label="3D Orbital Globe and Space Habitat Visualization">
+              <!-- Rendered Three.js Canvas -->
+            </div>
+
+            <!-- Floating Target Information Card -->
+            <div class="absolute top-4 left-4 pointer-events-none bg-[#111827]/90 border border-white/[0.12] rounded-lg p-3 font-mono text-xs space-y-1 shadow-lg backdrop-blur-md max-w-[280px]">
+              <div class="text-[11px] text-sky-400 font-bold flex items-center gap-1.5">
+                <i class="fa-solid fa-satellite"></i> TARGET TELEMETRY LOCK
+              </div>
+              <div id="globe-overlay-title" class="text-white font-bold text-sm">ISS Destiny Lab (CIR & MSG)</div>
+              <div id="globe-overlay-coords" class="text-slate-400 text-xs">LEO 408 km | Inclination 51.6°</div>
+              <div id="globe-overlay-hazard" class="text-emerald-400 font-medium text-xs">STATUS: Nominal (21% O₂, 14.7 psi)</div>
+            </div>
+
+            <!-- Floating Legend -->
+            <div class="absolute bottom-4 left-4 right-4 pointer-events-none flex flex-wrap items-center justify-between gap-2 bg-[#111827]/90 border border-white/[0.08] rounded-lg px-4 py-2 font-mono text-xs backdrop-blur-md">
+              <span class="flex items-center gap-1.5 text-sky-400"><span class="w-2 h-2 rounded-full bg-sky-400"></span>ISS Orbit (LEO)</span>
+              <span class="flex items-center gap-1.5 text-amber-400"><span class="w-2 h-2 rounded-full bg-amber-400"></span>Lunar Surface (0.16g)</span>
+              <span class="flex items-center gap-1.5 text-rose-400"><span class="w-2 h-2 rounded-full bg-rose-400"></span>Oxygen-Enriched Risk Zone</span>
+            </div>
           </div>
+
+          <!-- VIEW B: 2D FLAME PHYSICS SIMULATOR CONTAINER (Initially Hidden) -->
+          <div id="studio-view-flame" class="hidden relative flex-1 flex-col bg-[#06080C] min-h-[500px] overflow-hidden">
+            <!-- Flame Regime Selector Buttons -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-1 p-2 bg-[#0A0F1A] border-b border-white/[0.08] text-xs font-mono">
+              <button onclick="setFlameVisualMode('0g')" id="flame-mode-0g" class="flame-mode-btn py-2 px-2 rounded bg-sky-500/20 text-sky-400 border border-sky-400/40 font-bold text-center">
+                0.0g Microgravity<br><span class="text-[10px] text-slate-300 font-normal">Spherical Blue Flame</span>
+              </button>
+              <button onclick="setFlameVisualMode('lunar')" id="flame-mode-lunar" class="flame-mode-btn py-2 px-2 rounded bg-[#182235] text-slate-300 border border-white/[0.08] hover:border-amber-400 text-center">
+                0.16g Moon<br><span class="text-[10px] text-slate-400 font-normal">34% O₂ Accelerated</span>
+              </button>
+              <button onclick="setFlameVisualMode('insideout')" id="flame-mode-insideout" class="flame-mode-btn py-2 px-2 rounded bg-[#182235] text-slate-300 border border-white/[0.08] hover:border-indigo-400 text-center">
+                CFI-G 85% O₂<br><span class="text-[10px] text-slate-400 font-normal">Inside-Out Plume</span>
+              </button>
+              <button onclick="setFlameVisualMode('1g')" id="flame-mode-1g" class="flame-mode-btn py-2 px-2 rounded bg-[#182235] text-slate-300 border border-white/[0.08] hover:border-emerald-400 text-center">
+                1.0g Earth<br><span class="text-[10px] text-slate-400 font-normal">Buoyant Teardrop</span>
+              </button>
+            </div>
+
+            <!-- Canvas Viewport -->
+            <div class="relative flex-1 min-h-[360px]">
+              <canvas id="flame-physics-canvas" class="w-full h-full block" role="img" aria-label="Real-time 2D combustion flame physics simulation"></canvas>
+              
+              <!-- Floating Particle Telemetry -->
+              <div class="absolute top-3 left-3 right-3 pointer-events-none flex justify-between items-start font-mono text-xs">
+                <div class="bg-[#111827]/90 border border-white/[0.08] rounded-lg p-2.5 space-y-0.5 backdrop-blur-md">
+                  <div class="text-[11px] text-slate-400">FLAME GEOMETRY</div>
+                  <div id="flame-geom-readout" class="text-sky-400 font-bold">Spherical Diffusion Front</div>
+                  <div id="flame-temp-readout" class="text-amber-400 text-[11px]">Peak T: ~1,380 K (Low Soot)</div>
+                </div>
+                <div class="bg-[#111827]/90 border border-white/[0.08] rounded-lg p-2.5 text-right space-y-0.5 backdrop-blur-md">
+                  <div class="text-[11px] text-slate-400">O₂ TRANSPORT</div>
+                  <div id="flame-transport-readout" class="text-emerald-400 font-bold">Isotropic Diffusion</div>
+                  <div id="flame-coolflame-readout" class="text-indigo-300 text-[11px]">Cool-Flame Stage: Active (FLEX)</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bottom Scientific Explanation Strip -->
+            <div id="flame-physics-caption" class="p-4 bg-[#182235] border-t border-white/[0.08] text-xs text-slate-300 font-mono leading-relaxed">
+              <strong class="text-sky-400">0.0g Microgravity (ISS CIR/MSG):</strong> Absence of buoyant convection creates a stationary spherical blue flame fed purely by molecular O₂ diffusion and slow ventilation co-flow.
+            </div>
+          </div>
+
         </div>
 
-        <!-- RIGHT 3 COLS: SELECTED HABITAT TELEMETRY & TOP-RANKED PSI EXPERIMENTS -->
-        <div class="lg:col-span-3 hud-panel rounded-xl p-4 flex flex-col justify-between min-h-[460px] lg:h-[580px] overflow-y-auto">
+        <!-- RIGHT 5 COLS: ATMOSPHERIC ENVIRONMENT & HABITAT CONSOLE -->
+        <div class="lg:col-span-5 hud-panel rounded-xl p-5 flex flex-col justify-between space-y-5">
           <div class="space-y-4">
-            <div class="border-b border-white/[0.08] pb-2">
-              <div class="text-[10px] font-mono text-sky-400 uppercase tracking-wider">HABITAT ATMOSPHERIC PROFILE</div>
-              <h3 id="hab-panel-name" class="font-sans font-bold text-base text-white mt-0.5">ISS Destiny Lab (CIR & MSG)</h3>
+            
+            <!-- Section Title -->
+            <div class="border-b border-white/[0.08] pb-3">
+              <h2 class="text-sm font-semibold text-sky-400 uppercase tracking-wider font-mono">HABITAT ENVIRONMENTAL INTELLIGENCE</h2>
+              <h3 id="hab-panel-name" class="font-bold text-lg text-white mt-1">ISS Destiny Lab (CIR & MSG)</h3>
+              <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+                Select an operational extraterrestrial environment to analyze atmospheric composition, flammability hazards, and corresponding NASA research records.
+              </p>
             </div>
 
-            <!-- 4 Key Atmospheric Gauges -->
+            <!-- Habitat Selection Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <button onclick="selectHabitatNode('ISS')" id="node-btn-ISS" class="habitat-node-btn p-3 rounded-lg border border-sky-400 bg-sky-500 text-slate-950 text-left transition flex items-center justify-between">
+                <div>
+                  <div class="font-bold text-xs font-mono">ISS Destiny Lab</div>
+                  <div class="text-[11px] opacity-80">0.0g • 21% O₂ • 14.7 psi</div>
+                </div>
+                <i class="fa-solid fa-satellite text-sm"></i>
+              </button>
+
+              <button onclick="selectHabitatNode('MOON')" id="node-btn-MOON" class="habitat-node-btn p-3 rounded-lg border border-white/[0.08] bg-[#182235] text-slate-200 text-left hover:border-sky-400 transition flex items-center justify-between">
+                <div>
+                  <div class="font-bold text-xs font-mono">Lunar Base Surface</div>
+                  <div class="text-[11px] text-amber-400">0.16g • 34% O₂ • 8.2 psi</div>
+                </div>
+                <i class="fa-solid fa-moon text-sm text-amber-400"></i>
+              </button>
+
+              <button onclick="selectHabitatNode('ARTEMIS')" id="node-btn-ARTEMIS" class="habitat-node-btn p-3 rounded-lg border border-white/[0.08] bg-[#182235] text-slate-200 text-left hover:border-sky-400 transition flex items-center justify-between">
+                <div>
+                  <div class="font-bold text-xs font-mono">Artemis Gateway</div>
+                  <div class="text-[11px] text-slate-400">0.0g • 26.5% O₂ • 10.2 psi</div>
+                </div>
+                <i class="fa-solid fa-shuttle-space text-sm"></i>
+              </button>
+
+              <button onclick="selectHabitatNode('SUIT')" id="node-btn-SUIT" class="habitat-node-btn p-3 rounded-lg border border-white/[0.08] bg-[#182235] text-slate-200 text-left hover:border-sky-400 transition flex items-center justify-between">
+                <div>
+                  <div class="font-bold text-xs font-mono">EVA Space Suit</div>
+                  <div class="text-[11px] text-rose-400">0.0g • 100% O₂ • 4.3 psi</div>
+                </div>
+                <i class="fa-solid fa-person-walking text-sm text-rose-400"></i>
+              </button>
+
+              <button onclick="selectHabitatNode('MARS')" id="node-btn-MARS" class="habitat-node-btn p-3 rounded-lg border border-white/[0.08] bg-[#182235] text-slate-200 text-left hover:border-sky-400 transition flex items-center justify-between sm:col-span-2">
+                <div>
+                  <div class="font-bold text-xs font-mono">Mars Habitat Surface</div>
+                  <div class="text-[11px] text-slate-400">0.38g • 28% O₂ • 10.0 psi</div>
+                </div>
+                <i class="fa-solid fa-globe text-sm text-orange-400"></i>
+              </button>
+            </div>
+
+            <!-- Key Atmospheric Parameters (2x2 Grid) -->
             <div class="grid grid-cols-2 gap-2.5 font-mono">
-              <div class="bg-space/90 border border-white/[0.08] rounded-lg p-2.5">
-                <div class="text-[10px] text-slate-400">OXYGEN (O₂)</div>
-                <div id="hab-o2" class="text-lg font-bold text-sky-400 telemetry-num">21.0%</div>
-                <div id="hab-o2-sub" class="text-[10px] text-slate-400">Earth Normoxic</div>
+              <div class="bg-[#0A0F1A] border border-white/[0.08] rounded-lg p-3">
+                <div class="text-xs text-slate-400">OXYGEN FRACTION</div>
+                <div id="hab-o2" class="text-lg font-bold text-sky-400 mt-0.5">21.0%</div>
+                <div class="text-[11px] text-slate-500">Normal Sea-Level Normoxic</div>
               </div>
-              <div class="bg-space/90 border border-white/[0.08] rounded-lg p-2.5">
-                <div class="text-[10px] text-slate-400">PRESSURE</div>
-                <div id="hab-psi" class="text-lg font-bold text-white telemetry-num">14.7 psi</div>
-                <div id="hab-psi-sub" class="text-[10px] text-slate-400">101.3 kPa Sea Level</div>
+
+              <div class="bg-[#0A0F1A] border border-white/[0.08] rounded-lg p-3">
+                <div class="text-xs text-slate-400">TOTAL PRESSURE</div>
+                <div id="hab-psi" class="text-lg font-bold text-white mt-0.5">14.7 psi</div>
+                <div class="text-[11px] text-slate-500">101.3 kPa Baseline</div>
               </div>
-              <div class="bg-space/90 border border-white/[0.08] rounded-lg p-2.5">
-                <div class="text-[10px] text-slate-400">GRAVITY REGIME</div>
-                <div id="hab-g" class="text-lg font-bold text-emerald-400 telemetry-num">0.00g µg</div>
-                <div id="hab-g-sub" class="text-[10px] text-slate-400">Freefall Orbit</div>
+
+              <div class="bg-[#0A0F1A] border border-white/[0.08] rounded-lg p-3">
+                <div class="text-xs text-slate-400">GRAVITY LEVEL</div>
+                <div id="hab-g" class="text-lg font-bold text-emerald-400 mt-0.5">0.00g µg</div>
+                <div class="text-[11px] text-slate-500">Microgravity Orbit</div>
               </div>
-              <div class="bg-space/90 border border-white/[0.08] rounded-lg p-2.5">
-                <div class="text-[10px] text-slate-400">VENTILATION</div>
-                <div id="hab-flow" class="text-lg font-bold text-amber-400 telemetry-num">15 cm/s</div>
-                <div id="hab-flow-sub" class="text-[10px] text-slate-400">HVAC Co-flow</div>
+
+              <div class="bg-[#0A0F1A] border border-white/[0.08] rounded-lg p-3">
+                <div class="text-xs text-slate-400">FORCED VENTILATION</div>
+                <div id="hab-flow" class="text-lg font-bold text-amber-400 mt-0.5">15 cm/s</div>
+                <div class="text-[11px] text-slate-500">Cabin HVAC Circulation</div>
               </div>
             </div>
 
-            <!-- SI Fire Risk Assessment Box -->
-            <div id="hab-risk-box" class="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-xs space-y-1">
+            <!-- Flammability Risk Index Card -->
+            <div id="hab-risk-box" class="p-4 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-xs space-y-1.5">
               <div class="flex items-center justify-between font-mono font-bold">
                 <span class="text-emerald-400">FLAMMABILITY HAZARD INDEX</span>
-                <span id="hab-risk-score" class="text-white bg-emerald-500/20 px-2 py-0.5 rounded telemetry-num">38 / 100 (MODERATE)</span>
+                <span id="hab-risk-score" class="text-white bg-emerald-500/20 px-2.5 py-0.5 rounded">38 / 100 (MODERATE)</span>
               </div>
-              <p id="hab-risk-desc" class="text-slate-300 text-[11px] leading-relaxed">
+              <p id="hab-risk-desc" class="text-slate-300 text-xs leading-relaxed">
                 Quiescent microgravity smothers some flames, but low-speed ventilation (5–20 cm/s) in BASS-II showed solids can burn at lower O₂ limits than on Earth.
               </p>
             </div>
 
-            <!-- Top-Ranked PSI Investigations for this Habitat -->
+            <!-- Relevant NASA PSI Studies Container -->
             <div class="space-y-2">
-              <div class="flex items-center justify-between text-[11px] font-mono">
-                <span class="text-sky-400 font-bold"><i class="fa-solid fa-ranking-star mr-1"></i>SI-RANKED PSI STUDIES</span>
-                <button onclick="switchMainTab('tab-psi')" class="text-amber-400 hover:underline text-[10px]">FULL MATRIX →</button>
+              <div class="flex items-center justify-between text-xs font-mono">
+                <span class="text-sky-400 font-bold"><i class="fa-solid fa-ranking-star mr-1"></i>RELEVANT NASA PSI INVESTIGATIONS</span>
+                <button onclick="switchMainTab('tab-psi')" class="text-amber-400 hover:underline text-xs">Full Catalog →</button>
               </div>
               <div id="hab-top-psi-list" class="space-y-2">
-                <!-- Populated dynamically via JS -->
+                <!-- Dynamically populated by habitat-controller.js -->
               </div>
             </div>
+
           </div>
 
-          <button onclick="loadHabitatIntoSimulator()" class="mt-3 w-full py-2.5 px-3 rounded-lg font-mono text-xs font-bold bg-sky-500 text-slate-950 hover:bg-sky-400 transition flex items-center justify-center gap-2 shadow-sm">
+          <!-- Bottom Action Button -->
+          <button onclick="loadHabitatIntoSimulator()" class="w-full py-3 px-4 rounded-lg font-semibold text-xs bg-sky-500 text-slate-950 hover:bg-sky-400 transition flex items-center justify-center gap-2 shadow-sm">
             <i class="fa-solid fa-sliders"></i>
-            <span>OPEN TARGET IN PREDICTIVE SIMULATOR</span>
+            <span>OPEN ATMOSPHERE IN FLAMMABILITY SIMULATOR</span>
           </button>
         </div>
 
       </div>
+
     </section>
 
-    <!-- =====================================================================
-         MODULE 2: NASA PSI INVESTIGATION MATRIX, SI RANKER & COMPARATOR
-         ===================================================================== -->
+    <!-- =======================================================================
+         MODULE 2: NASA PSI INVESTIGATION MATRIX & COMPARATOR
+         ======================================================================= -->
     <section id="tab-psi" class="tab-section hidden space-y-6">
       
-      <!-- Top Control Panel: SI Multi-Attribute Weight Sliders & Hardware/Fuel Filters -->
-      <div class="hud-panel rounded-xl p-4 sm:p-5 space-y-4">
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b border-white/[0.08] pb-3">
+      <!-- Top Search & Filter Bar -->
+      <div class="hud-panel rounded-xl p-5 space-y-4">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-white/[0.08] pb-4">
           <div>
-            <div class="text-xs font-mono text-sky-400 flex items-center gap-2">
-              <i class="fa-solid fa-microchip"></i>
-              <span>PHYSICAL SCIENCES INFORMATICS (PSI) — RELEVANCE RANKING ENGINE</span>
-            </div>
-            <h2 class="font-sans text-lg sm:text-xl font-bold text-white mt-0.5 tracking-tight">
-              Summarize, Rank & Compare NASA Microgravity Combustion Investigations
-            </h2>
+            <h2 class="text-xs font-semibold text-sky-400 uppercase tracking-wider font-mono">NASA PHYSICAL SCIENCES INFORMATICS (PSI)</h2>
+            <h3 class="font-bold text-xl text-white mt-0.5 tracking-tight">Microgravity Combustion Experimental Research Archive</h3>
+            <p class="text-xs text-slate-300 mt-1">Discover, rank, and compare documented flight investigations across CIR, MSG, Cygnus, and Artemis CLPS.</p>
           </div>
-          <div class="flex flex-wrap items-center gap-2">
+
+          <div class="flex flex-wrap items-center gap-2.5">
             <div class="relative">
               <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-              <input id="psi-search-input" oninput="renderPsiMatrix()" type="text" placeholder="Search fuel, rack (CIR/MSG), sensor..." aria-label="Search NASA PSI investigations by fuel, rack, or sensor" class="pl-8 pr-3 py-1.5 rounded-lg bg-space border border-slate-700 focus:border-sky-400 text-xs font-mono text-white outline-none w-64" />
+              <input id="psi-search-input" oninput="renderPsiMatrix()" type="text" placeholder="Search investigations, DOIs, fuels..." aria-label="Search NASA PSI investigations" class="pl-9 pr-3 py-2 rounded-lg bg-[#0A0F1A] border border-slate-700 focus:border-sky-400 text-xs text-white outline-none w-64 font-mono" />
             </div>
-            <select id="psi-rack-filter" onchange="renderPsiMatrix()" class="px-3 py-1.5 rounded-lg bg-space border border-slate-700 text-xs font-mono text-slate-200 outline-none focus:border-sky-400">
-              <option value="ALL">All Hardware Racks (CIR / MSG / Cygnus)</option>
-              <option value="CIR">CIR — Combustion Integrated Rack (ACME / FLEX)</option>
-              <option value="MSG">MSG — Microgravity Glovebox (BASS / SPICE / SAME)</option>
-              <option value="CYGNUS">Cygnus Autonomous Spacecraft (Saffire I-III)</option>
-              <option value="LUNAR">Lunar Surface / Partial-G Bounds (LUCI / FM2)</option>
+
+            <select id="psi-rack-filter" onchange="renderPsiMatrix()" class="px-3 py-2 rounded-lg bg-[#0A0F1A] border border-slate-700 text-xs text-slate-200 outline-none focus:border-sky-400 font-mono">
+              <option value="ALL">All Facilities (CIR / MSG / Cygnus / Lunar)</option>
+              <option value="CIR">CIR — Combustion Integrated Rack</option>
+              <option value="MSG">MSG — Microgravity Science Glovebox</option>
+              <option value="CYGNUS">Cygnus Resupply Vehicle (Saffire)</option>
+              <option value="LUNAR">Lunar Lander Surface (FM2)</option>
             </select>
-            <select id="psi-fuel-filter" onchange="renderPsiMatrix()" class="px-3 py-1.5 rounded-lg bg-space border border-slate-700 text-xs font-mono text-slate-200 outline-none focus:border-sky-400">
+
+            <select id="psi-fuel-filter" onchange="renderPsiMatrix()" class="px-3 py-2 rounded-lg bg-[#0A0F1A] border border-slate-700 text-xs text-slate-200 outline-none focus:border-sky-400 font-mono">
               <option value="ALL">All Fuel Types</option>
-              <option value="Solid">Solid Fuels (Fabrics, PMMA, Wires)</option>
-              <option value="Gaseous">Gaseous Fuels (Methane, Ethylene, Propane)</option>
-              <option value="Liquid">Liquid Droplets (Heptane, Methanol, Decane)</option>
-              <option value="Aerosol">Smoke & Dust Aerosols (SAME / DAFT)</option>
+              <option value="Solid">Solid Fuels (Polymers, Fabrics, Wires)</option>
+              <option value="Gaseous">Gaseous Fuels (Methane, Ethylene)</option>
+              <option value="Liquid">Liquid Droplets (FLEX Alkanes)</option>
+              <option value="Aerosol">Smoke & Dust Aerosols</option>
             </select>
           </div>
         </div>
 
-        <!-- SI Ranking Priority Weight Sliders -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-1">
-          <div class="bg-space/70 border border-white/[0.08] rounded-lg p-3 space-y-1.5">
-            <div class="flex justify-between text-xs font-mono">
-              <span class="text-amber-400 font-semibold">🌕 Lunar Base (30%+ O₂)</span>
-              <span id="val-w-lunar" class="text-white font-bold telemetry-num">90%</span>
-            </div>
-            <input id="w-lunar" type="range" min="0" max="100" value="90" oninput="updateSiWeights()" class="w-full slider-amber" />
-            <p class="text-[10px] text-slate-400">Prioritizes elevated O₂ flammability & partial-g bounding.</p>
+        <!-- Research Prioritization Weights (User Decision Criteria) -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between text-xs text-slate-400 font-mono">
+            <span>MULTI-ATTRIBUTE PRIORITIZATION CRITERIA</span>
+            <span class="text-slate-500">Adjust weights to reorder investigations for specific mission profiles</span>
           </div>
 
-          <div class="bg-space/70 border border-white/[0.08] rounded-lg p-3 space-y-1.5">
-            <div class="flex justify-between text-xs font-mono">
-              <span class="text-sky-400 font-semibold">🛡️ Material Prevention & LOI</span>
-              <span id="val-w-prev" class="text-white font-bold telemetry-num">85%</span>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div class="bg-[#0A0F1A] border border-white/[0.08] rounded-lg p-3 space-y-1.5">
+              <div class="flex justify-between text-xs font-mono">
+                <span class="text-amber-400 font-medium">Lunar Habitation (0.16g)</span>
+                <span id="val-w-lunar" class="text-white font-bold">90%</span>
+              </div>
+              <input id="w-lunar" type="range" min="0" max="100" value="90" oninput="updateSiWeights()" class="slider-amber" />
+              <p class="text-[11px] text-slate-400">Prioritizes partial gravity & 34% O₂ exploration atmospheres.</p>
             </div>
-            <input id="w-prev" type="range" min="0" max="100" value="85" oninput="updateSiWeights()" class="w-full" />
-            <p class="text-[10px] text-slate-400">Weights solid material selection, airflow limits & BRE/BASS.</p>
-          </div>
 
-          <div class="bg-space/70 border border-white/[0.08] rounded-lg p-3 space-y-1.5">
-            <div class="flex justify-between text-xs font-mono">
-              <span class="text-emerald-400 font-semibold">🚨 Smoke & Dust Detection</span>
-              <span id="val-w-det" class="text-white font-bold telemetry-num">75%</span>
+            <div class="bg-[#0A0F1A] border border-white/[0.08] rounded-lg p-3 space-y-1.5">
+              <div class="flex justify-between text-xs font-mono">
+                <span class="text-sky-400 font-medium">Material Prevention & LOI</span>
+                <span id="val-w-prev" class="text-white font-bold">85%</span>
+              </div>
+              <input id="w-prev" type="range" min="0" max="100" value="85" oninput="updateSiWeights()" />
+              <p class="text-[11px] text-slate-400">Weights solid fabric flammability & forced airflow limits.</p>
             </div>
-            <input id="w-det" type="range" min="0" max="100" value="75" oninput="updateSiWeights()" class="w-full" />
-            <p class="text-[10px] text-slate-400">Weights aerosol sizing, SAME/SAME-R & DAFT nuisance rejection.</p>
-          </div>
 
-          <div class="bg-space/70 border border-white/[0.08] rounded-lg p-3 space-y-1.5">
-            <div class="flex justify-between text-xs font-mono">
-              <span class="text-indigo-400 font-semibold">🧯 Suppression & Cool Flames</span>
-              <span id="val-w-supp" class="text-white font-bold telemetry-num">80%</span>
+            <div class="bg-[#0A0F1A] border border-white/[0.08] rounded-lg p-3 space-y-1.5">
+              <div class="flex justify-between text-xs font-mono">
+                <span class="text-emerald-400 font-medium">Smoke & Dust Detection</span>
+                <span id="val-w-det" class="text-white font-bold">75%</span>
+              </div>
+              <input id="w-det" type="range" min="0" max="100" value="75" oninput="updateSiWeights()" />
+              <p class="text-[11px] text-slate-400">Weights microgravity smoke particle growth & alarm thresholds.</p>
             </div>
-            <input id="w-supp" type="range" min="0" max="100" value="80" oninput="updateSiWeights()" class="w-full" />
-            <p class="text-[10px] text-slate-400">Weights CO₂/He dilution, FLEX cool-flame re-ignition & mist.</p>
+
+            <div class="bg-[#0A0F1A] border border-white/[0.08] rounded-lg p-3 space-y-1.5">
+              <div class="flex justify-between text-xs font-mono">
+                <span class="text-indigo-400 font-medium">Suppression & Cool Flames</span>
+                <span id="val-w-supp" class="text-white font-bold">80%</span>
+              </div>
+              <input id="w-supp" type="range" min="0" max="100" value="80" oninput="updateSiWeights()" />
+              <p class="text-[11px] text-slate-400">Weights low-temperature burning & water-mist quench effectiveness.</p>
+            </div>
           </div>
         </div>
+
       </div>
 
-      <!-- SIDE-BY-SIDE INVESTIGATION COMPARATOR PANEL -->
-      <div class="hud-panel hud-panel-amber rounded-xl p-4 sm:p-5 space-y-4">
+      <!-- SIDE-BY-SIDE INVESTIGATION COMPARATOR -->
+      <div class="hud-panel rounded-xl p-5 space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/[0.08] pb-3">
           <div>
-            <span class="text-[11px] font-mono text-amber-400 uppercase font-bold"><i class="fa-solid fa-code-compare mr-1"></i>INTERACTIVE MULTI-INVESTIGATION COMPARATOR</span>
-            <h3 class="font-sans text-base sm:text-lg font-bold text-white tracking-tight">Compare Similarities, Variables, Hardware Racks & Crew Safety Findings</h3>
+            <span class="text-xs font-mono text-amber-400 uppercase font-bold"><i class="fa-solid fa-code-compare mr-1"></i>SIDE-BY-SIDE RESEARCH COMPARATOR</span>
+            <h3 class="font-bold text-base text-white">Compare Objectives, Experimental Conditions, Sensors & Findings</h3>
           </div>
           <div class="flex items-center gap-2 font-mono text-xs">
-            <span class="text-slate-400">Comparing: <strong id="compare-count-badge" class="text-sky-400">3 Selected</strong></span>
-            <button onclick="resetDefaultComparison()" class="px-2.5 py-1 rounded bg-surface-raised border border-slate-700 hover:border-sky-400 text-slate-300 text-[11px]">
+            <span id="compare-count-badge" class="px-2 py-0.5 rounded bg-sky-500/10 border border-sky-400/30 text-sky-400 font-bold">3/3 SELECTED</span>
+            <button onclick="resetDefaultComparison()" class="px-2.5 py-1 rounded bg-[#0A0F1A] border border-slate-700 hover:border-sky-400 text-slate-300 text-xs transition">
               Reset Default Trio
             </button>
           </div>
         </div>
 
-        <!-- Dynamic Comparison Matrix Output -->
+        <!-- Rendered Comparison Matrix Output -->
         <div id="psi-comparison-container" class="overflow-x-auto">
-          <!-- Rendered by JS -->
+          <!-- Populated by comparator.js -->
         </div>
       </div>
 
-      <!-- RANKED PSI INVESTIGATIONS GRID -->
+      <!-- INVESTIGATION CARDS GRID -->
       <div class="space-y-3">
         <div class="flex items-center justify-between">
-          <h3 class="font-sans text-base font-bold text-white flex items-center gap-2">
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
             <i class="fa-solid fa-list-ol text-sky-400"></i>
-            <span>RANKED NASA PSI COMBUSTION INVESTIGATIONS (<span id="psi-count-label" class="telemetry-num">10</span> DATASETS)</span>
+            <span>CATALOGED NASA PSI INVESTIGATIONS (<span id="psi-count-label" class="font-mono text-sky-400">10</span> RECORDS)</span>
           </h3>
-          <span class="text-xs font-mono text-slate-400">Sorted dynamically by Composite Fire Safety Score</span>
+          <span class="text-xs text-slate-400 font-mono">Ranked by Priority Score based on active weights</span>
         </div>
 
         <div id="psi-cards-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Populated dynamically by JS -->
+          <!-- Populated by matrix-renderer.js -->
         </div>
       </div>
 
     </section>
 
-    <!-- =====================================================================
-         MODULE 3: PREDICTIVE FLAMMABILITY & PARTIAL-G BOUNDING SIMULATOR
-         ===================================================================== -->
+    <!-- =======================================================================
+         MODULE 3: PREDICTIVE FLAMMABILITY SIMULATOR
+         ======================================================================= -->
     <section id="tab-simulator" class="tab-section hidden space-y-6">
       
-      <!-- Header & Mission Preset Bar -->
-      <div class="hud-panel rounded-xl p-4 sm:p-5 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-        <div>
-          <div class="text-xs font-mono text-amber-400 flex items-center gap-2 font-bold">
-            <i class="fa-solid fa-sliders"></i>
-            <span>PREDICTIVE FLAMMABILITY & PARTIAL-GRAVITY BOUNDING ENGINE</span>
-          </div>
-          <h2 class="font-sans text-lg sm:text-xl font-bold text-white mt-0.5 tracking-tight">
-            Simulate Oxygen Concentration, Pressure, Airflow & Partial-Gravity Fire Scenarios
-          </h2>
-          <p class="text-xs text-slate-300 mt-1 max-w-3xl leading-relaxed">
-            Because PSI currently lacks direct lunar partial-gravity data (awaiting <strong>LUCI</strong> & <strong>FM2</strong>), this predictive model bounds <span class="text-sky-400 font-mono">0.16g Moon</span> and <span class="text-amber-400 font-mono">0.38g Mars</span> flammability by synthesizing <strong>BASS-II</strong> co-flow laws, <strong>Saffire</strong> pressure/O₂ curves, <strong>ACME CFI-G</strong> high-O₂ limits, and <strong>E-FIELD Flames</strong> ion-driven buoyancy equivalents.
-          </p>
-        </div>
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-        <!-- Preset Scenarios -->
-        <div class="flex flex-wrap gap-2">
-          <button onclick="applySimPreset(21, 14.7, 15, 0.00, 'ISS Standard Cabin')" class="px-3 py-1.5 rounded-lg bg-surface-raised border border-white/[0.12] hover:border-sky-400 text-xs font-mono text-sky-400 font-semibold">
-            🛰️ ISS (21% O₂, 14.7 psi, 0g)
-          </button>
-          <button onclick="applySimPreset(34, 10.2, 8, 0.16, 'Lunar Base / Rover (High Risk)')" class="px-3 py-1.5 rounded-lg bg-amber-500/15 border border-amber-500/40 hover:border-amber-400 text-xs font-mono text-amber-400 font-semibold">
-            🌕 Moon Base (34% O₂, 10.2 psi, 0.16g)
-          </button>
-          <button onclick="applySimPreset(100, 4.3, 25, 0.16, 'EVA Spacesuit Loop')" class="px-3 py-1.5 rounded-lg bg-rose-500/15 border border-rose-500/40 hover:border-rose-400 text-xs font-mono text-rose-300 font-semibold">
-            👨‍🚀 EVA Suit (100% O₂, 4.3 psi)
-          </button>
-          <button onclick="applySimPreset(85, 14.7, 30, 0.00, 'ACME CFI-G Inside-Out Extreme')" class="px-3 py-1.5 rounded-lg bg-indigo-500/15 border border-indigo-500/40 hover:border-indigo-400 text-xs font-mono text-indigo-300 font-semibold">
-            🔬 CFI-G Test (85% O₂, 14.7 psi, 0g)
-          </button>
-          <button onclick="applySimPreset(21, 14.7, 10, 1.00, 'Earth Sea-Level Baseline')" class="px-3 py-1.5 rounded-lg bg-emerald-500/15 border border-emerald-500/40 hover:border-emerald-400 text-xs font-mono text-emerald-300 font-semibold">
-            🌍 Earth (21% O₂, 14.7 psi, 1g)
-          </button>
-        </div>
-      </div>
-
-      <!-- Simulator Main Grid -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        
-        <!-- LEFT 4 COLS: ENVIRONMENTAL PARAMETER CONTROLS -->
-        <div class="lg:col-span-4 hud-panel rounded-xl p-5 space-y-5">
-          <div class="flex items-center justify-between border-b border-white/[0.08] pb-2">
-            <span class="font-sans text-sm font-bold text-white">ENVIRONMENTAL INPUTS</span>
-            <span id="sim-preset-label" class="text-[11px] font-mono text-sky-400 bg-sky-400/10 px-2 py-0.5 rounded">Lunar Base / Rover</span>
-          </div>
-
-          <!-- Slider 1: Oxygen Concentration (%) -->
-          <div class="space-y-1.5">
-            <div class="flex justify-between font-mono text-xs">
-              <label for="sim-o2" class="text-slate-300">OXYGEN CONCENTRATION (O₂ %)</label>
-              <span id="sim-o2-label" class="text-amber-400 font-bold text-sm telemetry-num">34.0%</span>
-            </div>
-            <input id="sim-o2" type="range" min="15" max="100" step="0.5" value="34" oninput="runPredictiveModel()" class="w-full slider-amber" />
-            <div class="slider-ticks">
-              <span>15%</span>
-              <span>21% (ISS)</span>
-              <span>34% (Moon)</span>
-              <span>85% (CFI)</span>
-              <span>100%</span>
-            </div>
-          </div>
-
-          <!-- Slider 2: Cabin Pressure (psi) -->
-          <div class="space-y-1.5">
-            <div class="flex justify-between font-mono text-xs">
-              <label for="sim-psi" class="text-slate-300">AMBIENT PRESSURE (PSI)</label>
-              <span id="sim-psi-label" class="text-sky-400 font-bold text-sm telemetry-num">10.2 psi</span>
-            </div>
-            <input id="sim-psi" type="range" min="4.0" max="15.0" step="0.1" value="10.2" oninput="runPredictiveModel()" class="w-full" />
-            <div class="slider-ticks">
-              <span>4.3 psi (Suit)</span>
-              <span>8.2 psi (Mars)</span>
-              <span>10.2 psi (Moon)</span>
-              <span>14.7 psi (ISS)</span>
-            </div>
-          </div>
-
-          <!-- Slider 3: Ventilation / Co-Flow Speed (cm/s) -->
-          <div class="space-y-1.5">
-            <div class="flex justify-between font-mono text-xs">
-              <label for="sim-flow" class="text-emerald-400 font-bold text-sm telemetry-num">8.0 cm/s</label>
-              <span id="sim-flow-label" class="text-emerald-400 font-bold text-sm telemetry-num">8.0 cm/s</span>
-            </div>
-            <input id="sim-flow" type="range" min="0" max="55" step="1" value="8" oninput="runPredictiveModel()" class="w-full" />
-            <div class="slider-ticks">
-              <span>0 cm/s (Still)</span>
-              <span>8-15 cm/s (HVAC)</span>
-              <span>55 cm/s (Max)</span>
-            </div>
-          </div>
-
-          <!-- Slider 4: Gravity Level (g) -->
-          <div class="space-y-1.5">
-            <div class="flex justify-between font-mono text-xs">
-              <label for="sim-g" class="text-slate-300">GRAVITY REGIME (g)</label>
-              <span id="sim-g-label" class="text-indigo-300 font-bold text-sm telemetry-num">0.16g (Lunar)</span>
-            </div>
-            <input id="sim-g" type="range" min="0.00" max="1.00" step="0.01" value="0.16" oninput="runPredictiveModel()" class="w-full" />
-            <div class="slider-ticks">
-              <span>0.0g (ISS)</span>
-              <span>0.16g (Moon)</span>
-              <span>0.38g (Mars)</span>
-              <span>1.0g (Earth)</span>
-            </div>
-          </div>
-
-          <!-- Pre-breathe & Spacesuit Engineering Note -->
-          <div class="p-3 rounded-lg bg-surface-sunken border border-white/[0.08] text-[11px] font-mono text-slate-300 space-y-1">
-            <div class="text-sky-400 font-bold"><i class="fa-solid fa-user-astronaut mr-1"></i>DECOMPRESSION & PRE-BREATHE INSIGHT</div>
-            <p id="sim-prebreathe-note" class="text-slate-400 leading-relaxed">
-              At 10.2 psi and 34% O₂, astronauts cut nitrogen pre-breathing time before entering 4.3 psi spacesuits—but O₂ enrichment increases flame spread rate by >2.1x over Earth!
-            </p>
-          </div>
-        </div>
-
-        <!-- CENTER 4 COLS: PREDICTED OUTPUTS & MATERIAL FLAMMABILITY BARS -->
-        <div class="lg:col-span-4 hud-panel rounded-xl p-5 flex flex-col justify-between space-y-4">
+        <!-- LEFT 4 COLS: SIMULATION CONTROLS & PRESETS -->
+        <div class="lg:col-span-4 hud-panel rounded-xl p-5 flex flex-col justify-between space-y-5">
           <div class="space-y-4">
-            <div class="flex items-center justify-between border-b border-white/[0.08] pb-2">
-              <span class="font-sans text-sm font-bold text-white">PREDICTED FIRE SAFETY METRICS</span>
+            
+            <div class="border-b border-white/[0.08] pb-3">
+              <span class="text-xs font-semibold text-amber-400 uppercase tracking-wider font-mono">ENVIRONMENTAL INPUT CONTROLS</span>
+              <h3 class="font-bold text-lg text-white mt-0.5">Atmospheric Flammability Simulator</h3>
+              <p class="text-xs text-slate-300 mt-1">Adjust environmental variables or select standard mission presets to compute ignition thresholds and flame spread velocities.</p>
+            </div>
+
+            <!-- Quick Presets -->
+            <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+              <button onclick="applySimPreset('iss')" class="p-2 rounded bg-[#182235] border border-white/[0.08] hover:border-sky-400 text-slate-200 text-left transition">
+                <strong class="text-sky-400 block">ISS Nominal</strong>
+                <span class="text-[11px] text-slate-400">21% O₂ • 14.7 psi • 0g</span>
+              </button>
+              <button onclick="applySimPreset('lunar')" class="p-2 rounded bg-[#182235] border border-white/[0.08] hover:border-amber-400 text-slate-200 text-left transition">
+                <strong class="text-amber-400 block">Lunar Base (Exploration)</strong>
+                <span class="text-[11px] text-slate-400">34% O₂ • 8.2 psi • 0.16g</span>
+              </button>
+              <button onclick="applySimPreset('artemis')" class="p-2 rounded bg-[#182235] border border-white/[0.08] hover:border-indigo-400 text-slate-200 text-left transition">
+                <strong class="text-indigo-300 block">Artemis II Cislunar</strong>
+                <span class="text-[11px] text-slate-400">26.5% O₂ • 10.2 psi • 0g</span>
+              </button>
+              <button onclick="applySimPreset('earth')" class="p-2 rounded bg-[#182235] border border-white/[0.08] hover:border-emerald-400 text-slate-200 text-left transition">
+                <strong class="text-emerald-400 block">Terrestrial Standard</strong>
+                <span class="text-[11px] text-slate-400">21% O₂ • 14.7 psi • 1.0g</span>
+              </button>
+            </div>
+
+            <!-- Slider 1: Oxygen Percentage -->
+            <div class="space-y-1.5 bg-[#0A0F1A] border border-white/[0.08] rounded-lg p-3">
+              <div class="flex justify-between text-xs font-mono">
+                <span class="text-slate-300 font-medium">Oxygen Concentration (O₂)</span>
+                <span id="sim-o2-label" class="text-sky-400 font-bold">21.0%</span>
+              </div>
+              <input id="sim-o2" type="range" min="15" max="100" step="0.5" value="21" oninput="runPredictiveModel()" />
+              <div class="flex justify-between text-[10px] font-mono text-slate-500">
+                <span>15% (Extinction)</span>
+                <span>21% (Earth)</span>
+                <span>34% (Exploration)</span>
+                <span>100% (Suit)</span>
+              </div>
+            </div>
+
+            <!-- Slider 2: Atmospheric Pressure -->
+            <div class="space-y-1.5 bg-[#0A0F1A] border border-white/[0.08] rounded-lg p-3">
+              <div class="flex justify-between text-xs font-mono">
+                <span class="text-slate-300 font-medium">Total Pressure</span>
+                <span id="sim-psi-label" class="text-white font-bold">14.7 psi</span>
+              </div>
+              <input id="sim-psi" type="range" min="4.0" max="20.0" step="0.1" value="14.7" oninput="runPredictiveModel()" />
+              <div class="flex justify-between text-[10px] font-mono text-slate-500">
+                <span>4.3 psi (Suit)</span>
+                <span>8.2 psi (Moon)</span>
+                <span>14.7 psi (Sea Level)</span>
+              </div>
+            </div>
+
+            <!-- Slider 3: Forced Airflow Velocity -->
+            <div class="space-y-1.5 bg-[#0A0F1A] border border-white/[0.08] rounded-lg p-3">
+              <div class="flex justify-between text-xs font-mono">
+                <span class="text-slate-300 font-medium">Forced Airflow Velocity</span>
+                <span id="sim-flow-label" class="text-amber-400 font-bold">15 cm/s</span>
+              </div>
+              <input id="sim-flow" type="range" min="0" max="50" step="1" value="15" oninput="runPredictiveModel()" class="slider-amber" />
+              <div class="flex justify-between text-[10px] font-mono text-slate-500">
+                <span>0 cm/s (Quiescent)</span>
+                <span>15 cm/s (Nominal Duct)</span>
+                <span>50 cm/s (Draft)</span>
+              </div>
+            </div>
+
+            <!-- Slider 4: Gravity Regime -->
+            <div class="space-y-1.5 bg-[#0A0F1A] border border-white/[0.08] rounded-lg p-3">
+              <div class="flex justify-between text-xs font-mono">
+                <span class="text-slate-300 font-medium">Gravitational Acceleration</span>
+                <span id="sim-g-label" class="text-emerald-400 font-bold">0.00g</span>
+              </div>
+              <input id="sim-g" type="range" min="0" max="1.0" step="0.01" value="0.0" oninput="runPredictiveModel()" />
+              <div class="flex justify-between text-[10px] font-mono text-slate-500">
+                <span>0.0g (Orbit)</span>
+                <span>0.16g (Moon)</span>
+                <span>0.38g (Mars)</span>
+                <span>1.0g (Earth)</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Scientific Note -->
+          <div class="p-3 rounded-lg bg-[#0A0F1A] border border-white/[0.08] text-[11px] text-slate-400 leading-relaxed font-mono">
+            <strong>Physics Note:</strong> In microgravity with 0 flow, flames self-extinguish due to oxygen starvation. Adding even 5–20 cm/s forced airflow supplies fresh oxidizer, rapidly accelerating flame propagation.
+          </div>
+        </div>
+
+        <!-- RIGHT 8 COLS: COMBUSTION PREDICTIONS & BOUNDING CURVE -->
+        <div class="lg:col-span-8 space-y-6">
+
+          <!-- Primary Output Metrics -->
+          <div class="hud-panel rounded-xl p-5 space-y-5">
+            <div class="flex items-center justify-between border-b border-white/[0.08] pb-3">
+              <div>
+                <span class="text-xs font-semibold text-sky-400 uppercase tracking-wider font-mono">CALCULATED COMBUSTION INDICES</span>
+                <h3 class="font-bold text-base text-white">Atmospheric Hazard & Material Spread Predictions</h3>
+              </div>
               <span class="provenance-badge-empirical">EMPIRICAL MODEL</span>
             </div>
 
-            <!-- 3 Top KPI Readouts -->
-            <div class="grid grid-cols-3 gap-2.5 font-mono">
-              <div class="bg-space/90 border border-white/[0.08] rounded-lg p-3 text-center">
-                <div class="text-[10px] text-slate-400">IGNITION RISK</div>
-                <div id="pred-risk-score" class="text-xl font-extrabold text-amber-400 mt-0.5 telemetry-num">78%</div>
-                <div id="pred-risk-tag" class="text-[10px] text-amber-400 font-bold">HIGH HAZARD</div>
+            <!-- 3 Top KPIs -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono">
+              <div class="bg-[#0A0F1A] border border-white/[0.08] rounded-lg p-3.5 text-center">
+                <div class="text-xs text-slate-400">COMPOSITE IGNITION RISK</div>
+                <div id="pred-risk-score" class="text-2xl font-bold text-amber-400 mt-1">78%</div>
+                <div id="pred-risk-tag" class="text-xs text-amber-400 font-semibold mt-0.5">HIGH HAZARD</div>
               </div>
-              <div class="bg-space/90 border border-white/[0.08] rounded-lg p-3 text-center">
-                <div class="text-[10px] text-slate-400">MIN O₂ LIMIT (LOI)</div>
-                <div id="pred-loi" class="text-xl font-extrabold text-sky-400 mt-0.5 telemetry-num">16.2%</div>
-                <div class="text-[10px] text-slate-400">Threshold</div>
+
+              <div class="bg-[#0A0F1A] border border-white/[0.08] rounded-lg p-3.5 text-center">
+                <div class="text-xs text-slate-400">LIMITING OXYGEN INDEX (LOI)</div>
+                <div id="pred-loi" class="text-2xl font-bold text-sky-400 mt-1">16.2%</div>
+                <div class="text-xs text-slate-500 mt-0.5">Flammability Threshold</div>
               </div>
-              <div class="bg-space/90 border border-white/[0.08] rounded-lg p-3 text-center">
-                <div class="text-[10px] text-slate-400">O₂ PARTIAL PRESS</div>
-                <div id="pred-ppo2" class="text-xl font-extrabold text-white mt-0.5 telemetry-num">3.47 psi</div>
-                <div class="text-[10px] text-slate-400">Earth = 3.09</div>
+
+              <div class="bg-[#0A0F1A] border border-white/[0.08] rounded-lg p-3.5 text-center">
+                <div class="text-xs text-slate-400">OXYGEN PARTIAL PRESSURE (pO₂)</div>
+                <div id="pred-ppo2" class="text-2xl font-bold text-white mt-1">3.47 psi</div>
+                <div class="text-xs text-slate-500 mt-0.5">Sea-Level Air = 3.09 psi</div>
               </div>
             </div>
 
-            <!-- Solid Material Flame Spread Rate Predictions (BASS-II / Saffire calibrated) -->
-            <div class="space-y-3 pt-1">
-              <div class="text-xs font-mono text-sky-400 font-bold">
-                SOLID FUEL FLAME SPREAD PREDICTIONS (BASS-II & SAFFIRE)
+            <!-- Solid Fuel Spread Comparison Bars -->
+            <div class="space-y-3 pt-2">
+              <div class="text-xs font-mono text-sky-400 font-bold uppercase tracking-wider">
+                CALIBRATED SOLID MATERIAL FLAME SPREAD RATES (BASS-II & SAFFIRE)
               </div>
 
-              <!-- Material 1: Thin Cotton / SIBAL Fabric -->
+              <!-- SIBAL Fabric -->
               <div class="space-y-1">
                 <div class="flex justify-between text-xs font-mono">
-                  <span class="text-slate-200">SIBAL Cloth (Cotton-Fiberglass)</span>
-                  <span id="mat-sibal-rate" class="text-amber-400 font-bold telemetry-num">4.8 mm/s</span>
+                  <span class="text-slate-200">SIBAL Composite Fabric (Cotton-Fiberglass, Saffire-I)</span>
+                  <span id="mat-sibal-rate" class="text-amber-400 font-bold">4.8 mm/s</span>
                 </div>
-                <div class="w-full h-2.5 bg-space rounded-full overflow-hidden border border-white/[0.08]">
-                  <div id="mat-sibal-bar" class="h-full bg-gradient-to-r from-sky-400 via-amber-400 to-rose-500" style="width: 68%"></div>
-                </div>
-              </div>
-
-              <!-- Material 2: PMMA (Acrylic Slab - BASS / Saffire / BRE) -->
-              <div class="space-y-1">
-                <div class="flex justify-between text-xs font-mono">
-                  <span class="text-slate-200">PMMA Cast Acrylic (BASS / Saffire)</span>
-                  <span id="mat-pmma-rate" class="text-sky-400 font-bold telemetry-num">2.1 mm/s</span>
-                </div>
-                <div class="w-full h-2.5 bg-space rounded-full overflow-hidden border border-white/[0.08]">
-                  <div id="mat-pmma-bar" class="h-full bg-gradient-to-r from-sky-400 to-amber-400" style="width: 42%"></div>
+                <div class="w-full h-2.5 bg-[#0A0F1A] rounded-full overflow-hidden border border-white/[0.08]">
+                  <div id="mat-sibal-bar" class="h-full bg-amber-400 rounded-full" style="width: 68%"></div>
                 </div>
               </div>
 
-              <!-- Material 3: Silicone Elastomer Composite -->
+              <!-- PMMA Acrylic -->
               <div class="space-y-1">
                 <div class="flex justify-between text-xs font-mono">
-                  <span class="text-slate-200">Silicone Composite (Saffire-II)</span>
-                  <span id="mat-silicone-rate" class="text-emerald-400 font-bold telemetry-num">1.3 mm/s</span>
+                  <span class="text-slate-200">PMMA Cast Acrylic Slab (BASS-II / BRE)</span>
+                  <span id="mat-pmma-rate" class="text-sky-400 font-bold">2.1 mm/s</span>
                 </div>
-                <div class="w-full h-2.5 bg-space rounded-full overflow-hidden border border-white/[0.08]">
-                  <div id="mat-silicone-bar" class="h-full bg-emerald-400" style="width: 28%"></div>
+                <div class="w-full h-2.5 bg-[#0A0F1A] rounded-full overflow-hidden border border-white/[0.08]">
+                  <div id="mat-pmma-bar" class="h-full bg-sky-400 rounded-full" style="width: 42%"></div>
                 </div>
               </div>
 
-              <!-- Material 4: Nomex Flame-Retardant Fabric -->
+              <!-- Silicone Rubber -->
               <div class="space-y-1">
                 <div class="flex justify-between text-xs font-mono">
-                  <span class="text-slate-200">Nomex HT90-40 (Crew Acoustic Liner)</span>
-                  <span id="mat-nomex-rate" class="text-indigo-300 font-bold telemetry-num">0.4 mm/s</span>
+                  <span class="text-slate-200">Silicone Elastomer (Cables & Seals)</span>
+                  <span id="mat-silicone-rate" class="text-emerald-400 font-bold">1.3 mm/s</span>
                 </div>
-                <div class="w-full h-2.5 bg-space rounded-full overflow-hidden border border-white/[0.08]">
-                  <div id="mat-nomex-bar" class="h-full bg-indigo-500" style="width: 15%"></div>
+                <div class="w-full h-2.5 bg-[#0A0F1A] rounded-full overflow-hidden border border-white/[0.08]">
+                  <div id="mat-silicone-bar" class="h-full bg-emerald-400 rounded-full" style="width: 28%"></div>
+                </div>
+              </div>
+
+              <!-- Nomex Fabric -->
+              <div class="space-y-1">
+                <div class="flex justify-between text-xs font-mono">
+                  <span class="text-slate-200">Nomex Aramid (Flight Suit Liner, NASA-STD-6001)</span>
+                  <span id="mat-nomex-rate" class="text-indigo-300 font-bold">0.4 mm/s</span>
+                </div>
+                <div class="w-full h-2.5 bg-[#0A0F1A] rounded-full overflow-hidden border border-white/[0.08]">
+                  <div id="mat-nomex-bar" class="h-full bg-indigo-500 rounded-full" style="width: 15%"></div>
                 </div>
               </div>
             </div>
+
+            <!-- Recommended Emergency Response -->
+            <div class="p-4 rounded-lg bg-[#0A0F1A] border border-white/[0.08] space-y-1 text-xs">
+              <div class="text-sky-400 font-bold font-mono flex items-center gap-1.5">
+                <i class="fa-solid fa-shield-halved"></i> RECOMMENDED FIRE MITIGATION PROTOCOL
+              </div>
+              <div id="pred-suppression-rec" class="text-slate-300 leading-relaxed font-mono">
+                Deploy ultrafine water mist (30–80 µm droplets) or portable CO₂ extinguisher. Maintain ventilation scrubbers on post-fire carbon monoxide removal mode.
+              </div>
+            </div>
+
           </div>
 
-          <!-- Recommended Detection & Suppression Protocol -->
-          <div class="p-3.5 rounded-lg bg-surface-raised border border-white/[0.12] space-y-1.5 font-mono text-xs">
-            <div class="text-sky-400 font-bold flex items-center gap-1.5">
-              <i class="fa-solid fa-shield-halved"></i> RECOMMENDED CONTROLS & SUPPRESSION
-            </div>
-            <div id="pred-suppression-rec" class="text-slate-200 text-[11px] leading-relaxed">
-              <!-- Populated by JS -->
-            </div>
-          </div>
-        </div>
-
-        <!-- RIGHT 4 COLS: PARTIAL-GRAVITY BOUNDING CURVE CHART (0g -> 0.16g -> 0.38g -> 1g) -->
-        <div class="lg:col-span-4 hud-panel hud-panel-amber rounded-xl p-5 flex flex-col justify-between space-y-3">
-          <div>
-            <div class="flex items-center justify-between border-b border-white/[0.08] pb-2">
-              <span class="font-sans text-sm font-bold text-white">PARTIAL-GRAVITY BOUNDING CURVE</span>
+          <!-- Partial-Gravity Bounding Curve Canvas Card -->
+          <div class="hud-panel rounded-xl p-5 space-y-4">
+            <div class="flex items-center justify-between border-b border-white/[0.08] pb-3">
+              <div>
+                <span class="text-xs font-semibold text-amber-400 uppercase tracking-wider font-mono">GRAVITATIONAL CONTINUUM BOUNDING</span>
+                <h3 class="font-bold text-base text-white">Flame Spread Velocity vs Gravity (0.0g to 1.0g)</h3>
+              </div>
               <span class="provenance-badge-empirical">CONCEPTUAL BOUND: ±14%</span>
             </div>
-            <p class="text-[11px] text-slate-400 mt-1.5 font-mono">
-              Why Partial-G (0.16g Moon) can be MORE hazardous than 1g Earth: gentle buoyant flow feeds fresh O₂ without blowing the flame out or causing heavy convective heat loss.
+
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Why Partial Gravity (0.16g Moon) exhibits an accelerated spread peak: gentle natural buoyancy supplies fresh oxygen to the reaction zone without blowing the flame out or causing severe convective heat loss.
             </p>
-          </div>
 
-          <!-- Canvas Chart for Partial-G Bounding -->
-          <div class="relative flex-1 min-h-[250px] bg-[#06080C] rounded-lg border border-white/[0.08] p-2">
-            <canvas id="partial-g-chart-canvas" class="w-full h-full block" role="img" aria-label="Flame spread rate versus gravity continuum bounding curve chart from 0g to 1g"></canvas>
-          </div>
-
-          <!-- Legend & LUCI / FM2 Future Note -->
-          <div class="p-3 rounded-lg bg-surface-sunken border border-white/[0.08] text-[11px] font-mono space-y-1">
-            <div class="flex items-center justify-between text-amber-400 font-bold">
-              <span>BRIDGING THE PARTIAL-G GAP (E-FIELD → LUCI & FM2)</span>
+            <div class="relative w-full h-[260px] bg-[#06080C] rounded-lg border border-white/[0.08] p-2">
+              <canvas id="partial-g-chart-canvas" class="w-full h-full block" role="img" aria-label="Flame spread rate versus gravity continuum bounding curve chart"></canvas>
             </div>
-            <p class="text-slate-400 leading-relaxed">
-              Current curve uses <strong>ACME E-FIELD Flames</strong> (electric-field ion body force mimicking 0.05g–0.5g buoyancy) bounded between ISS 0g and Earth 1g data, awaiting direct lunar flight validation from <strong>LUCI</strong> & <strong>FM2</strong>.
-            </p>
+
+            <div class="p-3 rounded-lg bg-[#0A0F1A] border border-white/[0.08] text-xs font-mono text-slate-400 flex items-center justify-between">
+              <span>Bridging the Partial-G Knowledge Gap (ACME E-Field → LUCI & FM2)</span>
+              <span class="text-amber-400 font-semibold">Peak Hazard: ~0.16g</span>
+            </div>
           </div>
+
         </div>
 
       </div>
+
     </section>
 
-    <!-- =====================================================================
-         MODULE 4: SI CO-PILOT, HISTORICAL INCIDENT FORENSICS & EARTH SPINOFFS
-         ===================================================================== -->
+    <!-- =======================================================================
+         MODULE 4: RESEARCH CO-PILOT & MISSION FORENSICS
+         ======================================================================= -->
     <section id="tab-sicopilot" class="tab-section hidden space-y-6">
       
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        <!-- LEFT 7 COLS: INTERACTIVE SI RESEARCH CO-PILOT -->
+
+        <!-- LEFT 7 COLS: CURATED SCIENTIFIC KNOWLEDGE BASE -->
         <div class="lg:col-span-7 hud-panel rounded-xl p-5 flex flex-col justify-between space-y-4">
-          <div class="space-y-2">
+          <div class="space-y-3">
+            
             <div class="flex items-center justify-between border-b border-white/[0.08] pb-3">
-              <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-indigo-400"></span>
-                <h2 class="font-sans text-base sm:text-lg font-bold text-white">PYRO-SI // RESEARCH CO-PILOT & SYNTHESIS</h2>
+              <div>
+                <span class="text-xs font-semibold text-indigo-400 uppercase tracking-wider font-mono">EVIDENCE-GROUNDED RESEARCH CO-PILOT</span>
+                <h2 class="font-bold text-lg text-white mt-0.5">NASA Combustion Science Knowledge Base</h2>
               </div>
               <span class="provenance-badge-verified">PSI ARCHIVE v2026.4</span>
             </div>
-            <p class="text-xs text-slate-300">
-              Query NASA Physical Sciences Informatics (PSI) combustion archives, or click a verified synthesis prompt below to generate structured engineering answers with authentic flight citations.
+
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Explore curated research syntheses cross-referenced against NASA's Physical Sciences Informatics repository, or enter custom inquiries to retrieve documented experimental findings.
             </p>
+
+            <!-- Curated Inquiries -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
+              <button onclick="runSiPrompt('moon')" class="text-left p-3 rounded-lg bg-[#0A0F1A] hover:bg-[#182235] border border-white/[0.08] hover:border-sky-400 transition text-slate-200 space-y-1">
+                <div class="text-amber-400 font-bold flex items-center gap-1.5">
+                  <i class="fa-solid fa-moon"></i> Lunar Exploration Atmosphere
+                </div>
+                <div class="text-[11px] text-slate-400">Why is the 34% O₂ / 8.2 psi Moon base more flammable than ISS?</div>
+              </button>
+
+              <button onclick="runSiPrompt('coolflames')" class="text-left p-3 rounded-lg bg-[#0A0F1A] hover:bg-[#182235] border border-white/[0.08] hover:border-sky-400 transition text-slate-200 space-y-1">
+                <div class="text-sky-400 font-bold flex items-center gap-1.5">
+                  <i class="fa-solid fa-fire-extinguisher"></i> Low-Temperature Cool Flames
+                </div>
+                <div class="text-[11px] text-slate-400">How did FLEX discover cool flames and re-ignition hazards?</div>
+              </button>
+
+              <button onclick="runSiPrompt('hardware')" class="text-left p-3 rounded-lg bg-[#0A0F1A] hover:bg-[#182235] border border-white/[0.08] hover:border-sky-400 transition text-slate-200 space-y-1">
+                <div class="text-emerald-400 font-bold flex items-center gap-1.5">
+                  <i class="fa-solid fa-gears"></i> Facility Comparison
+                </div>
+                <div class="text-[11px] text-slate-400">Compare CIR (ACME, FLEX) vs MSG (BASS, SAME) vs Cygnus.</div>
+              </button>
+
+              <button onclick="runSiPrompt('alarms')" class="text-left p-3 rounded-lg bg-[#0A0F1A] hover:bg-[#182235] border border-white/[0.08] hover:border-sky-400 transition text-slate-200 space-y-1">
+                <div class="text-rose-400 font-bold flex items-center gap-1.5">
+                  <i class="fa-solid fa-bell"></i> Deep-Space Smoke Detection
+                </div>
+                <div class="text-[11px] text-slate-400">How SAME-R and DAFT prevent false alarms from floating dust.</div>
+              </button>
+            </div>
+
+            <!-- Terminal Output -->
+            <div id="si-response-terminal" class="min-h-[280px] max-h-[360px] bg-[#06080C] border border-white/[0.08] rounded-xl p-4 font-mono text-xs leading-relaxed space-y-3 overflow-y-auto">
+              <!-- Populated by copilot-controller.js -->
+            </div>
+
           </div>
 
-          <!-- Preset SI Challenge Prompts -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <button onclick="runSiPrompt('moon')" class="text-left p-2.5 rounded-lg bg-surface-sunken hover:bg-surface-raised border border-white/[0.08] hover:border-sky-400/50 transition text-xs font-mono text-slate-200 flex items-start gap-2">
-              <i class="fa-solid fa-moon text-amber-400 mt-0.5"></i>
-              <span>Why is the planned 30%+ O₂ / 10.2 psi Moon Base more flammable than ISS, and which PSI studies bound it?</span>
-            </button>
-            <button onclick="runSiPrompt('coolflames')" class="text-left p-2.5 rounded-lg bg-surface-sunken hover:bg-surface-raised border border-white/[0.08] hover:border-sky-400/50 transition text-xs font-mono text-slate-200 flex items-start gap-2">
-              <i class="fa-solid fa-fire-extinguisher text-sky-400 mt-0.5"></i>
-              <span>How did FLEX & CFI-G discover "Cool Flames" and why can extinguished fires reignite in space?</span>
-            </button>
-            <button onclick="runSiPrompt('hardware')" class="text-left p-2.5 rounded-lg bg-surface-sunken hover:bg-surface-raised border border-white/[0.08] hover:border-sky-400/50 transition text-xs font-mono text-slate-200 flex items-start gap-2">
-              <i class="fa-solid fa-gears text-emerald-400 mt-0.5"></i>
-              <span>Compare CIR (ACME, FLEX) vs. MSG (BASS, SPICE, SAME) vs. Cygnus (Saffire) hardware & fuels.</span>
-            </button>
-            <button onclick="runSiPrompt('alarms')" class="text-left p-2.5 rounded-lg bg-surface-sunken hover:bg-surface-raised border border-white/[0.08] hover:border-sky-400/50 transition text-xs font-mono text-slate-200 flex items-start gap-2">
-              <i class="fa-solid fa-bell text-rose-400 mt-0.5"></i>
-              <span>How do SAME/SAME-R and DAFT prevent false fire alarms like the Artemis II smoke alert?</span>
-            </button>
-          </div>
-
-          <!-- SI Output Terminal Box -->
-          <div id="si-response-terminal" class="flex-1 min-h-[270px] bg-[#06080C] border border-white/[0.08] rounded-xl p-4 font-mono text-xs leading-relaxed space-y-3 overflow-y-auto">
-            <!-- Populated by JS -->
-          </div>
-
-          <!-- Custom Query Input Bar -->
-          <div class="flex gap-2">
-            <input id="si-custom-input" onkeydown="if(event.key==='Enter') submitCustomSiQuery()" type="text" placeholder="Ask Pyro-SI about BASS-II, Saffire, E-FIELD, Cool Flames, Spacesuits, or Earth spinoffs..." class="flex-1 px-3.5 py-2.5 rounded-lg bg-surface-sunken border border-slate-700 focus:border-sky-400 text-xs font-mono text-white outline-none" />
-            <button onclick="submitCustomSiQuery()" class="px-4 py-2.5 rounded-lg bg-sky-500 text-slate-950 font-mono text-xs font-bold hover:bg-sky-400 transition flex items-center gap-1.5 shadow-sm">
-              <i class="fa-solid fa-bolt"></i> SYNTHESIZE
+          <!-- Custom Inquiry Bar -->
+          <div class="flex gap-2 pt-2">
+            <input id="si-custom-input" onkeydown="if(event.key==='Enter') submitCustomSiQuery()" type="text" placeholder="Search BASS-II, Saffire, cool flames, suppression, or spacesuits..." class="flex-1 px-4 py-2.5 rounded-lg bg-[#0A0F1A] border border-slate-700 focus:border-sky-400 text-xs text-white outline-none font-mono" />
+            <button onclick="submitCustomSiQuery()" class="px-5 py-2.5 rounded-lg bg-sky-500 text-slate-950 font-bold text-xs hover:bg-sky-400 transition flex items-center gap-1.5 font-mono shadow-sm">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <span>SEARCH</span>
             </button>
           </div>
         </div>
 
-        <!-- RIGHT 5 COLS: HISTORICAL SPACECRAFT FIRE INCIDENTS & EARTH SPINOFFS -->
+        <!-- RIGHT 5 COLS: HISTORICAL FORENSICS & TERRESTRIAL SPINOFFS -->
         <div class="lg:col-span-5 space-y-5">
           
-          <!-- Historical Missions & Lessons Learned -->
-          <div class="hud-panel rounded-xl p-5 space-y-3">
-            <div class="border-b border-white/[0.08] pb-2">
-              <span class="text-[10px] font-mono text-rose-400 uppercase font-bold"><i class="fa-solid fa-triangle-exclamation mr-1"></i>HISTORICAL SPACEFIRE FORENSICS</span>
-              <h3 class="font-sans text-base font-bold text-white">From Apollo 1 & Mir to Artemis II: How PSI Data Prevents Disasters</h3>
+          <!-- Historical Fire Incidents -->
+          <div class="hud-panel rounded-xl p-5 space-y-4">
+            <div class="border-b border-white/[0.08] pb-3">
+              <span class="text-xs font-semibold text-rose-400 uppercase tracking-wider font-mono">HISTORICAL SPACECRAFT FIRE FORENSICS</span>
+              <h3 class="font-bold text-base text-white mt-0.5">Lessons from Apollo 1, Mir & Artemis II</h3>
             </div>
 
-            <div class="space-y-2.5 text-xs">
-              <div class="p-3 rounded-lg bg-surface-sunken border-l-4 border-rose-500 border border-white/[0.08] space-y-1">
+            <div class="space-y-3 text-xs">
+              <div class="p-3 rounded-lg bg-[#0A0F1A] border-l-4 border-rose-500 border border-white/[0.08] space-y-1">
                 <div class="flex justify-between font-mono font-bold text-white">
-                  <span>Apollo 1 Pre-Launch Cabin Fire (1967)</span>
-                  <span class="text-rose-400 telemetry-num">16.7 psi / 100% O₂</span>
+                  <span>Apollo 1 Cabin Fire (1967)</span>
+                  <span class="text-rose-400">16.7 psi / 100% O₂</span>
                 </div>
-                <p class="text-slate-300 text-[11px]">
-                  High-pressure pure O₂ turned Velcro and nylon into explosive fuels. <strong>PSI Link:</strong> <em>BASS-II</em>, <em>BRE</em>, and <em>Saffire</em> establish strict Limiting Oxygen Index (LOI) and pressure thresholds for all crew materials.
+                <p class="text-slate-300 text-[11px] leading-relaxed">
+                  Pure high-pressure oxygen turned Velcro and nylon into explosive fuels. <strong>PSI Link:</strong> <em>BASS-II</em> and <em>Saffire</em> define strict Limiting Oxygen Index (LOI) thresholds to prevent flammable material selection.
                 </p>
               </div>
 
-              <div class="p-3 rounded-lg bg-surface-sunken border-l-4 border-amber-500 border border-white/[0.08] space-y-1">
+              <div class="p-3 rounded-lg bg-[#0A0F1A] border-l-4 border-amber-500 border border-white/[0.08] space-y-1">
                 <div class="flex justify-between font-mono font-bold text-white">
-                  <span>Apollo 13 Oxygen Tank Explosion (1970)</span>
-                  <span class="text-amber-400">Cryogenic O₂ / Teflon Wire</span>
+                  <span>Mir Station Solid Oxygen Fire (1997)</span>
+                  <span class="text-amber-400">Solid Fuel Candle</span>
                 </div>
-                <p class="text-slate-300 text-[11px]">
-                  Damaged thermostat wiring ignited Teflon insulation inside Supercritical O₂ Tank #2. <strong>PSI Link:</strong> <em>BASS</em> wire-overload ignition tests and <em>ACME CFI-G</em> (up to 85% O₂) model high-O₂ combustion dynamics.
+                <p class="text-slate-300 text-[11px] leading-relaxed">
+                  Vika oxygen canister burned open for 90 seconds, filling the module with dense toxic smoke. <strong>PSI Link:</strong> <em>FLEX</em> and <em>SAME</em> establish low-toxicity water-mist suppression and zero-buoyancy smoke dynamics.
                 </p>
               </div>
 
-              <div class="p-3 rounded-lg bg-surface-sunken border-l-4 border-amber-400 border border-white/[0.08] space-y-1">
+              <div class="p-3 rounded-lg bg-[#0A0F1A] border-l-4 border-sky-400 border border-white/[0.08] space-y-1">
                 <div class="flex justify-between font-mono font-bold text-white">
-                  <span>Mir Space Station Vika Generator Fire (1997)</span>
-                  <span class="text-amber-400">Solid O₂ Candle ("Blowtorch")</span>
+                  <span>Artemis II Smoke Nuisance Alert</span>
+                  <span class="text-sky-400">Deep Space Dust</span>
                 </div>
-                <p class="text-slate-300 text-[11px]">
-                  Lithium perchlorate oxygen canister burned for 14 minutes, filling Mir with dense smoke. <strong>PSI Link:</strong> <em>FLEX</em> (CO₂/He & water-mist suppression) and <em>SAME</em> (smoke particle aging in microgravity).
-                </p>
-              </div>
-
-              <div class="p-3 rounded-lg bg-surface-sunken border-l-4 border-sky-400 border border-white/[0.08] space-y-1">
-                <div class="flex justify-between font-mono font-bold text-white">
-                  <span>Artemis II Deep-Space Smoke Alarm (80,000 mi Out)</span>
-                  <span class="text-sky-400">Nuisance Dust vs. Smoke</span>
-                </div>
-                <p class="text-slate-300 text-[11px]">
-                  “Make the fire alarm go off 80,000 miles from home...” Floating cabin dust can trigger standard optical detectors. <strong>PSI Link:</strong> <em>SAME / SAME-R</em> & <em>DAFT / DAFT-2</em> enable dust-vs-smoke discrimination.
+                <p class="text-slate-300 text-[11px] leading-relaxed">
+                  Floating lunar dust particles trigger false optical alarms. <strong>PSI Link:</strong> <em>SAME-R</em> and <em>DAFT</em> characterize particle size distributions to prevent false alarms millions of miles from Earth.
                 </p>
               </div>
             </div>
           </div>
 
-          <!-- Terrestrial Applications (Earth Fire Safety Spinoffs) -->
-          <div class="hud-panel hud-panel-amber rounded-xl p-5 space-y-3">
-            <div class="border-b border-white/[0.08] pb-2">
-              <span class="text-[10px] font-mono text-emerald-400 uppercase font-bold"><i class="fa-solid fa-earth-americas mr-1"></i>EARTH FIRE SAFETY SPINOFFS</span>
-              <h3 class="font-sans text-base font-bold text-white">How ISS Combustion Science Protects Lives on Earth</h3>
+          <!-- Terrestrial Spinoffs -->
+          <div class="hud-panel rounded-xl p-5 space-y-4">
+            <div class="border-b border-white/[0.08] pb-3">
+              <span class="text-xs font-semibold text-emerald-400 uppercase tracking-wider font-mono">TERRESTRIAL APPLICATION SPINOFFS</span>
+              <h3 class="font-bold text-base text-white mt-0.5">How Space Combustion Science Saves Lives on Earth</h3>
             </div>
 
-            <div class="grid grid-cols-1 gap-2.5 text-xs">
-              <div class="p-2.5 rounded-lg bg-surface-sunken border border-white/[0.08] flex items-start gap-3">
+            <div class="space-y-3 text-xs">
+              <div class="p-3 rounded-lg bg-[#0A0F1A] border border-white/[0.08] flex items-start gap-3">
                 <div class="w-8 h-8 rounded bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 shrink-0 mt-0.5">
                   <i class="fa-solid fa-spray-can-sparkles"></i>
                 </div>
                 <div>
-                  <div class="font-mono font-bold text-white">Fine-Water-Mist Extinguishers (ISS & FLEX)</div>
-                  <p class="text-slate-400 text-[11px]">Developed for ISS to replace toxic Halon; ultra-fine <span class="text-sky-400">50-micron water droplets</span> absorb radiant heat and vaporize rapidly—now safeguarding terrestrial server farms, hospitals, and museums.</p>
+                  <div class="font-bold text-white font-mono">Fine-Water-Mist Fire Extinguishers</div>
+                  <p class="text-slate-400 text-[11px] mt-0.5">Developed for ISS to replace toxic Halon; 50-micron water droplets rapidly vaporize to absorb radiant heat, protecting data centers, aircraft, and museums.</p>
                 </div>
               </div>
 
-              <div class="p-2.5 rounded-lg bg-surface-sunken border border-white/[0.08] flex items-start gap-3">
+              <div class="p-3 rounded-lg bg-[#0A0F1A] border border-white/[0.08] flex items-start gap-3">
                 <div class="w-8 h-8 rounded bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5">
                   <i class="fa-solid fa-smog"></i>
                 </div>
                 <div>
-                  <div class="font-mono font-bold text-white">Dust-Discriminating Smoke Detectors (Shuttle / SAME / DAFT)</div>
-                  <p class="text-slate-400 text-[11px]">Multi-angle scattering and particle size discrimination prevent false alarms in dusty underground mines, industrial mills, and commercial aircraft cargo bays.</p>
-                </div>
-              </div>
-
-              <div class="p-2.5 rounded-lg bg-surface-sunken border border-white/[0.08] flex items-start gap-3">
-                <div class="w-8 h-8 rounded bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0 mt-0.5">
-                  <i class="fa-solid fa-helmet-safety"></i>
-                </div>
-                <div>
-                  <div class="font-mono font-bold text-white">Firefighter SCBA Air Tanks & Thermal Turnout Gear</div>
-                  <p class="text-slate-400 text-[11px]">Composite aluminum/carbon-fiber pressure vessels from Apollo/Shuttle spacesuits slashed firefighter air tank weight by 40%, while PBI/Nomex space textiles protect structural firefighters.</p>
+                  <div class="font-bold text-white font-mono">Mine & Aviation Dust-Discriminating Detectors</div>
+                  <p class="text-slate-400 text-[11px] mt-0.5">Derived from SAME-R and DAFT aerosol physics to eliminate false alarms in dusty underground mines and commercial cargo bays.</p>
                 </div>
               </div>
             </div>
@@ -840,128 +836,90 @@
         </div>
 
       </div>
+
     </section>
 
-    <!-- =====================================================================
-         MODULE 5: SPACE APPS "PROJECT WHOAMI" SUBMISSION KIT
-         ===================================================================== -->
+    <!-- =======================================================================
+         MODULE 5: SUBMISSION KIT
+         ======================================================================= -->
     <section id="tab-submission" class="tab-section hidden space-y-6">
-      <div class="hud-panel hud-panel-amber rounded-xl p-5 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-        <div>
-          <div class="text-xs font-mono text-amber-400 font-bold">
-            <i class="fa-solid fa-rocket mr-1"></i>OFFICIAL 2026 NASA SPACE APPS SUBMISSION PACKET — TEAM PROJECT: whoami
-          </div>
-          <h2 class="font-sans text-lg sm:text-xl font-bold text-white mt-0.5 tracking-tight">
-            Ready-to-Paste Project Submission Answers, 7-Slide Blueprint & NASA Resource Links
-          </h2>
-          <p class="text-xs text-slate-300 mt-1">
-            Click any <strong>"COPY FIELD"</strong> button below to copy the exact, character-counted response directly into your NASA Space Apps Challenge submission form.
-          </p>
-        </div>
-        <div class="px-3 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30 font-mono text-xs text-emerald-400">
-          <i class="fa-solid fa-circle-check mr-1"></i> GLOBAL AWARD ELIGIBILITY CHECKLIST: COMPLETE
-        </div>
-      </div>
-
-      <!-- Copyable Submission Fields Grid -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      
+      <div class="hud-panel rounded-xl p-6 space-y-6">
         
-        <!-- Field 1: Project Name & Summary (50-200 Words) -->
-        <div class="hud-panel rounded-xl p-5 space-y-3">
-          <div class="flex items-center justify-between border-b border-white/[0.08] pb-2">
-            <div>
-              <span class="text-[10px] font-mono text-sky-400 uppercase">FIELD 1: PROJECT NAME & SUMMARY (158 WORDS / &lt;1500 CHARS)</span>
-              <h3 class="font-sans text-sm font-bold text-white">Project Name & Short Summary *</h3>
-            </div>
-            <button onclick="copySubmissionBlock('sub-summary-text', this)" class="px-3 py-1 rounded bg-sky-500/20 border border-sky-400/40 text-sky-300 font-mono text-xs font-bold hover:bg-sky-500 hover:text-slate-950 transition">
-              <i class="fa-regular fa-copy mr-1"></i>COPY SUMMARY
-            </button>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/[0.08] pb-4">
+          <div>
+            <span class="text-xs font-semibold text-amber-400 uppercase tracking-wider font-mono">NASA SPACE APPS CHALLENGE 2026</span>
+            <h2 class="font-bold text-xl text-white mt-0.5">Flame in Freefall — Submission Kit & Documentation</h2>
+            <p class="text-xs text-slate-300 mt-1">Project Whoami • Official Challenge Deliverables Dossier</p>
           </div>
-          <div id="sub-summary-text" class="p-3.5 rounded-lg bg-surface-sunken border border-white/[0.08] font-mono text-xs text-slate-200 leading-relaxed space-y-2">
-            <p><strong>Project Name:</strong> whoami — GODEYE // PYRO-SI: Flame in Freefall Orbital Fire Safety Intelligence</p>
-            <p><strong>Summary:</strong> GODEYE // PYRO-SI (Project whoami) is an interactive Super Intelligence (SI) and 3D spatial telemetry dashboard that transforms NASA’s Physical Science Informatics (PSI) microgravity combustion archives into actionable fire safety insights for human spaceflight and Earth applications. Combining a real-time 3D orbital habitat globe ("GodEye") with a multi-attribute PSI investigation ranker and a partial-gravity flammability simulator, our platform synthesizes data from BASS/BASS-II, Saffire I–III, ACME (BRE, CFI-G, E-FIELD), FLEX/CFI, SPICE/SLICE, and SAME/DAFT. Users can lock onto crewed environments—including the ISS (0g, 21% O2), Lunar South Pole Base (0.16g, 10.2 psi, 34% O2), EVA Spacesuits (4.3 psi, 100% O2), and Mars Habitats (0.38g)—to compare hardware setups (CIR vs. MSG vs. Cygnus), visualize spherical and inside-out diffusion flames, and bound partial-gravity fire spread rates before LUCI and FM2 fly. By bridging complex experimental telemetry with predictive modeling, whoami makes the next giant leap safer.</p>
-          </div>
+          <span class="provenance-badge-verified">OFFICIAL DOSSIER v2026.4</span>
         </div>
 
-        <!-- Field 2: Project Details -->
-        <div class="hud-panel rounded-xl p-5 space-y-3">
-          <div class="flex items-center justify-between border-b border-white/[0.08] pb-2">
-            <div>
-              <span class="text-[10px] font-mono text-sky-400 uppercase">FIELD 2: PROJECT DETAILS & ARCHITECTURE</span>
-              <h3 class="font-sans text-sm font-bold text-white">Project Details (How it Works, Benefits, Stack & Creativity) *</h3>
-            </div>
-            <button onclick="copySubmissionBlock('sub-details-text', this)" class="px-3 py-1 rounded bg-sky-500/20 border border-sky-400/40 text-sky-300 font-mono text-xs font-bold hover:bg-sky-500 hover:text-slate-950 transition">
-              <i class="fa-regular fa-copy mr-1"></i>COPY DETAILS
-            </button>
-          </div>
-          <div id="sub-details-text" class="p-3.5 rounded-lg bg-surface-sunken border border-white/[0.08] font-mono text-xs text-slate-200 leading-relaxed space-y-2 max-h-[260px] overflow-y-auto">
-            <p><strong>What It Does & How It Works:</strong> GODEYE // PYRO-SI solves the data overload in NASA's Physical Science Informatics (PSI) repository through four integrated modules: (1) The GodEye 3D Orbital & Habitat Tactical Globe, allowing engineers and students to select orbital/surface habitats and visualize live microgravity vs. partial-g flame physics (spherical diffusion flames, ACME CFI-G 85% O2 inside-out flames, and lunar 34% O2 convective plumes); (2) An SI-Powered PSI Investigation Ranker & Side-by-Side Comparator covering BASS-II, Saffire I-III, ACME (BRE, CFI-G, E-FIELD), FLEX/FLEX-2, SPICE/SLICE, and SAME/DAFT; (3) A Predictive Flammability & Partial-Gravity Bounding Simulator that calculates Limiting Oxygen Index (LOI), oxygen partial pressure, and flame spread rates across PMMA, SIBAL, Silicone, and Nomex from 0g to 1g; and (4) An SI Research Co-Pilot linking historical incidents (Apollo 1, Apollo 13, Mir, Artemis II) to terrestrial spinoffs (fine-water-mist extinguishers, mining dust/smoke detectors, firefighter SCBA gear).</p>
-            <p><strong>Tools & Tech Stack:</strong> Built with HTML5, Tailwind CSS, Three.js (3D WebGL orbital globe), HTML5 2D Physics Canvas (particle diffusion & partial-gravity bounding curves), and client-side Super Intelligence (SI) multi-attribute ranking algorithms.</p>
-            <p><strong>Intended Impact:</strong> Empowers aerospace engineers, mission planners, and researchers to rapidly identify fire hazards in elevated-oxygen lunar rovers and habitats while bridging the partial-gravity knowledge gap using E-FIELD ion-body-force equivalents ahead of upcoming LUCI and FM2 lunar experiments.</p>
-          </div>
-        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-        <!-- Field 3: 7-Slide Demo Presentation Blueprint -->
-        <div class="hud-panel rounded-xl p-5 space-y-3">
-          <div class="flex items-center justify-between border-b border-white/[0.08] pb-2">
-            <div>
-              <span class="text-[10px] font-mono text-amber-400 uppercase">FIELD 3: 7-SLIDE DEMO DECK & 30-SEC VIDEO SCRIPT</span>
-              <h3 class="font-sans text-sm font-bold text-white">7-Slide Global Award Presentation Blueprint</h3>
+          <!-- Section 1: Project Overview -->
+          <div class="space-y-3 bg-[#0A0F1A] border border-white/[0.08] rounded-xl p-5">
+            <div class="flex items-center justify-between border-b border-white/[0.08] pb-2">
+              <h3 class="font-bold text-sm text-white font-mono">1. High-Level Summary</h3>
+              <button onclick="copySubmissionBlock('sub-summary-text', this)" class="px-3 py-1 rounded bg-sky-500/10 border border-sky-400/30 text-sky-400 font-mono text-xs font-bold hover:bg-sky-500 hover:text-slate-950 transition">
+                <i class="fa-regular fa-copy mr-1"></i>Copy
+              </button>
             </div>
-            <button onclick="copySubmissionBlock('sub-slides-text', this)" class="px-3 py-1 rounded bg-amber-500/20 border border-amber-500/40 text-amber-300 font-mono text-xs font-bold hover:bg-amber-500 hover:text-slate-950 transition">
-              <i class="fa-regular fa-copy mr-1"></i>COPY 7-SLIDE DECK
-            </button>
+            <div id="sub-summary-text" class="text-xs text-slate-300 leading-relaxed font-mono">
+              GODEYE // PYRO-SI is a spaceflight fire safety intelligence platform that transforms raw microgravity research from NASA's Physical Sciences Informatics (PSI) repository into actionable design tools for lunar habitats, Mars missions, and deep-space transit. By synthesizing completed investigations (BASS-II, Saffire, ACME, FLEX, SAME), PYRO-SI models the critical partial-gravity flammability corridor where gentle buoyant drafts accelerate flame spread in 34% O₂ exploration atmospheres.
+            </div>
           </div>
-          <div id="sub-slides-text" class="p-3.5 rounded-lg bg-surface-sunken border border-white/[0.08] font-mono text-xs text-slate-200 leading-relaxed space-y-1.5 max-h-[260px] overflow-y-auto">
-            <p><strong>Slide 1 (Title):</strong> whoami — GODEYE // PYRO-SI: SI-Powered Fire Safety Insights from NASA Microgravity Combustion Data.</p>
-            <p><strong>Slide 2 (The Problem):</strong> Fire in space is existential (Apollo 1, Mir, Artemis II smoke alarm 80,000 miles out). Lunar habitats (30–34% O2, 10.2 psi, 0.16g) increase material flammability by >40%, yet NASA's PSI combustion data is vast and hard to compare.</p>
-            <p><strong>Slide 3 (GodEye 3D Spatial & Flame Lab):</strong> Live demo of the 3D Orbital Habitat Globe + Real-Time Flame Chamber comparing 0g spherical diffusion flames, ACME CFI-G 85% O2 inside-out flames, and 0.16g Lunar plumes.</p>
-            <p><strong>Slide 4 (SI Investigation Ranker & Comparator):</strong> Side-by-side synthesis of CIR (ACME, FLEX) vs. MSG (BASS-II, SPICE, SAME) vs. Cygnus (Saffire I-III) hardware, fuels, and variables.</p>
-            <p><strong>Slide 5 (Predictive Partial-G Bounding Model):</strong> How we bound 0.16g Lunar and 0.38g Martian fire spread using BASS-II ventilation curves and ACME E-FIELD ion buoyancy before LUCI & FM2 fly.</p>
-            <p><strong>Slide 6 (Earth Spinoffs & Detection):</strong> From FLEX Cool Flames & ISS fine-water-mist extinguishers to SAME/DAFT dust-discriminating smoke detectors for mining and firefighter SCBA tanks.</p>
-            <p><strong>Slide 7 (Conclusion & Impact):</strong> Turning complex PSI telemetry into clear answers for safer Artemis, Lunar Base, and Mars exploration.</p>
-          </div>
-        </div>
 
-        <!-- Field 4: Required NASA Data Links & SI Disclosure -->
-        <div class="hud-panel rounded-xl p-5 space-y-3">
-          <div class="flex items-center justify-between border-b border-white/[0.08] pb-2">
-            <div>
-              <span class="text-[10px] font-mono text-emerald-400 uppercase">FIELD 4: FORMATTED NASA DATA URLS & SI DISCLOSURE</span>
-              <h3 class="font-sans text-sm font-bold text-white">NASA Data Links & Super Intelligence (SI) Declaration *</h3>
+          <!-- Section 2: Technical Architecture -->
+          <div class="space-y-3 bg-[#0A0F1A] border border-white/[0.08] rounded-xl p-5">
+            <div class="flex items-center justify-between border-b border-white/[0.08] pb-2">
+              <h3 class="font-bold text-sm text-white font-mono">2. Tools & Technologies</h3>
+              <button onclick="copySubmissionBlock('sub-tech-text', this)" class="px-3 py-1 rounded bg-sky-500/10 border border-sky-400/30 text-sky-400 font-mono text-xs font-bold hover:bg-sky-500 hover:text-slate-950 transition">
+                <i class="fa-regular fa-copy mr-1"></i>Copy
+              </button>
             </div>
-            <button onclick="copySubmissionBlock('sub-links-text', this)" class="px-3 py-1 rounded bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-mono text-xs font-bold hover:bg-emerald-500 hover:text-slate-950 transition">
-              <i class="fa-regular fa-copy mr-1"></i>COPY LINKS & SI NOTE
-            </button>
+            <div id="sub-tech-text" class="text-xs text-slate-300 leading-relaxed font-mono">
+              Engineered with HTML5, Tailwind CSS, Three.js (interactive WebGL 3D orbital spaceflight mechanics), HTML5 Canvas 2D Physics (real-time particle combustion diffusion & partial-gravity bounding curves), and modular client-side multi-criteria decision algorithms. Backend services powered by FastAPI proxying NASA PSI open data and Google Gemini generative research synthesis.
+            </div>
           </div>
-          <div id="sub-links-text" class="p-3.5 rounded-lg bg-surface-sunken border border-white/[0.08] font-mono text-xs text-slate-200 leading-relaxed space-y-1.5 max-h-[260px] overflow-y-auto">
-            <p><strong>1. Link Text:</strong> NASA Physical Sciences Informatics (PSI) Data Repository - Combustion Science<br><strong>Link URL:</strong> https://psi.nasa.gov/</p>
-            <p><strong>2. Link Text:</strong> NASA Space Station Research Explorer - Combustion Science Investigations (BASS-II, Saffire, ACME, FLEX, SAME)<br><strong>Link URL:</strong> https://www.nasa.gov/mission/station/research-explorer/search/?#q=combustion</p>
-            <p><strong>3. Link Text:</strong> A Researcher’s Guide to International Space Station Combustion Science (NASA NP-2015-03-015-JSC)<br><strong>Link URL:</strong> https://www.nasa.gov/wp-content/uploads/2015/05/combustionscience_iss-researchersguide_2015.pdf</p>
-            <p><strong>4. Link Text:</strong> NASA Spinoff - Fine Water Mist, Smoke Detectors & Firefighter SCBA Gear<br><strong>Link URL:</strong> https://spinoff.nasa.gov/</p>
-            <p><strong>Use of Super Intelligence (SI) Disclosure:</strong> SI tools (Large Language Models) were utilized to assist in code scaffolding, synthesizing multi-attribute ranking weights across NASA PSI combustion metadata, and structuring the interactive SI Research Co-Pilot responses. All generated UI elements include the visible header/footer watermark: "[SI-GENERATED TELEMETRY & CODE ASSISTED — NASA SPACE APPS 2026 COMPLIANT (NO NASA LOGOS USED)]". Zero NASA logos or restricted insignias are used.</p>
+
+          <!-- Section 3: Detailed Description -->
+          <div class="space-y-3 bg-[#0A0F1A] border border-white/[0.08] rounded-xl p-5 lg:col-span-2">
+            <div class="flex items-center justify-between border-b border-white/[0.08] pb-2">
+              <h3 class="font-bold text-sm text-white font-mono">3. What It Does & Spaceflight Impact</h3>
+              <button onclick="copySubmissionBlock('sub-details-text', this)" class="px-3 py-1 rounded bg-sky-500/10 border border-sky-400/30 text-sky-400 font-mono text-xs font-bold hover:bg-sky-500 hover:text-slate-950 transition">
+                <i class="fa-regular fa-copy mr-1"></i>Copy
+              </button>
+            </div>
+            <div id="sub-details-text" class="text-xs text-slate-300 leading-relaxed font-mono space-y-2">
+              <p>PYRO-SI solves data fragmentation in NASA's Physical Sciences Informatics (PSI) repository through five integrated capabilities: (1) The GodEye 3D Orbital & Combustion Physics Workspace, enabling engineers to compare microgravity vs partial-g flame dynamics; (2) An Interactive PSI Investigation Matrix & Comparator covering 10 flight campaigns; (3) A Predictive Flammability & Partial-Gravity Bounding Simulator calculating Limiting Oxygen Index (LOI), oxygen partial pressure, and flame spread rates across SIBAL, PMMA, silicone, and Nomex; (4) An Evidence-Grounded Research Co-Pilot linking historical spacecraft fires (Apollo 1, Mir 1997, Artemis II) to terrestrial spinoffs; and (5) A verified dataset catalog detailing 9 S3 archived flight datasets and 1 planned Artemis CLPS development charter.</p>
+            </div>
           </div>
+
         </div>
 
       </div>
+
     </section>
 
   </main>
 
-  <!-- COMPLIANT FOOTER -->
-  <footer class="bg-[#06080C] border-t border-white/[0.08] py-4 px-4 mt-8 font-mono text-xs text-slate-400">
-    <div class="max-w-[1600px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+  <!-- =========================================================================
+       FOOTER
+       ========================================================================= -->
+  <footer class="bg-[#0A0F1A] border-t border-white/[0.08] py-4 px-6 text-xs font-mono text-slate-400">
+    <div class="max-w-[1680px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
       <div class="flex items-center gap-2">
-        <span class="text-sky-400 font-bold">GODEYE // PYRO-SI</span>
-        <span>— Built for the 2026 NASA Space Apps Challenge ("Flame in Freefall") | Project: <strong class="text-white">whoami</strong></span>
+        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+        <span>NASA Space Apps Challenge 2026 • Flame in Freefall • Team Project: whoami</span>
       </div>
-      <div class="text-[11px] text-indigo-300 bg-indigo-500/10 border border-indigo-500/30 px-2.5 py-1 rounded">
-        METADATA ACKNOWLEDGMENT: Code, predictive synthesis & visuals assisted by Super Intelligence (SI). No NASA branding/logos used.
+      <div>
+        <span>Grounded on NASA Physical Sciences Informatics (PSI) Open Data • CC0-1.0</span>
       </div>
     </div>
   </footer>
 
-  <!-- Modular ES Application Orchestrator -->
+  <!-- Application Entry Point Script -->
   <script type="module" src="./src/app/main.js"></script>
 </body>
 </html>

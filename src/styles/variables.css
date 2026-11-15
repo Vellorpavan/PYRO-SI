@@ -1,35 +1,35 @@
 /* =============================================================================
-   GODEYE // PYRO-SI — Design Tokens (Aerospace Scientific Standard)
+   PYRO-SI — Aerospace Precision Design System Tokens
    NASA Space Apps Challenge 2026 — Flame in Freefall
-   Benchmarked against NASA Eyes, SpaceX Crew Dragon, Palantir Foundry, Linear
+   Benchmarked against NASA Eyes, ESA SSA, CERN, Nature Science, Linear
    ============================================================================= */
 
 :root {
   /* Canvas & Elevation Hierarchy */
-  --canvas-void:          #06080C; /* Deepest background behind 3D canvases & charts */
-  --canvas-base:          #0B0E14; /* Default darkroom application background */
-  --surface-base:         #111622; /* Primary card & panel container */
-  --surface-raised:       #182030; /* Elevated components, headers, active chips */
-  --surface-overlay:      #1F293D; /* Modal dialogs, floating tooltips */
-  --surface-sunken:       #080B10; /* Inset metric panels, slider wells, code boxes */
+  --canvas-void:          #080C14; /* Deep neutral void behind 3D canvases & charts */
+  --canvas-base:          #0B101B; /* Default application canvas */
+  --surface-base:         #111827; /* Primary card & panel container */
+  --surface-raised:       #182235; /* Elevated components, headers, active chips */
+  --surface-overlay:      #1F2B42; /* Modal dialogs, floating tooltips */
+  --surface-sunken:       #0A0F1A; /* Inset metric panels, slider wells, code boxes */
 
   /* Hairline Borders & Dividers */
-  --border-subtle:        rgba(255, 255, 255, 0.07);
+  --border-subtle:        rgba(255, 255, 255, 0.08);
   --border-default:       rgba(255, 255, 255, 0.12);
   --border-strong:        rgba(255, 255, 255, 0.22);
-  --border-focus:         #38BDF8; /* Sky-400 */
+  --border-focus:         #0284C7; /* Sky-600 */
 
-  /* Scientific Telemetry & Accents (WCAG AAA compliant on --surface-base) */
+  /* Scientific Accents (High-Contrast, Meaningful Semantics) */
   --accent-cyan:          #38BDF8; /* Sky-400: Primary telemetry, spatial navigation */
   --accent-cyan-subtle:   rgba(56, 189, 248, 0.10);
-  --accent-amber:         #F59E0B; /* Amber-500: Thermal, combustion, caution */
+  --accent-amber:         #F59E0B; /* Amber-500: Thermal, combustion, partial-g */
   --accent-amber-subtle:  rgba(245, 158, 11, 0.10);
   --accent-emerald:       #10B981; /* Emerald-500: Nominal status, verified data */
   --accent-emerald-subtle:rgba(16, 185, 129, 0.10);
-  --accent-rose:          #F43F5E; /* Rose-500: Flammability hazard, warning */
-  --accent-rose-subtle:   rgba(244, 63, 94, 0.12);
-  --accent-indigo:        #818CF8; /* Indigo-400: Empirical simulation, AI copilot */
-  --accent-indigo-subtle: rgba(129, 140, 248, 0.10);
+  --accent-rose:          #EF4444; /* Red-500: Flammability hazard, warning */
+  --accent-rose-subtle:   rgba(239, 68, 68, 0.12);
+  --accent-indigo:        #6366F1; /* Indigo-500: Empirical simulation, AI copilot */
+  --accent-indigo-subtle: rgba(99, 102, 241, 0.10);
 
   /* Typography Colors */
   --text-primary:         #F8FAFC; /* Slate-50: Main headings & primary readouts */
@@ -37,51 +37,17 @@
   --text-muted:           #64748B; /* Slate-500: Units, metadata, timestamps */
   --text-disabled:        #475569; /* Slate-600: Inactive states */
 
-  /* Backward Compatibility Aliases for Components */
-  --color-space:          var(--canvas-base);
-  --color-space-deep:     var(--canvas-void);
-  --color-space-surface:  var(--surface-sunken);
-  --color-panel:          var(--surface-base);
-  --color-panel-solid:    var(--surface-base);
-  --color-panel-light:    var(--surface-raised);
-  --color-panel-lighter:  var(--surface-overlay);
-  --color-cyan-hud:       var(--accent-cyan);
-  --color-cyan-hud-dim:   var(--accent-cyan-subtle);
-  --color-cyan-hud-border:var(--border-default);
-  --color-flame-amber:    var(--accent-amber);
-  --color-flame-amber-dim:var(--accent-amber-subtle);
-  --color-flame-amber-border: rgba(245, 158, 11, 0.35);
-  --color-crimson-alert:  var(--accent-rose);
-  --color-emerald-safe:   var(--accent-emerald);
-  --color-violet-si:      var(--accent-indigo);
-
-  /* Typography */
-  --font-sans:            'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-mono:            'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  --font-display:         'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-
-  /* Borders & Radii */
-  --radius-xs:            4px;
-  --radius-sm:            6px;
+  /* Radii */
+  --radius-sm:            4px;
   --radius-md:            8px;
   --radius-lg:            12px;
   --radius-xl:            16px;
-  --radius-full:          9999px;
 
-  /* Shadows (Utilitarian Precision, Zero Neon Bloom) */
-  --shadow-sm:            0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-md:            0 4px 16px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  --shadow-lg:            0 12px 32px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  --shadow-hud:           var(--shadow-md);
-  --shadow-hud-amber:     var(--shadow-md);
-  --shadow-glow-cyan:     none;
-  --shadow-glow-amber:    none;
+  /* Typography Fonts */
+  --font-sans:            'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:            'JetBrains Mono', 'IBM Plex Mono', monospace;
 
-  /* Transitions — Spring Physics / Motion */
-  --transition-fast:      150ms cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-normal:    250ms cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-slow:      400ms cubic-bezier(0.16, 1, 0.3, 1);
-
-  /* Layout Boundaries */
-  --max-content-width:    1600px;
+  /* Transitions */
+  --transition-fast:      150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal:    250ms cubic-bezier(0.4, 0, 0.2, 1);
 }

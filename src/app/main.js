@@ -45,6 +45,39 @@ window.runSiPrompt = runSiPrompt;
 window.submitCustomSiQuery = submitCustomSiQuery;
 window.copySubmissionBlock = copySubmissionBlock;
 
+// Lab Studio View Switcher (3D Orbital Globe vs 2D Flame Physics)
+window.switchLabStudio = (mode) => {
+  const globeBox = document.getElementById('studio-view-globe');
+  const flameBox = document.getElementById('studio-view-flame');
+  const btnGlobe = document.getElementById('studio-btn-globe');
+  const btnFlame = document.getElementById('studio-btn-flame');
+
+  if (mode === 'globe') {
+    if (globeBox) globeBox.classList.remove('hidden');
+    if (flameBox) flameBox.classList.add('hidden');
+    if (btnGlobe) {
+      btnGlobe.classList.add('active');
+      btnGlobe.classList.remove('inactive');
+    }
+    if (btnFlame) {
+      btnFlame.classList.remove('active');
+      btnFlame.classList.add('inactive');
+    }
+  } else {
+    if (globeBox) globeBox.classList.add('hidden');
+    if (flameBox) flameBox.classList.remove('hidden');
+    if (btnFlame) {
+      btnFlame.classList.add('active');
+      btnFlame.classList.remove('inactive');
+    }
+    if (btnGlobe) {
+      btnGlobe.classList.remove('active');
+      btnGlobe.classList.add('inactive');
+    }
+    window.dispatchEvent(new Event('resize'));
+  }
+};
+
 // Initialize on DOM Ready
 document.addEventListener('DOMContentLoaded', () => {
   console.log('[PYRO-SI] Initializing modular architecture...');
@@ -72,6 +105,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 7. Mission Incidents & Spinoffs
   renderIncidentsAndSpinoffs();
+
+  // 8. Deep-linking & URL parameter routing
+  const urlParams = new URLSearchParams(window.location.search);
+  const targetTab = urlParams.get('tab');
+  if (targetTab) {
+    switchMainTab(targetTab);
+  }
+  const targetStudio = urlParams.get('studio');
+  if (targetStudio && window.switchLabStudio) {
+    window.switchLabStudio(targetStudio);
+  }
 
   // Bind input listeners
   const customQueryInput = document.getElementById('si-custom-input');

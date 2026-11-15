@@ -1,6 +1,6 @@
 /* =============================================================================
-   GODEYE // PYRO-SI — Global Styles & Reset
-   Aerospace Mission Control Standard
+   PYRO-SI — Global Styles & Reset
+   Aerospace Scientific Laboratory Standard
    ============================================================================= */
 
 @import './variables.css';
@@ -27,10 +27,6 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-image: 
-    radial-gradient(circle at 50% -10%, rgba(56, 189, 248, 0.04) 0%, transparent 50%),
-    radial-gradient(circle at 85% 90%, rgba(245, 158, 11, 0.025) 0%, transparent 40%);
-  background-attachment: fixed;
 }
 
 /* Accessibility: Focus Visible */
@@ -39,84 +35,21 @@ body {
   outline-offset: 2px;
 }
 
-/* Custom Range Sliders — Calibrated Aerospace Precision */
-input[type="range"] {
-  -webkit-appearance: none;
-  appearance: none;
-  background: var(--surface-sunken);
-  height: 6px;
-  border-radius: var(--radius-full);
-  border: 1px solid var(--border-default);
-  transition: border-color var(--transition-fast);
-}
-
-input[type="range"]:focus-visible {
-  border-color: var(--accent-cyan);
-}
-
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: #FFFFFF;
-  border: 2px solid var(--surface-base);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
-  cursor: pointer;
-  transition: transform var(--transition-fast), background-color var(--transition-fast);
-}
-
-input[type="range"]::-webkit-slider-thumb:hover {
-  transform: scale(1.15);
-  background: var(--accent-cyan);
-}
-
-input[type="range"]::-webkit-slider-thumb:active {
-  transform: scale(0.95);
-}
-
-.slider-amber::-webkit-slider-thumb:hover {
-  background: var(--accent-amber) !important;
-}
-
-/* Tick Marks Track Utility */
-.slider-ticks {
-  display: flex;
-  justify-content: space-between;
-  padding: 0 4px;
-  margin-top: 4px;
-  font-family: var(--font-mono);
-  font-size: 9px;
-  color: var(--text-muted);
-}
-
-/* Custom Minimalist Scrollbar */
+/* Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--canvas-base);
+  background: var(--canvas-void);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1E293B;
-  border-radius: 3px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
-}
-
-/* Reduced Motion Fallback */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
+  background: rgba(255, 255, 255, 0.28);
 }

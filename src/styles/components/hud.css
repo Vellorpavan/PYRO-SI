@@ -1,30 +1,19 @@
 /* =============================================================================
-   GODEYE // PYRO-SI — Aerospace Scientific HUD & Card Component Styles
-   Benchmarked against NASA Eyes on the Solar System & SpaceX Avionics Displays
+   PYRO-SI — Precision Component & UI Styles
+   Aerospace Scientific Laboratory Standard
    ============================================================================= */
 
-/* Aerospace Surface Card */
+/* Precision Surface Card */
 .hud-panel {
   background: var(--surface-base);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border-default);
-  box-shadow: var(--shadow-md);
   border-radius: var(--radius-lg);
   position: relative;
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .hud-panel:hover {
-  border-color: rgba(255, 255, 255, 0.18);
-}
-
-.hud-panel-amber {
-  border-color: var(--color-flame-amber-border);
-}
-
-.hud-panel-amber:hover {
-  border-color: rgba(245, 158, 11, 0.55);
+  border-color: rgba(255, 255, 255, 0.20);
 }
 
 .hud-panel-subtle {
@@ -33,129 +22,122 @@
   border-radius: var(--radius-md);
 }
 
-/* Scanline Overlay Removed in favor of clean rendering */
-.scanline-overlay {
-  display: none;
-}
-
-/* Nav Tabs — Segmented Rail Architecture */
+/* Primary Top Navigation Tabs */
 .nav-tab-btn {
-  cursor: pointer;
-  background: transparent;
-  color: var(--text-secondary);
-  border: 1px solid transparent;
-  border-radius: var(--radius-md);
-  padding: 0.45rem 0.85rem;
-  font-family: var(--font-sans);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  transition: all var(--transition-fast);
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem; /* 13px */
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast);
 }
 
 .nav-tab-btn:hover {
   color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.04);
-  border-color: var(--border-subtle);
-  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.05);
 }
 
-.nav-tab-btn:active {
-  transform: scale(0.98);
-}
-
-.nav-tab-btn:focus-visible {
-  outline: 2px solid var(--accent-cyan);
-  outline-offset: 2px;
-}
-
-.active-tab {
-  background: var(--surface-raised) !important;
-  color: #FFFFFF !important;
-  border-color: rgba(56, 189, 248, 0.4) !important;
-  border-bottom: 2px solid var(--accent-cyan) !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35) !important;
-}
-
-/* Habitat Switcher Buttons */
-.habitat-node-btn {
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  border: 1px solid var(--border-default);
-  background: var(--surface-sunken);
-  border-radius: var(--radius-md);
-}
-
-.habitat-node-btn:hover {
-  border-color: var(--accent-cyan);
+.nav-tab-btn.active-tab {
+  color: #FFFFFF;
   background: var(--surface-raised);
-  transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
 }
 
-.habitat-node-btn:active {
-  transform: scale(0.98);
-}
-
-.habitat-node-btn:focus-visible {
-  outline: 2px solid var(--accent-cyan);
-  outline-offset: 2px;
-}
-
-/* Telemetry Figures — Tabular Alignment */
-.telemetry-num {
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums lining-nums;
-  letter-spacing: -0.02em;
-}
-
-/* Standardized Data Provenance Badges */
+/* Provenance Badges */
 .provenance-badge-verified {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
-  background: var(--accent-emerald-subtle);
-  border: 1px solid rgba(16, 185, 129, 0.35);
-  color: #34D399;
+  padding: 0.1875rem 0.5rem;
+  border-radius: var(--radius-sm);
   font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  padding: 2px 6px;
-  border-radius: var(--radius-xs);
-  letter-spacing: 0.03em;
+  font-size: 0.6875rem; /* 11px */
+  font-weight: 600;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.30);
+  color: #34D399;
 }
 
 .provenance-badge-empirical {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
-  background: var(--accent-amber-subtle);
-  border: 1px solid rgba(245, 158, 11, 0.35);
-  color: #FBBF24;
+  padding: 0.1875rem 0.5rem;
+  border-radius: var(--radius-sm);
   font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  padding: 2px 6px;
-  border-radius: var(--radius-xs);
-  letter-spacing: 0.03em;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.30);
+  color: #FBBF24;
 }
 
-.provenance-badge-concept {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  background: rgba(148, 163, 184, 0.1);
-  border: 1px solid rgba(148, 163, 184, 0.25);
-  color: #94A3B8;
-  font-family: var(--font-mono);
-  font-size: 10px;
+/* Custom High-Precision Sliders */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background: var(--surface-sunken);
+  border-radius: 9999px;
+  border: 1px solid var(--border-subtle);
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #38BDF8;
+  border: 2px solid #080C14;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  transition: transform var(--transition-fast), background var(--transition-fast);
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  background: #7DD3FC;
+}
+
+input[type="range"].slider-amber::-webkit-slider-thumb {
+  background: #F59E0B;
+}
+
+input[type="range"].slider-amber::-webkit-slider-thumb:hover {
+  background: #FBBF24;
+}
+
+/* Interactive Studio Switcher Segmented Control */
+.studio-segmented-pill {
+  padding: 0.375rem 0.75rem;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
   font-weight: 600;
-  text-transform: uppercase;
-  padding: 2px 6px;
-  border-radius: var(--radius-xs);
-  letter-spacing: 0.03em;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.studio-segmented-pill.active {
+  background: #0284C7;
+  color: #FFFFFF;
+}
+
+.studio-segmented-pill.inactive {
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.studio-segmented-pill.inactive:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
 }
