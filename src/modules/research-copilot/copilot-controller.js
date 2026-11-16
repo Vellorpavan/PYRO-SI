@@ -8,48 +8,107 @@
 import { queryKnowledgeBase, getPresetResponse } from './knowledge-engine.js';
 import { escapeHtml } from '../../utils/dom.js';
 
-const GEMINI_STORAGE_KEY = 'pyro_gemini_api_key';
+let geminiConfigState = {
+  configured: false,
+  masked_key: null,
+  source: 'none',
+  model: 'gemini-3-flash-preview'
+};
 
 /**
- * Returns user-configured Gemini API key from browser storage.
+ * Returns backend API base URL, resolving host and port automatically.
  */
-export function getSavedGeminiKey() {
-  if (typeof window === 'undefined' || !window.localStorage) return null;
-  return window.localStorage.getItem(GEMINI_STORAGE_KEY) || null;
+export function getBackendBaseUrl() {
+  if (typeof window !== 'undefined' && window.location) {
+    const host = window.location.hostname || 'localhost';
+    const port = window.location.port;
+    if (port === '8000') return '';
+    return `http://${host}:8000`;
+  }
+  return 'http://localhost:8000';
 }
 
 /**
- * Updates UI badge indicating Gemini status.
+ * Returns user-configured Gemini status (masked for security).
+ * RAW KEYS ARE NEVER STORED IN BROWSER STORAGE OR CLIENT LOGS.
  */
-export function updateGeminiStatusBadge() {
+export function getSavedGeminiKey() {
+  return geminiConfigState.configured ? geminiConfigState.masked_key : null;
+}
+
+/**
+ * Updates UI badge indicating Gemini status from secure backend gateway.
+ */
+export async function updateGeminiStatusBadge() {
   if (typeof document === 'undefined') return;
   const badge = document.getElementById('gemini-status-text');
   const btn = document.getElementById('gemini-status-btn');
   if (!badge) return;
 
-  const key = getSavedGeminiKey();
-  if (key) {
-    badge.textContent = 'Gemini 2.0 Flash (Active)';
-    if (btn) {
-      btn.className = 'px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 flex items-center gap-1.5 transition cursor-pointer shadow-2xs';
+  const base = getBackendBaseUrl();
+  const endpoints = base ? [`${base}/api/v1/auth/gemini-key/status`, '/api/v1/auth/gemini-key/status'] : ['/api/v1/auth/gemini-key/status'];
+
+  for (const url of endpoints) {
+    try {
+      const resp = await fetch(url);
+      if (resp.ok) {
+        const data = await resp.json();
+        geminiConfigState = data;
+        if (data.configured) {
+          const displayModel = (data.model || 'gemini-3-flash')
+            .replace('models/', '')
+            .replace('-preview', '')
+            .split('-')
+            .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+            .join(' ');
+          badge.textContent = `${displayModel} (${data.masked_key || 'Active'})`;
+          if (btn) {
+            btn.className = 'px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 flex items-center gap-1.5 transition cursor-pointer shadow-2xs';
+          }
+          return;
+        }
+      }
+    } catch {
+      // Continue to next endpoint
     }
-  } else {
-    badge.textContent = 'Gemini 2.0 Flash';
-    if (btn) {
-      btn.className = 'px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 flex items-center gap-1.5 transition cursor-pointer shadow-2xs';
-    }
+  }
+
+  badge.textContent = 'Gemini 3 Flash';
+  if (btn) {
+    btn.className = 'px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 flex items-center gap-1.5 transition cursor-pointer shadow-2xs';
   }
 }
 
 /**
  * Modal handlers for Gemini configuration.
  */
-export function openGeminiConfigModal() {
+export async function openGeminiConfigModal() {
   const modal = document.getElementById('gemini-config-modal');
   const input = document.getElementById('gemini-api-key-input');
   if (modal) modal.classList.remove('hidden');
+
+  const base = getBackendBaseUrl();
+  const endpoints = base ? [`${base}/api/v1/auth/gemini-key/status`, '/api/v1/auth/gemini-key/status'] : ['/api/v1/auth/gemini-key/status'];
+  for (const url of endpoints) {
+    try {
+      const resp = await fetch(url);
+      if (resp.ok) {
+        const data = await resp.json();
+        geminiConfigState = data;
+        break;
+      }
+    } catch {
+      // Ignore
+    }
+  }
+
   if (input) {
-    input.value = getSavedGeminiKey() || '';
+    input.value = '';
+    if (geminiConfigState.configured) {
+      input.placeholder = `Active key: ${geminiConfigState.masked_key} (Enter new key to replace)`;
+    } else {
+      input.placeholder = 'AIzaSy...';
+    }
     input.focus();
   }
 }
@@ -59,27 +118,61 @@ export function closeGeminiConfigModal() {
   if (modal) modal.classList.add('hidden');
 }
 
-export function saveGeminiApiKey() {
+export async function saveGeminiApiKey() {
   const input = document.getElementById('gemini-api-key-input');
   const key = (input?.value || '').trim();
-  if (key) {
-    localStorage.setItem(GEMINI_STORAGE_KEY, key);
-    showToast('Gemini API key saved & activated!', 'success');
-  } else {
-    localStorage.removeItem(GEMINI_STORAGE_KEY);
-    showToast('Gemini API key cleared.', 'info');
+  if (!key) {
+    showToast('Please enter a valid Gemini API key.', 'info');
+    return;
   }
-  closeGeminiConfigModal();
-  updateGeminiStatusBadge();
+
+  showToast('Validating Gemini API key with Google AI...', 'info');
+
+  const base = getBackendBaseUrl();
+  const endpoints = base ? [`${base}/api/v1/auth/gemini-key`, '/api/v1/auth/gemini-key'] : ['/api/v1/auth/gemini-key'];
+
+  for (const url of endpoints) {
+    try {
+      const resp = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ api_key: key })
+      });
+
+      const data = await resp.json();
+      if (!resp.ok) {
+        throw new Error(data.detail || 'Validation failed');
+      }
+
+      showToast(`Gemini API key verified & saved securely (${data.masked_key}).`, 'success');
+      closeGeminiConfigModal();
+      await updateGeminiStatusBadge();
+      return;
+    } catch (err) {
+      if (url === endpoints[endpoints.length - 1]) {
+        showToast(`Key validation error: ${err.message}`, 'error');
+      }
+    }
+  }
 }
 
-export function clearGeminiApiKey() {
-  localStorage.removeItem(GEMINI_STORAGE_KEY);
+export async function clearGeminiApiKey() {
+  const base = getBackendBaseUrl();
+  const endpoints = base ? [`${base}/api/v1/auth/gemini-key`, '/api/v1/auth/gemini-key'] : ['/api/v1/auth/gemini-key'];
+  for (const url of endpoints) {
+    try {
+      await fetch(url, { method: 'DELETE' });
+      geminiConfigState = { configured: false, masked_key: null, source: 'none', model: 'gemini-3-flash-preview' };
+      showToast('Gemini API key removed from device.', 'info');
+      break;
+    } catch {
+      // Try next
+    }
+  }
   const input = document.getElementById('gemini-api-key-input');
   if (input) input.value = '';
-  updateGeminiStatusBadge();
+  await updateGeminiStatusBadge();
   closeGeminiConfigModal();
-  showToast('Gemini API key removed.', 'info');
 }
 
 /**
@@ -206,22 +299,22 @@ export async function submitCustomSiQuery(overrideQuery) {
     </div>
   `;
 
-  const customKey = getSavedGeminiKey();
   let result = null;
 
   // 1. Try FastAPI backend endpoint first
   try {
-    const backendEndpoints = ['/api/v1/copilot/query', 'http://localhost:8000/api/v1/copilot/query'];
+    const base = getBackendBaseUrl();
+    const backendEndpoints = base
+      ? [`${base}/api/v1/copilot/query`, '/api/v1/copilot/query']
+      : ['/api/v1/copilot/query', 'http://localhost:8000/api/v1/copilot/query'];
+
     for (const endpoint of backendEndpoints) {
       try {
         const resp = await fetch(endpoint, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(customKey ? { 'X-Gemini-Key': customKey } : {})
-          },
-          body: JSON.stringify({ query: q, gemini_api_key: customKey }),
-          signal: AbortSignal.timeout(4500)
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: q }),
+          signal: AbortSignal.timeout(20000)
         });
 
         if (resp.ok) {
@@ -236,23 +329,7 @@ export async function submitCustomSiQuery(overrideQuery) {
     console.warn('[Copilot] Backend fetch failed:', err);
   }
 
-  // 2. If backend was unreachable and user has a direct Gemini key, query Gemini API directly
-  if (!result && customKey) {
-    try {
-      const geminiData = await queryGeminiDirect(q, customKey);
-      if (geminiData) {
-        result = {
-          ...geminiData,
-          status: 'VERIFIED NASA PSI EVIDENCE // GEMINI 2.0 FLASH',
-          verified: Boolean(geminiData.verified)
-        };
-      }
-    } catch (directErr) {
-      console.warn('[Copilot] Direct Gemini call failed, falling back to local engine:', directErr);
-    }
-  }
-
-  // 3. Fallback to local verified NASA PSI knowledge engine
+  // 2. Fallback to local verified NASA PSI knowledge engine
   if (!result) {
     result = queryKnowledgeBase(q);
   }
@@ -274,6 +351,9 @@ export async function submitCustomSiQuery(overrideQuery) {
       } else if (qLower.includes('flex') || qLower.includes('cool flame') || qLower.includes('psi-69')) {
         result.image = './assets/images/card_flex.jpg';
         result.imageCaption = 'Figure 1: NASA FLEX Droplet Combustion & Invisible 500–800 K Cool Flame Persistence in CIR';
+      } else if (result.verified) {
+        result.image = './assets/images/card_acme.jpg';
+        result.imageCaption = 'Figure 1: Authentic NASA Space Flame in Microgravity (CIR ACME Investigation)';
       }
     }
 
@@ -300,6 +380,7 @@ export function renderTerminalOutput(terminal, arg1, arg2, arg3) {
   let parameters = null;
   let comparisonCards = null;
   let actions = [];
+  let diagramHtml = '';
 
   if (typeof arg1 === 'object' && arg1 !== null) {
     title = arg1.title || '';
@@ -315,6 +396,7 @@ export function renderTerminalOutput(terminal, arg1, arg2, arg3) {
     parameters = arg1.parameters || null;
     comparisonCards = arg1.comparisonCards || null;
     actions = arg1.actions || [];
+    diagramHtml = arg1.diagramHtml || '';
   } else {
     title = arg1 || '';
     badge = arg2 || '';
@@ -553,6 +635,7 @@ export function renderTerminalOutput(terminal, arg1, arg2, arg3) {
 
       <!-- Research Imagery / Diagnostics Box -->
       ${visualMediaHtml}
+      ${diagramHtml}
 
       <!-- Parameter Badges Ribbon -->
       ${parametersHtml}

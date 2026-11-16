@@ -10,6 +10,10 @@ yarn-error.log*
 .env.*.local
 *.pem
 *.key
+*.credentials.json
+.gemini_credentials.json
+backend/.gemini_credentials.json
+credentials.json
 
 # OS Generated Files
 .DS_Store

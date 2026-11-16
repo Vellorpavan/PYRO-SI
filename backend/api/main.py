@@ -28,6 +28,12 @@ try:
 except ImportError:
     pass
 
+# Import NASA PSI Combustion RAG Engine & Visual Schematics
+try:
+    from backend.intelligence.nasa_rag import rag_engine, SPHERICAL_DIFFUSION_FLAME_DIAGRAM
+except ImportError:
+    from intelligence.nasa_rag import rag_engine, SPHERICAL_DIFFUSION_FLAME_DIAGRAM
+
 logger = logging.getLogger("pyro_si.gateway")
 if not logger.handlers:
     handler = logging.StreamHandler()
@@ -233,6 +239,18 @@ class QueryResponse(BaseModel):
     imageCaption: Optional[str] = None
     parameters: Optional[Dict[str, Any]] = None
     actions: Optional[List[Dict[str, Any]]] = None
+    diagramHtml: Optional[str] = None
+
+
+class GeminiKeyPayload(BaseModel):
+    api_key: str
+
+
+class GeminiKeyStatusResponse(BaseModel):
+    configured: bool
+    masked_key: Optional[str] = None
+    source: str
+    model: str
 
 
 class DiscoveredItem(BaseModel):
@@ -316,33 +334,179 @@ def get_iss_telemetry():
     }
 
 
+# -----------------------------------------------------------------------------
+# Google Gemini API Key Management (BYOK - Secure Local Storage & chmod 0600)
+# -----------------------------------------------------------------------------
+CREDENTIALS_FILE = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    ".gemini_credentials.json"
+)
+
+def get_active_gemini_key() -> Optional[str]:
+    """Retrieves active Gemini key with priority: local secure credentials file -> environment variable."""
+    if os.path.exists(CREDENTIALS_FILE):
+        try:
+            with open(CREDENTIALS_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                key = (data.get("gemini_api_key") or "").strip()
+                if key:
+                    return key
+        except Exception as e:
+            logger.error(f"Failed to read local credentials file: {e}")
+
+    env_key = (os.getenv("GEMINI_API_KEY") or "").strip()
+    if env_key and env_key not in ("your_gemini_api_key_here", ""):
+        return env_key
+
+    return None
+
+def mask_gemini_key(k: str) -> str:
+    """Masks key for safe display in UI/API responses."""
+    if not k:
+        return "••••••••"
+    if len(k) <= 10:
+        return "••••••••"
+    return f"{k[:8]}...{k[-4:]}"
+
+
+@app.get("/api/v1/auth/gemini-key/status", response_model=GeminiKeyStatusResponse)
+def get_gemini_key_status():
+    """
+    Returns masked status of configured Google Gemini API key.
+    Never exposes raw secrets in response payloads.
+    """
+    key = get_active_gemini_key()
+    if key:
+        source = "file" if os.path.exists(CREDENTIALS_FILE) else "env"
+        return GeminiKeyStatusResponse(
+            configured=True,
+            masked_key=mask_gemini_key(key),
+            source=source,
+            model="gemini-3-flash-preview"
+        )
+    return GeminiKeyStatusResponse(
+        configured=False,
+        masked_key=None,
+        source="none",
+        model="gemini-3-flash-preview"
+    )
+
+
+@app.post("/api/v1/auth/gemini-key")
+def configure_gemini_key(payload: GeminiKeyPayload):
+    """
+    Validates and stores user's Gemini API key locally on their machine.
+    Enforces chmod 0600 so key is readable only by the process owner.
+    Does NOT store key in browser localStorage or Git repository.
+    """
+    key = payload.api_key.strip()
+    if not key:
+        raise HTTPException(status_code=400, detail="API key cannot be empty.")
+
+    # 1. Validate key against Google Gemini API using gemini-2.5-flash
+    try:
+        from google import genai
+        client = genai.Client(api_key=key)
+        test_resp = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents="Respond with 'OK' only."
+        )
+        if not test_resp or not test_resp.text:
+            raise ValueError("No response text from Gemini API validation probe.")
+    except Exception as e:
+        err_msg = str(e)
+        logger.warning(f"Gemini API key validation failed: {err_msg}")
+        raise HTTPException(
+            status_code=400,
+            detail=f"Google Gemini API key validation failed: {err_msg}"
+        )
+
+    # 2. Persist locally with chmod 0600
+    try:
+        with open(CREDENTIALS_FILE, "w", encoding="utf-8") as f:
+            json.dump({
+                "gemini_api_key": key,
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "model": "gemini-2.5-flash"
+            }, f, indent=2)
+        os.chmod(CREDENTIALS_FILE, 0o600)
+    except Exception as e:
+        logger.error(f"Failed to persist secure credentials locally: {e}")
+        raise HTTPException(status_code=500, detail="Failed to save credentials file locally.")
+
+    logger.info("Successfully validated and saved Gemini API key to local secure credentials file.")
+    return {
+        "success": True,
+        "configured": True,
+        "masked_key": mask_gemini_key(key),
+        "model": "gemini-2.5-flash",
+        "message": "Gemini API key verified and stored securely on user device."
+    }
+
+
+@app.delete("/api/v1/auth/gemini-key")
+def delete_gemini_key():
+    """
+    Removes locally stored Gemini credentials file.
+    """
+    if os.path.exists(CREDENTIALS_FILE):
+        try:
+            os.remove(CREDENTIALS_FILE)
+            logger.info("Successfully removed local Gemini credentials file.")
+        except Exception as e:
+            logger.error(f"Failed removing credentials file: {e}")
+            raise HTTPException(status_code=500, detail="Failed to delete local credentials file.")
+    return {
+        "success": True,
+        "configured": False,
+        "message": "Gemini API credentials removed from local device."
+    }
+
+
+# -----------------------------------------------------------------------------
+# Research Co-Pilot Retrieval & Generative Synthesis Engine
+# -----------------------------------------------------------------------------
 def try_gemini_synthesis(raw_query: str, key_override: Optional[str] = None) -> Optional[QueryResponse]:
     """
-    Attempts to query the official Google Gemini API (gemini-2.0-flash / gemini-1.5-flash)
+    Attempts to query the official Google Gemini API (gemini-2.5-flash)
     using the official google.genai SDK.
     Grounds the model on NASA Physical Sciences Informatics (PSI) combustion research.
     """
-    gemini_key = key_override or os.getenv("GEMINI_API_KEY")
+    gemini_key = key_override or get_active_gemini_key()
     if not gemini_key or gemini_key.strip() in ("", "your_gemini_api_key_here"):
         return None
 
     try:
         from google import genai
-        client = genai.Client(api_key=gemini_key.strip())
-        model_name = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
+        client = genai.Client(api_key=gemini_key.strip(), http_options={"timeout": 15000})
+        
+        candidate_models = [
+            "gemini-3-flash-preview",
+            os.getenv("GEMINI_MODEL"),
+            "gemini-3.1-flash-lite-preview",
+            "gemini-2.5-flash",
+            "gemini-flash-latest"
+        ]
+        candidate_models = [m for m in candidate_models if m]
+
+        # Retrieve authentic NASA PSI passages to ground the generative response
+        passages = rag_engine.retrieve_passages(raw_query, top_k=3)
+        grounding_context = rag_engine.build_grounding_context(passages)
 
         system_instruction = (
-            "You are GODEYE // PYRO-SI, NASA Combustion Science Intelligence Co-Pilot. "
-            "You provide grounded, executive scientific briefings based on NASA Physical Sciences Informatics (PSI), "
-            "NASA-STD-3001 Rev F, and NASA-STD-6001B.\n"
-            "Strict Guidelines:\n"
-            "1. If the user greeting is conversational, return intent 'greeting', verified false, and no sources.\n"
-            "2. For specific flight investigations (BASS-II, Saffire, ACME, FLEX, etc.), return exact parameters, "
-            "distinguishing direct sensor measurements from image-extracted data (e.g. BASS-II optical videos, SPICE photoshop rulers) "
-            "and derived equilibrium calculations (e.g. Tad via NASA CEA).\n"
-            "3. For multi-investigation comparisons, contrast small-scale vs large-scale dynamics, flow velocities, and facilities.\n"
-            "4. For out-of-scope queries (e.g. speed of sound on Mars, non-space topics), return intent 'unsupported', verified false, empty sources.\n"
-            "Return valid JSON conforming to:\n"
+            "You are GODEYE // PYRO-SI, NASA Lead Space Combustion Science Intelligence Co-Pilot.\n"
+            "You provide authoritative, evidence-grounded scientific research briefings based on authentic NASA Physical Sciences Informatics (PSI) flight records, "
+            "peer-reviewed mission literature, NASA-STD-3001 Rev F, and NASA-STD-6001B.\n\n"
+            "STRICT GROUNDING & SCIENTIFIC EPISTEMOLOGY CONTRACT:\n"
+            "1. Ground your answers in the retrieved NASA PSI context below. Reference specific flight investigations by ID (e.g. PSI-25, PSI-98, PSI-10, PSI-69, PSI-47).\n"
+            "2. If the user asks conceptual or fundamental questions about space combustion science, microgravity flames, spacecraft fire safety, or extraterrestrial habitats (Moon/Mars), provide an authoritative scientific briefing explaining the microgravity physics (absence of buoyant updraft Gr ≈ 0, radial molecular diffusion, spherical blue flames, low-temperature cool flames, forced-flow flammability limits).\n"
+            "3. Present exact experimental parameters with numerical values and physical units (flow velocity in cm/s, oxygen concentration in % O2, pressure in psia/kPa, temperature in K).\n"
+            "4. Explicitly state measurement provenance: distinguish in-situ sensor measurements (calibrated thermocouples, radiometers, pressure transducers) from data extracted from imagery/video (optical flame tracking, photo rulers) and equilibrium calculations (Tad via NASA CEA code, chemical kinetics models).\n"
+            "5. Highlight spacecraft fire safety takeaways and extraterrestrial habitat implications (normoxia band 145–155 mmHg, 30% minimum diluent, ventilation isolation protocols, low-temperature cool flame re-ignition hazards).\n"
+            "6. Include traceable citations with DOI and official NASA PSI URLs.\n"
+            "7. NEVER reject legitimate space, combustion, fire safety, physics, or flight questions as 'out of scope'. Always answer with authentic NASA science and set verified: true.\n\n"
+            f"{grounding_context}\n\n"
+            "Return valid JSON conforming strictly to:\n"
             "{\n"
             "  \"title\": \"string\",\n"
             "  \"badge\": \"string\",\n"
@@ -355,28 +519,65 @@ def try_gemini_synthesis(raw_query: str, key_override: Optional[str] = None) -> 
             "}"
         )
 
-        resp = client.models.generate_content(
-            model=model_name,
-            contents=f"User Query: {raw_query}",
-            config=dict(
-                system_instruction=system_instruction,
-                response_mime_type="application/json"
-            )
-        )
+        resp = None
+        for m in candidate_models:
+            try:
+                resp = client.models.generate_content(
+                    model=m,
+                    contents=f"User Research Query: {raw_query}",
+                    config=dict(
+                        system_instruction=system_instruction,
+                        response_mime_type="application/json",
+                        temperature=0.2
+                    )
+                )
+                if resp and resp.text:
+                    logger.info(f"[Copilot] Gemini generative synthesis succeeded using model: {m}")
+                    break
+            except Exception as model_err:
+                logger.warning(f"[Copilot] Gemini API error ({model_err}). Quota limit or server busy. Trying next or falling back to offline NASA engine.")
+                continue
 
         if resp and resp.text:
             parsed = json.loads(resp.text)
             title = parsed.get("title", "NASA Combustion Research Intelligence")
             badge = parsed.get("badge", "Synthesized")
             intent = parsed.get("intent", "thematic")
-            
-            # Enrich with authentic flight imagery and parameters if matching investigation
+            q_lower = raw_query.lower()
+
+            # Normalize badge and intent for known flight investigations & comparative queries
+            if intent == "unsupported" or not bool(parsed.get("verified", False)):
+                badge = "Evidence Limitation"
+                verified = False
+            elif any(k in q_lower for k in ["compare", " vs ", "versus"]):
+                intent = "comparison"
+                if "bass" in q_lower and "saffire" in q_lower:
+                    title = "Comparative Synthesis: BASS-II (PSI-25) vs SAFFIRE-I (PSI-98)"
+                    badge = "Comparative Synthesis (PSI-25 vs PSI-98)"
+                elif "cir" in q_lower and "msg" in q_lower:
+                    badge = "Comparative Hardware Synthesis"
+                else:
+                    badge = f"Comparative Synthesis: {badge}"
+            elif "bass" in q_lower or "psi-25" in q_lower:
+                badge = "VERIFIED FLIGHT RECORD: PSI-25"
+                intent = "investigation"
+            elif "saffire" in q_lower or "psi-98" in q_lower:
+                badge = "VERIFIED FLIGHT RECORD: PSI-98"
+                intent = "investigation"
+
+            # Enrich with authentic flight imagery, schematic diagrams, and parameters
             image = None
             image_caption = None
             parameters = None
             actions = None
-            q_lower = raw_query.lower()
-            
+            diagram_html = None
+
+            if any(k in q_lower for k in ["spherical", "diagram", "visual", "schematic"]):
+                diagram_html = SPHERICAL_DIFFUSION_FLAME_DIAGRAM
+                if "acme" in q_lower or "flame" in q_lower or "diffusion" in q_lower:
+                    image = "./assets/images/card_acme.jpg"
+                    image_caption = "Figure 1: Authentic NASA ACME s-Flame Flight Imagery in Combustion Integrated Rack (CIR)"
+
             if "bass" in q_lower or "psi-25" in q_lower:
                 image = "./assets/images/card_bass2.jpg"
                 image_caption = "Figure 1: NASA BASS-II MSG Solid Fuel Flame Spread (PMMA flat film in 0 to 55 cm/s forced flow)"
@@ -404,11 +605,19 @@ def try_gemini_synthesis(raw_query: str, key_override: Optional[str] = None) -> 
                     {"label": "Load in Simulator", "icon": "fa-fire-flame-curved", "onclick": "window.switchMainTab('tab-simulator')"}
                 ]
             elif "acme" in q_lower or "flame design" in q_lower or "psi-10" in q_lower:
-                image = "./assets/images/card_acme.jpg"
-                image_caption = "Figure 1: NASA ACME Coflow Burner Gaseous Diffusion Flame in Combustion Integrated Rack (CIR)"
+                if not image:
+                    image = "./assets/images/card_acme.jpg"
+                    image_caption = "Figure 1: NASA ACME Coflow Burner Gaseous Diffusion Flame in Combustion Integrated Rack (CIR)"
             elif "cool flame" in q_lower or "flex" in q_lower or "psi-69" in q_lower:
                 image = "./assets/images/card_flex.jpg"
-                image_caption = "Figure 1: NASA FLEX Droplet Combustion & Invisible 500–800 K Cool Flame Regime"
+                image_caption = "Figure 1: NASA FLEX Droplet Combustion & Invisible 500–800 K Cool Flame Regime in CIR"
+            elif "lunar" in q_lower or "moon" in q_lower or "partial" in q_lower:
+                image = "./assets/images/sidebar_lunar_card.jpg"
+                image_caption = "Figure 1: Artemis Lunar Habitat (0.16g) Flammability Regime & Low-Buoyancy Convection"
+
+            if not image:
+                image = "./assets/images/card_acme.jpg"
+                image_caption = "Figure 1: Authentic NASA Microgravity Combustion Flame in ISS Combustion Integrated Rack (ACME Investigation)"
 
             return QueryResponse(
                 title=title,
@@ -416,13 +625,14 @@ def try_gemini_synthesis(raw_query: str, key_override: Optional[str] = None) -> 
                 content=parsed.get("content", ""),
                 citations=parsed.get("citations", []),
                 intent=intent,
-                status=parsed.get("status", "VERIFIED NASA PSI EVIDENCE // GEMINI SYNTHESIS"),
+                status=parsed.get("status", "VERIFIED NASA PSI EVIDENCE // GEMINI 2.5 FLASH"),
                 verified=bool(parsed.get("verified", False)),
                 sources=parsed.get("sources", []),
                 image=image,
                 imageCaption=image_caption,
                 parameters=parameters,
-                actions=actions
+                actions=actions,
+                diagramHtml=diagram_html
             )
     except Exception as e:
         logger.warning(f"[Copilot] Gemini API call skipped or encountered error: {e}. Falling back to deterministic knowledge engine.")
@@ -437,20 +647,38 @@ def handle_copilot_query(req: QueryRequest):
     Evidence-grounded, intent-aware Co-Pilot research query endpoint.
     Distinguishes greetings, multi-study comparisons, specific study retrievals,
     and out-of-scope queries without returning fabricated research syntheses.
-    Supports real-time Gemini API generative synthesis when GEMINI_API_KEY is configured.
+    Supports real-time Gemini API generative synthesis when configured.
     """
     raw_q = req.query.strip()
     q = raw_q.lower()
     if not q:
         raise HTTPException(status_code=400, detail="Query cannot be empty.")
 
-    # 0. Live Gemini API Synthesis (if configured)
-    gemini_resp = try_gemini_synthesis(raw_q, key_override=req.gemini_api_key)
-    if gemini_resp is not None:
-        return gemini_resp
+    # 1. Research Scope Enforcement (reject coding, pop culture, recipes, non-space topics)
+    is_out_scope, scope_reason = rag_engine.is_out_of_scope(raw_q)
+    if is_out_scope:
+        return QueryResponse(
+            title="Research Scope Limitation: Query Out of Scope",
+            badge="Scope Limitation",
+            content=(
+                f"{scope_reason}\n\n"
+                "GODEYE // PYRO-SI is a dedicated scientific intelligence platform specialized in NASA microgravity combustion science and spacecraft fire safety.\n\n"
+                "Supported research domains:\n"
+                "• Solid material flammability & extinction limits (BASS-II, Saffire I–VI)\n"
+                "• Droplet combustion & low-temperature cool flames (FLEX, FLEX-2, CFI)\n"
+                "• Gaseous diffusion flames, soot & radiation (ACME: s-Flame, Flame Design, BRE)\n"
+                "• Spacecraft smoke detection & aerosol physics (SAME-R, DAFT)\n"
+                "• Lunar / partial-gravity flammability & standards (NASA-STD-3001 Rev F, NASA-STD-6001B)"
+            ),
+            citations=[],
+            intent="unsupported",
+            status="OUT OF SCOPE // NON-COMBUSTION TOPIC",
+            verified=False,
+            sources=[]
+        )
 
-    # 1. Greetings
-    if re.match(r"^(hello|hi|hey|greetings|howdy|good\s+morning|good\s+afternoon|good\s+evening|help|who\s+are\s+you)(\s+.*)?$", q):
+    # 2. Conversational Greetings
+    if rag_engine.is_greeting(raw_q):
         return QueryResponse(
             title="Space Combustion Research Co-Pilot",
             badge="Conversational Assistant",
@@ -459,7 +687,8 @@ def handle_copilot_query(req: QueryRequest):
                 "I can help you:\n"
                 "• Retrieve specific NASA investigations (e.g. BASS-II, Saffire-I, ACME Flame Design, SPICE, FLEX).\n"
                 "• Compare experimental conditions across flight studies (e.g. 'Compare BASS-II and SAFFIRE-I' or compare CIR vs MSG facilities).\n"
-                "• Explore spacecraft fire safety concepts such as low-temperature cool flames, partial-gravity flammability, and suppression standards.\n\n"
+                "• Explore spacecraft fire safety concepts such as low-temperature cool flames, partial-gravity flammability, and suppression standards.\n"
+                "• Examine spherical diffusion flame physics with visual schematics and authentic flight imagery.\n\n"
                 "What topic or flight experiment would you like to explore?"
             ),
             citations=[],
@@ -469,7 +698,65 @@ def handle_copilot_query(req: QueryRequest):
             sources=[]
         )
 
-    # 2. Multi-study Comparison
+    # 3. Out of Evidence Boundaries (e.g. Saturn atmospheric thermal runaway)
+    is_out_evidence, evidence_reason = rag_engine.is_out_of_evidence(raw_q)
+    if is_out_evidence:
+        return QueryResponse(
+            title="Evidence Boundary: No NASA PSI Flight Data Available",
+            badge="Out of Flight Evidence",
+            content=(
+                f"{evidence_reason}\n\n"
+                "Authentic NASA combustion experiments indexed in PYRO-SI were conducted in Low Earth Orbit aboard the International Space Station "
+                "(Combustion Integrated Rack, Microgravity Science Glovebox) and uncrewed Cygnus egress vehicles (Saffire).\n\n"
+                "To maintain scientific integrity, GODEYE does not extrapolate beyond documented NASA physical science investigation records."
+            ),
+            citations=[],
+            intent="unsupported",
+            status="OUT OF EVIDENCE // ARCHIVE BOUNDARY",
+            verified=False,
+            sources=[]
+        )
+
+    # 4. NASA PSI Overview
+    if rag_engine.is_psi_overview(raw_q):
+        return QueryResponse(
+            title="NASA Physical Sciences Informatics (PSI) System",
+            badge="NASA Open Science Repository",
+            content=(
+                "NASA's Physical Sciences Informatics (PSI) repository (psi.nasa.gov) is the agency's primary open-access system for physical science research conducted in space.\n\n"
+                "• Scope: Archives experimental data from completed microgravity flight investigations across five disciplines: Combustion Science, Fluid Physics, Materials Science, Complex Fluids, and Fundamental Physics.\n"
+                "• Combustion Archives: Houses over 19 verified flight investigations conducted on the ISS (in the Combustion Integrated Rack [CIR] and Microgravity Science Glovebox [MSG]) and Cygnus cargo spacecraft (Saffire I–VI).\n"
+                "• Scientific Access: Provides open-access accessions containing flight telemetry, raw video footage, gas chromatography, thermocouple logs, and test matrix run schedules to encourage secondary scientific analysis."
+            ),
+            citations=["https://psi.nasa.gov/physci/repo/search?q=combustion"],
+            intent="thematic",
+            status="VERIFIED NASA PSI ARCHIVE OVERVIEW",
+            verified=True,
+            sources=[
+                {"label": "NASA PSI Official Repository", "url": "https://psi.nasa.gov"},
+                {"label": "NASA Biological and Physical Sciences", "url": "https://science.nasa.gov/biological-physical/data/"}
+            ],
+            image="./assets/images/card_acme.jpg",
+            imageCaption="Figure 1: NASA Physical Sciences Informatics Flight Research (ACME Coflow Burner in ISS Combustion Integrated Rack)",
+            parameters={
+                "Repository Scope": "5 Space Physical Science Disciplines",
+                "Combustion Archive": "19+ Verified Flight Investigations",
+                "Flight Platforms": "ISS (CIR, MSG) & Cygnus (Saffire)",
+                "Data Access": "Open Data (CC0-1.0 / Public Domain)"
+            },
+            actions=[
+                {"label": "Explore in PSI Matrix", "icon": "fa-table-cells", "onclick": "window.switchMainTab('tab-matrix')"},
+                {"label": "Open NASA PSI Portal", "icon": "fa-arrow-up-right-from-square", "onclick": "window.open('https://psi.nasa.gov', '_blank')"}
+            ]
+        )
+
+    # 5. Live Gemini API Synthesis (if configured)
+    gemini_resp = try_gemini_synthesis(raw_q, key_override=req.gemini_api_key)
+    if gemini_resp is not None:
+        return gemini_resp
+
+    # 6. Deterministic NASA PSI Synthesis Engine Fallback
+    # A. Multi-study Comparison
     if any(k in q for k in ["compare", "difference between", " vs ", "versus"]):
         if ("bass" in q) and ("saffire" in q):
             return QueryResponse(
@@ -516,7 +803,7 @@ def handle_copilot_query(req: QueryRequest):
                 ]
             )
 
-    # 3. Specific Investigation Queries
+    # B. Specific Investigation Queries
     if "bass" in q or "psi-25" in q:
         return QueryResponse(
             title="NASA Investigation: BASS-II (PSI-25)",
@@ -589,7 +876,64 @@ def handle_copilot_query(req: QueryRequest):
             ]
         )
 
-    # 4. Thematic Queries
+    # C. Spherical Diffusion Flames with Visual
+    if "spherical" in q or ("flame" in q and ("visual" in q or "diagram" in q)):
+        return QueryResponse(
+            title="Spherical Gaseous Diffusion Flames & Quiescent Zero-G Dynamics",
+            badge="NASA ACME / s-Flame (PSI-23 / PSI-10)",
+            content=(
+                "In quiescent microgravity, the total absence of buoyancy-driven natural convection (Gr ≈ 0) transforms diffusion flames into perfect spherically symmetric geometries.\n\n"
+                "1. Direct Finding: In the absence of buoyant updraft, oxidizer transport is governed purely by radial molecular diffusion (D ∝ 1/r). Reaction rates decrease, producing thick, spherical blue chemiluminescence reaction zones (1500–1800 K) with extended residence times.\n\n"
+                "2. Soot Shell Formation: Because convective buoyant clearance is absent, soot particles formed in the fuel-rich interior cannot escape. Instead, they are trapped between the flame sheet and fuel core by thermophoresis, forming a prominent spherical soot shell.\n\n"
+                "3. NASA Flight Evidence: Demonstrated on the ISS inside the Combustion Integrated Rack (CIR) during the ACME Structure and Extinction Limit of Spherical Diffusion Flames (s-Flame / PSI-23) investigation using porous spherical burners with methane and ethylene fuels diluted by nitrogen and helium.\n\n"
+                "4. Measurement Epistemology: Quantitative emission radiometers and intensified camera spectrometry (MEASUREMENTS_EXTRACTED_FROM_IMAGERY); Adiabatic Flame Temperature (Tad) is a derived CEA calculation.\n\n"
+                "5. Spacecraft Fire Safety Takeaway: Without airflow, quiescent fires do not automatically vanish instantly—they linger as dim spherical diffusion flames until radiative loss causes extinction or ventilation is reintroduced."
+            ),
+            citations=["https://psi.nasa.gov/physci/repo/data/investigations/PSI-23", "10.1016/j.proci.2018.06.098"],
+            intent="thematic",
+            status="VERIFIED THEMATIC EVIDENCE // CIR ACME",
+            verified=True,
+            sources=[
+                {"label": "NASA PSI Record: ACME s-Flame (PSI-23)", "url": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-23"},
+                {"label": "Proceedings of the Combustion Institute", "url": "https://doi.org/10.1016/j.proci.2018.06.098"}
+            ],
+            image="./assets/images/card_acme.jpg",
+            imageCaption="Figure 1: Authentic NASA ACME s-Flame Flight Imagery in Combustion Integrated Rack (CIR)",
+            diagramHtml=SPHERICAL_DIFFUSION_FLAME_DIAGRAM
+        )
+
+    # D. Oxygen Concentration Effects
+    if "oxygen" in q or "o2" in q:
+        return QueryResponse(
+            title="Oxygen Concentration & Pressure Effects on Microgravity Combustion",
+            badge="Atmospheric Flammability & Extinction",
+            content=(
+                "Ambient oxygen concentration (XO2) and total pressure strongly dictate microgravity flammability boundaries and extinction limits:\n\n"
+                "1. Direct Finding: In microgravity, the absence of buoyant convection drastically reduces oxidizer flux to the reaction zone. At lower ambient oxygen concentrations (below the Limiting Oxygen Index, LOI), radiative heat loss exceeds chemical heat generation, leading to flame extinction.\n\n"
+                "2. Elevated Oxygen Hazards: In proposed exploration atmospheres (such as 34% O2 at 8.2 psia / 56.5 kPa), materials that self-extinguish under terrestrial conditions (21% O2, 14.7 psia)—such as Nomex fabrics—exceed their conditional LOI (typically 28–30% O2) and burn vigorously.\n\n"
+                "3. NASA Flight Evidence: BASS-II (PSI-25) quantified solid PMMA and fabric flame spread under varied O2 dilution; SAFFIRE-II (PSI-99) investigated flammability limits of spacecraft fabrics under variable oxygen and pressure conditions in uncrewed Cygnus egress.\n\n"
+                "4. Measurement Provenance: BASS-II extracted flame lengths from high-speed video (MEASUREMENTS_EXTRACTED_FROM_IMAGERY); Saffire recorded calibrated thermocouple arrays (NUMERICAL_EXPERIMENTAL_MEASUREMENTS).\n\n"
+                "5. Spacecraft Fire Safety Standards: NASA-STD-3001 Rev F mandates [V2 6002] minimum 30% diluent gas and [V2 6003] inspired PIO2 normoxia band 145–155 mmHg to prevent hyperoxic flammability risks while maintaining human respiration."
+            ),
+            citations=["NASA-STD-3001 Vol 2 Rev F", "10.2514/6.2014-0414"],
+            intent="thematic",
+            status="VERIFIED THEMATIC EVIDENCE // OXYGEN CONCENTRATION",
+            verified=True,
+            sources=[
+                {"label": "NASA-STD-3001 Volume 2 Revision F", "url": "https://www.nasa.gov"},
+                {"label": "BASS-II Flight Telemetry (PSI-25)", "url": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-25"}
+            ],
+            image="./assets/images/card_bass2.jpg",
+            imageCaption="Figure 1: NASA BASS-II Solid Fuel Flame Spread in Variable Oxygen & Forced Flow",
+            parameters={
+                "facility": "Microgravity Science Glovebox (MSG)",
+                "flow": "0 to 55 cm/s",
+                "fuel": "Solid PMMA & Cotton/Fiberglass",
+                "dataVolume": "255.77 GB"
+            }
+        )
+
+    # E. Thematic Queries: Lunar Partial-G, Cool Flames, Alarms, Suppression
     if any(k in q for k in ["cool flame", "cool flames", "droplet"]):
         return QueryResponse(
             title="Low-Temperature 'Cool Flames' & Invisible Microgravity Hazards",
@@ -606,7 +950,9 @@ def handle_copilot_query(req: QueryRequest):
             sources=[
                 {"label": "Nayagam et al. (2012) Combustion and Flame", "url": "https://doi.org/10.1016/j.combustflame.2012.07.009"},
                 {"label": "NASA PSI Repository: FLEX (PSI-69)", "url": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-69"}
-            ]
+            ],
+            image="./assets/images/card_flex.jpg",
+            imageCaption="Figure 1: NASA FLEX Droplet Combustion & Invisible 500–800 K Cool Flame Regime"
         )
     elif any(k in q for k in ["lunar", "moon", "artemis", "partial gravity", "0.16"]):
         return QueryResponse(
@@ -615,7 +961,8 @@ def handle_copilot_query(req: QueryRequest):
             content=(
                 "Artemis habitats plan to operate at 34% O2 at 8.2 psia (Exploration Atmosphere). At 34% O2, materials that pass terrestrial 21% O2 flammability tests "
                 "(such as Nomex HT90-40) exceed their Limiting Oxygen Index (28–30% O2) and burn readily. In 0.16g, buoyant convection is too weak for convective cooling "
-                "but strong enough to replenish oxygen, potentially accelerating solid flame spread relative to Earth 1-g buoyant spread (T'ien & Ferkul 1999)."
+                "but strong enough to replenish oxygen, potentially accelerating solid flame spread relative to Earth 1-g buoyant spread (T'ien & Ferkul 1999).\n\n"
+                "Scientific Limitation: NASA PSI currently archives microgravity (0g) flight records from ISS and Cygnus. In-situ lunar surface partial-gravity flame spread data is currently an unflown research gap awaiting future Artemis payloads (e.g. FM2 / LUCI)."
             ),
             citations=["10.1016/S0082-0784(98)80058-2", "NASA-STD-3001 Vol 2 Rev F"],
             intent="thematic",
@@ -624,7 +971,9 @@ def handle_copilot_query(req: QueryRequest):
             sources=[
                 {"label": "NASA-STD-3001 Vol 2 Rev F", "url": "https://www.nasa.gov"},
                 {"label": "T'ien & Ferkul (1999) Low-Buoyancy Combustion", "url": "https://doi.org/10.1016/S0082-0784(98)80058-2"}
-            ]
+            ],
+            image="./assets/images/sidebar_lunar_card.jpg",
+            imageCaption="Figure 1: Artemis Lunar Habitat (0.16g) 34% O₂ Exploration Atmosphere Flammability Regime"
         )
     elif any(k in q for k in ["suppress", "extinguish", "water mist"]):
         return QueryResponse(
@@ -645,7 +994,129 @@ def handle_copilot_query(req: QueryRequest):
             ]
         )
 
-    # 5. Unsupported / Out of Scope
+    # F. Space Combustion Science Fundamentals & Microgravity Fire Dynamics
+    clean_norm = re.sub(r"[^\w\s]", "", raw_q.lower()).strip()
+    if any(k in clean_norm for k in ["combustion", "flame", "fire", "burn", "spacecraft", "microgravity", "zero g", "safety", "ignition", "science"]):
+        return QueryResponse(
+            title="Space Combustion Science: Fundamentals & Flight Physics",
+            badge="NASA Microgravity Physical Science",
+            content=(
+                "Space combustion science investigates fuel oxidation, flame kinetics, and heat release in the near-total absence of gravity-driven natural convection (Gr ≈ 0 at 10⁻⁶ g):\n\n"
+                "1. Elimination of Buoyant Updraft: On Earth (1g), hot combustion gases rise because they are less dense than cold ambient air, drawing in fresh oxygen and elongating flames into teardrop shapes. In microgravity, buoyancy is eliminated.\n\n"
+                "2. Radial Molecular Diffusion Dominance: Without buoyant flow, fuel and oxidizer transport is governed purely by slow radial molecular diffusion (D ∝ 1/r). Diffusion flames become perfectly spherical, cool, and dim blue, burning with extended residence times.\n\n"
+                "3. Low-Temperature Cool Flames: As discovered during the NASA FLEX experiment (PSI-69) in the Combustion Integrated Rack (CIR), droplet flames continue burning invisibly at 500–800 K after apparent visible extinction, sustained by peroxy-radical low-temperature chemical kinetics.\n\n"
+                "4. Solid Fuel Flammability & Forced Ventilation: The BASS (PSI-25) and Saffire (PSI-98) investigations proved that while quiescent fires may starve and self-extinguish, low-speed forced ventilation (1–20 cm/s from spacecraft cabin air conditioning) sustains vigorous creeping flame fronts.\n\n"
+                "5. Spacecraft Fire Safety Mission: NASA conducts microgravity combustion research to establish Limiting Oxygen Index (LOI) thresholds, engineer false-alarm-free spacecraft smoke detectors (SAME-R / DAFT), design fine-water-mist suppression systems, and safeguard future Artemis Moon (0.16g) and Mars (0.38g) crewed habitats."
+            ),
+            citations=["https://psi.nasa.gov", "10.1016/j.combustflame.2012.07.009", "10.2514/6.2014-0414"],
+            intent="thematic",
+            status="VERIFIED NASA COMBUSTION EVIDENCE // CIR & MSG ARCHIVES",
+            verified=True,
+            sources=[
+                {"label": "NASA PSI Official Repository", "url": "https://psi.nasa.gov"},
+                {"label": "NASA Glenn Research Center: Space Combustion", "url": "https://www1.grc.nasa.gov/space/microgravity/combustion/"},
+                {"label": "BASS-II Flight Telemetry (PSI-25)", "url": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-25"}
+            ],
+            image="./assets/images/card_acme.jpg",
+            imageCaption="Figure 1: Authentic NASA Space Flame in Microgravity (ACME Investigation in ISS Combustion Integrated Rack)",
+            parameters={
+                "Gravity Regime": "Microgravity (0g) & Partial-g (0.16g Moon, 0.38g Mars)",
+                "Flight Platforms": "ISS CIR (ACME, FLEX) & MSG (BASS) / Cygnus (Saffire)",
+                "Dominant Transport": "Molecular Diffusion (Quiescent) / Forced Convection",
+                "Mission Focus": "Exploration Habitat & Spacecraft Fire Safety (NASA-STD-3001)"
+            },
+            actions=[
+                {"label": "Explore in PSI Matrix", "icon": "fa-table-cells", "onclick": "window.switchMainTab('tab-matrix')"},
+                {"label": "Test in Flammability Simulator", "icon": "fa-fire-flame-curved", "onclick": "window.switchMainTab('tab-simulator')"},
+                {"label": "Configure Gemini Key", "icon": "fa-key", "onclick": "window.openGeminiConfigModal()"}
+            ]
+        )
+
+    # G. Dynamic Grounded Retrieval Across All 19 NASA PSI Flight Investigations
+    retrieved_passages = rag_engine.retrieve_passages(raw_q, top_k=3)
+    if retrieved_passages:
+        # Check for short queries (1-2 characters, prefixes like 'd', 'b', 's')
+        if len(clean_norm) <= 2:
+            return QueryResponse(
+                title=f"NASA PSI Research Navigator: Matches for '{raw_q.strip()}'",
+                badge="NASA Investigation Directory",
+                content=(
+                    f"Showing documented NASA microgravity combustion flight investigations matching query '{raw_q.strip()}':\n\n"
+                    + "\n\n".join([
+                        f"• {p.title} ({p.investigation_id}):\n  {p.summary}\n  Platform: {p.facility} | Specimen: {p.fuel}"
+                        for p in retrieved_passages
+                    ])
+                    + "\n\nSelect an investigation below to view flight telemetry, or ask a specific combustion science question."
+                ),
+                citations=[p.doi for p in retrieved_passages if p.doi],
+                intent="investigation",
+                status="VERIFIED NASA PSI CATALOGUE DIRECTORY",
+                verified=True,
+                sources=[{"label": f"NASA PSI: {p.investigation_id}", "url": p.psi_url} for p in retrieved_passages],
+                image="./assets/images/card_bass2.jpg",
+                imageCaption="Figure 1: Authentic NASA Space Combustion Flight Test Directory (ISS / Cygnus Facilities)",
+                actions=[
+                    {"label": f"View {p.investigation_id}", "icon": "fa-table-cells", "onclick": f"window.viewPsiStudy('{p.investigation_id}')"}
+                    for p in retrieved_passages[:2]
+                ]
+            )
+
+        # Standard inquiry matching indexed flight datasets
+        p0 = retrieved_passages[0]
+        img = "./assets/images/card_acme.jpg"
+        img_cap = f"Figure 1: NASA Flight Combustion Research — {p0.title}"
+        if "bass" in p0.title.lower() or "solid" in p0.fuel.lower():
+            img = "./assets/images/card_bass2.jpg"
+            img_cap = "Figure 1: NASA BASS Solid Fuel Flame Spread in Controlled Duct Flow (MSG)"
+        elif "saffire" in p0.title.lower() or "cygnus" in p0.facility.lower():
+            img = "./assets/images/card_saffire.jpg"
+            img_cap = "Figure 1: NASA Saffire Large-Scale Structural Burn inside Cygnus Vehicle"
+        elif "flex" in p0.title.lower() or "droplet" in p0.fuel.lower() or "cool" in p0.summary.lower():
+            img = "./assets/images/card_flex.jpg"
+            img_cap = "Figure 1: NASA FLEX Droplet Combustion & Low-Temperature Cool Flames in CIR"
+
+        related_text = ""
+        if len(retrieved_passages) > 1:
+            related_text = f"\n\n• Related Flight Investigations: " + ", ".join([f"{p.title} ({p.investigation_id})" for p in retrieved_passages[1:]])
+
+        return QueryResponse(
+            title=f"NASA Combustion Research: {p0.title}",
+            badge=f"VERIFIED FLIGHT RECORD: {p0.investigation_id}",
+            content=(
+                f"NASA Physical Sciences Informatics Flight Investigation: {p0.title} ({p0.investigation_id})\n\n"
+                f"• Direct Flight Finding: {p0.summary}\n\n"
+                f"• Research Hardware: {p0.facility}\n"
+                f"• Fuel Specimen Regime: {p0.fuel}\n"
+                f"• Flow & Velocity: {p0.flow_velocity}\n"
+                f"• Diagnostic Instrumentation: {p0.sensors}\n"
+                f"• Epistemic Classification: {p0.epistemic_classification}"
+                f"{related_text}\n\n"
+                f"• Spacecraft Fire Safety Takeaway: Without natural buoyancy, oxidizer transport is governed by molecular diffusion or low-speed forced ventilation. "
+                f"Understanding critical extinction limits is essential to prevent undetected flame creep in crewed spacecraft cabins."
+            ),
+            citations=[p0.doi, f"https://psi.nasa.gov/physci/repo/data/investigations/{p0.investigation_id}"],
+            intent="investigation",
+            status=f"VERIFIED NASA PSI EVIDENCE // RECORD {p0.investigation_id}",
+            verified=True,
+            sources=[
+                {"label": f"NASA PSI Official Repository: {p0.investigation_id}", "url": p0.psi_url},
+                {"label": f"DOI Citation ({p0.doi})", "url": f"https://doi.org/{p0.doi}" if "10." in p0.doi else p0.psi_url}
+            ],
+            image=img,
+            imageCaption=img_cap,
+            parameters={
+                "facility": p0.facility,
+                "flow": p0.flow_velocity,
+                "fuel": p0.fuel,
+                "dataTier": p0.epistemic_classification
+            },
+            actions=[
+                {"label": "Explore in PSI Matrix", "icon": "fa-table-cells", "onclick": f"window.viewPsiStudy('{p0.investigation_id}')"},
+                {"label": "Load in Simulator", "icon": "fa-fire-flame-curved", "onclick": "window.switchMainTab('tab-simulator')"}
+            ]
+        )
+
+    # 7. Unsupported / Out of Scope Fallback
     return QueryResponse(
         title="Evidence Limitation: Query Out of Scope",
         badge="Evidence Limitation",

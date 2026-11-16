@@ -34,6 +34,14 @@ class TestNasaResourcesProxy(unittest.TestCase):
         session_store.sessions.clear()
         self.real_key = os.environ.get("PARSE_API_KEY", "")
 
+        # Isolate credentials file so proxy tests run deterministically without external API latency
+        self.backup_creds = None
+        from backend.api.main import CREDENTIALS_FILE
+        if os.path.exists(CREDENTIALS_FILE):
+            with open(CREDENTIALS_FILE, "r") as f:
+                self.backup_creds = f.read()
+            os.remove(CREDENTIALS_FILE)
+
         # Obtain a valid dynamic session token
         auth_resp = self.client.post("/api/v1/auth/session")
         self.assertEqual(auth_resp.status_code, 200)
@@ -45,6 +53,10 @@ class TestNasaResourcesProxy(unittest.TestCase):
         session_store.sessions.clear()
         if self.real_key:
             os.environ["PARSE_API_KEY"] = self.real_key
+        if self.backup_creds:
+            from backend.api.main import CREDENTIALS_FILE
+            with open(CREDENTIALS_FILE, "w") as f:
+                f.write(self.backup_creds)
 
     # -------------------------------------------------------------------------
     # 1. Dynamic Session Handshake & Authorization Tests
