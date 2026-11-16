@@ -9,7 +9,7 @@
     "rackFull": "Microgravity Science Glovebox (MSG) — ISS Destiny Laboratory",
     "fuelType": "Solid",
     "fuelDetails": "PMMA acrylic flat films (100–300 µm, 2 cm wide), rods, cotton/fiberglass fabric",
-    "airflowRange": "0 – 40 cm/s (Controlled duct flow)",
+    "airflowRange": "0 to 55 cm/s (Controlled duct flow)",
     "variables": "Forced oxidizer flow velocity, ambient O₂ concentration (vitiated below 21% by N₂ dilution), sample geometry",
     "sensors": "Radiometers, color video camera, thermography, on-board CSA-CP and CDM sensors",
     "summary": "Investigated ignition, flame growth, spread, and extinction limits of solid fuels in low-velocity forced flows. Provided 130 documented microgravity test runs proving that low-speed ventilation sustains solid combustion in microgravity where quiescent conditions would self-extinguish.",

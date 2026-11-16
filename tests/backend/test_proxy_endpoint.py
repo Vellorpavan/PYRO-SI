@@ -259,6 +259,51 @@ class TestNasaResourcesProxy(unittest.TestCase):
         self.assertGreater(data["sections_count"], 0)
         self.assertGreater(data["total_items_discovered"], 0)
 
+    # -------------------------------------------------------------------------
+    # 8. Research Co-Pilot Intent-Aware Query Tests
+    # -------------------------------------------------------------------------
+    def test_copilot_greeting_intent(self):
+        """User input 'hello' returns conversational greeting without fabricated synthesis."""
+        resp = self.client.post("/api/v1/copilot/query", json={"query": "hello"})
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertEqual(data["badge"], "Conversational Assistant")
+        self.assertIn("Space Combustion Research Co-Pilot", data["title"])
+        self.assertEqual(data["citations"], [])
+        self.assertNotIn("Cross-Investigation Query", data["badge"])
+
+    def test_copilot_investigation_intent(self):
+        """User input 'What is BASS-II?' retrieves relevant NASA information and citations."""
+        resp = self.client.post("/api/v1/copilot/query", json={"query": "What is BASS-II?"})
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertIn("BASS-II", data["title"])
+        self.assertIn("PSI-25", data["badge"])
+        self.assertIn("Microgravity Science Glovebox", data["content"])
+        self.assertTrue(len(data["citations"]) > 0)
+        self.assertIn("10.2514/6.2014-0414", data["citations"])
+
+    def test_copilot_comparison_intent(self):
+        """User input 'Compare BASS-II and SAFFIRE-I' returns comparative synthesis."""
+        resp = self.client.post("/api/v1/copilot/query", json={"query": "Compare BASS-II and SAFFIRE-I"})
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertIn("Comparative Synthesis", data["badge"])
+        self.assertIn("BASS-II (PSI-25) vs SAFFIRE-I (PSI-98)", data["title"])
+        self.assertIn("Microgravity Science Glovebox", data["content"])
+        self.assertIn("Cygnus", data["content"])
+        self.assertEqual(len(data["citations"]), 2)
+
+    def test_copilot_unsupported_intent(self):
+        """Unsupported question returns an explicit limitation without fabricated citations."""
+        resp = self.client.post("/api/v1/copilot/query", json={"query": "What is the speed of sound on Mars?"})
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertEqual(data["badge"], "Evidence Limitation")
+        self.assertIn("Evidence Limitation", data["title"])
+        self.assertIn("No matching experimental records", data["content"])
+        self.assertEqual(data["citations"], [])
+
 
 if __name__ == "__main__":
     unittest.main()

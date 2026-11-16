@@ -20,6 +20,7 @@ import { runPhase223CorrectionTests } from './scientific/phase-2-2-3-correction.
 import { runPhase224AuditTests } from './scientific/phase-2-2-4-audit.test.js';
 import { runPhase2241AddendumTests } from './scientific/phase-2-2-4-1-addendum.test.js';
 import { runPhase2242ContractTests } from './scientific/phase-2-2-4-2-contract.test.js';
+import { runCopilotIntentTests } from './unit/copilot-intent.test.js';
 
 let passed = 0;
 let failed = 0;
@@ -54,8 +55,9 @@ const testSuites = [
   { name: '[13/17] Phase 2.2.2 Traceability & Baseline Freeze Tests', fn: runPhase222TraceabilityTests },
   { name: '[14/17] Phase 2.2.3 Final Reference & Material Test Correction Tests', fn: runPhase223CorrectionTests },
   { name: '[15/17] Phase 2.2.4 Final Standards & Model Traceability Audit Tests', fn: runPhase224AuditTests },
-  { name: '[16/17] Phase 2.2.4.1 Evidence Closure Addendum Tests', fn: runPhase2241AddendumTests },
-  { name: '[17/17] Phase 2.2.4.2 Ignition Citation & Runtime Contract Tests', fn: runPhase2242ContractTests }
+  { name: '[16/18] Phase 2.2.4.1 Evidence Closure Addendum Tests', fn: runPhase2241AddendumTests },
+  { name: '[17/18] Phase 2.2.4.2 Ignition Citation & Runtime Contract Tests', fn: runPhase2242ContractTests },
+  { name: '[18/18] Research Co-Pilot Intent-Aware Verification Tests', fn: runCopilotIntentTests }
 ];
 
 for (const suite of testSuites) {
