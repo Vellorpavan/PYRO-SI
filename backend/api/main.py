@@ -217,6 +217,7 @@ class SessionResponse(BaseModel):
 class QueryRequest(BaseModel):
     query: str
     habitat: Optional[str] = "ISS"
+    gemini_api_key: Optional[str] = None
 
 
 class QueryResponse(BaseModel):
@@ -228,6 +229,10 @@ class QueryResponse(BaseModel):
     status: Optional[str] = None
     verified: Optional[bool] = False
     sources: Optional[List[Dict[str, Any]]] = None
+    image: Optional[str] = None
+    imageCaption: Optional[str] = None
+    parameters: Optional[Dict[str, Any]] = None
+    actions: Optional[List[Dict[str, Any]]] = None
 
 
 class DiscoveredItem(BaseModel):
@@ -311,13 +316,13 @@ def get_iss_telemetry():
     }
 
 
-def try_gemini_synthesis(raw_query: str) -> Optional[QueryResponse]:
+def try_gemini_synthesis(raw_query: str, key_override: Optional[str] = None) -> Optional[QueryResponse]:
     """
     Attempts to query the official Google Gemini API (gemini-2.0-flash / gemini-1.5-flash)
     using the official google.genai SDK.
     Grounds the model on NASA Physical Sciences Informatics (PSI) combustion research.
     """
-    gemini_key = os.getenv("GEMINI_API_KEY")
+    gemini_key = key_override or os.getenv("GEMINI_API_KEY")
     if not gemini_key or gemini_key.strip() in ("", "your_gemini_api_key_here"):
         return None
 
@@ -361,15 +366,63 @@ def try_gemini_synthesis(raw_query: str) -> Optional[QueryResponse]:
 
         if resp and resp.text:
             parsed = json.loads(resp.text)
+            title = parsed.get("title", "NASA Combustion Research Intelligence")
+            badge = parsed.get("badge", "Synthesized")
+            intent = parsed.get("intent", "thematic")
+            
+            # Enrich with authentic flight imagery and parameters if matching investigation
+            image = None
+            image_caption = None
+            parameters = None
+            actions = None
+            q_lower = raw_query.lower()
+            
+            if "bass" in q_lower or "psi-25" in q_lower:
+                image = "./assets/images/card_bass2.jpg"
+                image_caption = "Figure 1: NASA BASS-II MSG Solid Fuel Flame Spread (PMMA flat film in 0 to 55 cm/s forced flow)"
+                parameters = {
+                    "facility": "Microgravity Science Glovebox (MSG)",
+                    "flow": "0 to 55 cm/s (Forced laminar duct)",
+                    "fuel": "Solid PMMA (100–300 µm) & Rods",
+                    "dataVolume": "255.77 GB (410 video runs)"
+                }
+                actions = [
+                    {"label": "Explore in PSI Matrix", "icon": "fa-table-cells", "onclick": "window.viewPsiStudy('PSI-25')"},
+                    {"label": "Load in Simulator", "icon": "fa-fire-flame-curved", "onclick": "window.switchMainTab('tab-simulator')"}
+                ]
+            elif "saffire" in q_lower or "psi-98" in q_lower:
+                image = "./assets/images/card_saffire.jpg"
+                image_caption = "Figure 1: NASA Saffire Large-Scale Structural Burn inside Cygnus Vehicle (0.94 m SIBAL fabric panel)"
+                parameters = {
+                    "facility": "Cygnus Cargo Vehicle Egress",
+                    "flow": "20 cm/s (Forced ventilation)",
+                    "fuel": "SIBAL Cotton-Fiberglass Blend (1.0 m x 0.4 m)",
+                    "dataVolume": "130.4 GB (Thermocouple array)"
+                }
+                actions = [
+                    {"label": "Explore in PSI Matrix", "icon": "fa-table-cells", "onclick": "window.viewPsiStudy('PSI-98')"},
+                    {"label": "Load in Simulator", "icon": "fa-fire-flame-curved", "onclick": "window.switchMainTab('tab-simulator')"}
+                ]
+            elif "acme" in q_lower or "flame design" in q_lower or "psi-10" in q_lower:
+                image = "./assets/images/card_acme.jpg"
+                image_caption = "Figure 1: NASA ACME Coflow Burner Gaseous Diffusion Flame in Combustion Integrated Rack (CIR)"
+            elif "cool flame" in q_lower or "flex" in q_lower or "psi-69" in q_lower:
+                image = "./assets/images/card_flex.jpg"
+                image_caption = "Figure 1: NASA FLEX Droplet Combustion & Invisible 500–800 K Cool Flame Regime"
+
             return QueryResponse(
-                title=parsed.get("title", "NASA Combustion Research Intelligence"),
-                badge=parsed.get("badge", "Synthesized"),
+                title=title,
+                badge=badge,
                 content=parsed.get("content", ""),
                 citations=parsed.get("citations", []),
-                intent=parsed.get("intent", "thematic"),
-                status=parsed.get("status", "VERIFIED NASA PSI EVIDENCE"),
+                intent=intent,
+                status=parsed.get("status", "VERIFIED NASA PSI EVIDENCE // GEMINI SYNTHESIS"),
                 verified=bool(parsed.get("verified", False)),
-                sources=parsed.get("sources", [])
+                sources=parsed.get("sources", []),
+                image=image,
+                imageCaption=image_caption,
+                parameters=parameters,
+                actions=actions
             )
     except Exception as e:
         logger.warning(f"[Copilot] Gemini API call skipped or encountered error: {e}. Falling back to deterministic knowledge engine.")
@@ -392,7 +445,7 @@ def handle_copilot_query(req: QueryRequest):
         raise HTTPException(status_code=400, detail="Query cannot be empty.")
 
     # 0. Live Gemini API Synthesis (if configured)
-    gemini_resp = try_gemini_synthesis(raw_q)
+    gemini_resp = try_gemini_synthesis(raw_q, key_override=req.gemini_api_key)
     if gemini_resp is not None:
         return gemini_resp
 
@@ -485,6 +538,19 @@ def handle_copilot_query(req: QueryRequest):
             sources=[
                 {"label": "NASA PSI Official Repository: PSI-25", "url": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-25"},
                 {"label": "AIAA Aviation 2014 DOI", "url": "https://doi.org/10.2514/6.2014-0414"}
+            ],
+            image="./assets/images/card_bass2.jpg",
+            imageCaption="Figure 1: NASA BASS-II Microgravity Science Glovebox (MSG) Solid Fuel Flame Spread (PMMA flat film in 0 to 55 cm/s forced flow)",
+            parameters={
+                "facility": "Microgravity Science Glovebox (MSG)",
+                "flow": "0 to 55 cm/s (Forced laminar duct)",
+                "fuel": "Solid PMMA & Cotton/Fiberglass",
+                "dataVolume": "255.77 GB (410 video runs)"
+            },
+            actions=[
+                {"label": "Explore in PSI Matrix", "icon": "fa-table-cells", "onclick": "window.viewPsiStudy('PSI-25')"},
+                {"label": "Load in Simulator", "icon": "fa-fire-flame-curved", "onclick": "window.switchMainTab('tab-simulator')"},
+                {"label": "Copy Citation", "icon": "fa-copy", "onclick": "window.copyResearchCitation('10.2514/6.2014-0414')"}
             ]
         )
     elif "saffire" in q or "psi-98" in q:
@@ -507,6 +573,19 @@ def handle_copilot_query(req: QueryRequest):
             sources=[
                 {"label": "NASA PSI Official Repository: PSI-98", "url": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-98"},
                 {"label": "Acta Astronautica DOI", "url": "https://doi.org/10.1016/j.actaastro.2019.03.023"}
+            ],
+            image="./assets/images/card_saffire.jpg",
+            imageCaption="Figure 1: NASA Saffire Large-Scale Structural Burn inside Cygnus Vehicle (0.94 m SIBAL fabric panel)",
+            parameters={
+                "facility": "Cygnus Cargo Vehicle Egress",
+                "flow": "20 cm/s (Forced flow)",
+                "fuel": "SIBAL Cotton-Fiberglass (1.0 m x 0.4 m)",
+                "dataVolume": "130.4 GB (Thermocouple array)"
+            },
+            actions=[
+                {"label": "Explore in PSI Matrix", "icon": "fa-table-cells", "onclick": "window.viewPsiStudy('PSI-98')"},
+                {"label": "Load in Simulator", "icon": "fa-fire-flame-curved", "onclick": "window.switchMainTab('tab-simulator')"},
+                {"label": "Copy Citation", "icon": "fa-copy", "onclick": "window.copyResearchCitation('10.2514/6.2017-0158')"}
             ]
         )
 

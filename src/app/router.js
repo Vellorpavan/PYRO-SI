@@ -4,6 +4,8 @@
  */
 
 export function switchMainTab(tabId) {
+  if (tabId === 'tab-copilot') tabId = 'tab-sicopilot';
+
   // Hide all sections
   document.querySelectorAll('.tab-section').forEach(sec => {
     sec.classList.add('hidden');
