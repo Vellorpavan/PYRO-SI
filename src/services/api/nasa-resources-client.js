@@ -5,7 +5,7 @@
  * 
  * SECURITY AUDIT COMPLIANCE:
  * - ZERO hardcoded secrets or privileged tokens are embedded in this client module.
- * - Authenticates dynamically via session handshake: POST /api/v1/auth/session.
+ * - Obtains dynamic session lease via POST /api/v1/auth/session (IP-bound anti-abuse lease).
  * - Proxies calls to the secure backend gateway endpoint (/api/v1/nasa/resources).
  * - End-users NEVER supply, handle, or view Parse.bot API credentials.
  */

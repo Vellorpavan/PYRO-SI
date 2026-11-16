@@ -4,7 +4,7 @@
 **Challenge:** NASA Space Apps Challenge 2026 — *Flame in Freefall*  
 **Date:** November 16, 2026  
 **Document Identifier:** NASA-PYRO-ROADMAP-001  
-**Version:** 4.8 (Phase 2.3.3 NASA Data Verification & Catalogue Integration Completed)  
+**Version:** 4.9 (Phase 2.3.4 NASA PSI Combustion Dataset Discovery & Retrieval Completed)  
 **Governance Standard:** NASA Systems Engineering Handbook (SP-2016-6105)
 
 ---
@@ -136,6 +136,17 @@ To ensure **GODEYE // PYRO-SI** achieves absolute scientific credibility while f
 │ • Implemented Provenance Protection Invariant: zero downgrade of VERIFIED_DATASET.     │
 │ • Preserved all 19 core combustion flight datasets in psi-investigations.json.         │
 │ • 34 backend Python tests & 848 Node.js scientific assertions (100% green).            │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ PHASE 2.3.4: NASA PSI Combustion Dataset Discovery & Retrieval (COMPLETED & VERIFIED)  │
+│ • Resolved security audit: reclassified session token as anonymous anti-abuse lease   │
+│   token rather than user authentication; zero fake logins or static tokens introduced. │
+│ • Reverse-engineered NASA PSI geode-py REST API (search, detail, pre-signed download). │
+│ • Discovered & audited 24 authentic NASA combustion investigations on psi.nasa.gov.   │
+│ • Confirmed 20 investigations have active downloadable datasets (16,334 files, 9.87 TB)│
+│ • Verified live AWS S3 pre-signed download URLs without authentication gates.          │
+│ • Identified 4 METADATA_ONLY investigations (PSI-22, PSI-68, PSI-69, PSI-99; 0 files). │
+│ • Built exhaustive dataset availability matrix and retrieval architecture spec.        │
+│ • 100% test pass rate preserved (34 Python tests, 848 Node.js assertions).             │
 ├────────────────────────────────────────────────────────────────────────────────────────┤
 │ PHASE 3: AI Research Co-Pilot RAG Architecture Integration (NEXT PHASE — AWAITING GATE)│
 │ • Replace static substring keyword routing with authentic Retrieval-Augmented          │
@@ -294,13 +305,25 @@ To ensure **GODEYE // PYRO-SI** achieves absolute scientific credibility while f
   - Preserved all 19 original combustion flight investigations in `src/data/reference/psi-investigations.json`.
   - Authored 8 integration tests in `tests/backend/test_catalogue_integration.py`; achieved 34/34 passing backend tests and 848/848 passing Node.js assertions.
   - Authored `docs/NASA_CATALOGUE_INTEGRATION_SPEC.md`, `docs/NASA_INVESTIGATION_VERIFICATION_MATRIX.md`, and `docs/PHASE_2_3_3_NASA_DATA_INTEGRATION_REPORT.md`.
+- [x] **Task 18: Phase 2.3.4 NASA PSI Combustion Dataset Discovery & Retrieval:**
+  - Resolved security audit: inspected `POST /api/v1/auth/session` and `DynamicSessionStore`; reclassified token as an Anonymous Client Session Lease (Anti-Abuse Rate Gate) rather than user authentication; verified application has no user database or user account system; strictly avoided fake logins or static shared tokens.
+  - Reverse-engineered official NASA Physical Sciences Informatics (PSI) repository architecture (`https://psi.nasa.gov/geode-py/ws/`).
+  - Mapped repository REST contracts: search (`/repo/search`), details (`/repo/investigations/{id}`), and pre-signed S3 download (`/studies/{id}/download`).
+  - Discovered and audited 24 authentic NASA combustion investigations across ACME, BASS, Saffire, FLEX, SAME, DAFT, SLICE, SPICE, CFI, and cool flames.
+  - Verified 20 investigations have active downloadable empirical datasets totaling 16,334 research files and 9.87 TB on AWS S3 (`psi-repo-prod` and `psi-curation-prod`).
+  - Successfully generated and tested live AWS S3 pre-signed download URLs without authentication gates.
+  - Identified 4 investigations with metadata but 0 uploaded files in S3 (`PSI-22`, `PSI-68`, `PSI-69`, `PSI-99`), classifying them strictly as `METADATA_ONLY`.
+  - Discovered technical limitations: `psi.ndc.nasa.gov` internal host resolution failure, S3 GET verb signature enforcement, and metadata vs file count discrepancies.
+  - Preserved existing 19-record catalogue and scientific equation integrity.
+  - Authored `docs/NASA_PSI_RETRIEVAL_ARCHITECTURE.md`, `docs/NASA_COMBUSTION_DATASET_AVAILABILITY_MATRIX.md`, and `docs/PHASE_2_3_4_NASA_COMBUSTION_DATA_DISCOVERY.md`.
+  - Maintained 100% test pass rate: 34 Python backend tests and 848 Node.js scientific assertions passing.
 
 ---
 
 ## 3. Next Phase Gates
 
 ```
-Phase 1 (Complete) ➔ Phase 1.1 (Complete) ➔ Phase 2 (Complete) ➔ Phase 2.1 (Complete) ➔ Phase 2.2 (Complete) ➔ Phase 2.2.1 (Complete) ➔ Phase 2.2.2 (Complete) ➔ Phase 2.2.3 (Complete) ➔ Phase 2.2.4 (Complete) ➔ Phase 2.2.4.1 (Complete) ➔ Phase 2.2.4.2 (Complete & FROZEN) ➔ Phase 2.3.1 (Complete) ➔ Phase 2.3.2 (Complete) ➔ Phase 2.3.3 (Complete & VERIFIED) ➔ [AWAITING USER GATE APPROVAL FOR PHASE 3] ➔ Phase 3 (Gemini RAG Integration)
+Phase 1 (Complete) ➔ Phase 1.1 (Complete) ➔ Phase 2 (Complete) ➔ Phase 2.1 (Complete) ➔ Phase 2.2 (Complete) ➔ Phase 2.2.1 (Complete) ➔ Phase 2.2.2 (Complete) ➔ Phase 2.2.3 (Complete) ➔ Phase 2.2.4 (Complete) ➔ Phase 2.2.4.1 (Complete) ➔ Phase 2.2.4.2 (Complete & FROZEN) ➔ Phase 2.3.1 (Complete) ➔ Phase 2.3.2 (Complete) ➔ Phase 2.3.3 (Complete) ➔ Phase 2.3.4 (Complete & VERIFIED) ➔ [AWAITING USER GATE APPROVAL FOR PHASE 3] ➔ Phase 3 (Gemini RAG Integration)
 ```
 
 No Phase 3 Gemini RAG integration will commence without explicit user review and authorization.

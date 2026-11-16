@@ -99,12 +99,18 @@ rate_limiter = SlidingWindowRateLimiter(max_requests=30, window_seconds=60.0)
 
 
 # -----------------------------------------------------------------------------
-# Dynamic Session Store (Zero Hardcoded Frontend Secrets)
+# Dynamic Client Session Store (Ephemeral Lease & Rate-Limiting Gate)
 # -----------------------------------------------------------------------------
 class DynamicSessionStore:
     """
     In-memory session store providing dynamic, cryptographically secure
-    session tokens for application users without embedding static secrets in frontend JS.
+    ephemeral session tokens for application clients.
+    
+    SECURITY AUDIT NOTE (Phase 2.3.4):
+    This is an anonymous client session handshake for anti-abuse rate-limiting
+    and proxy gating. It eliminates hardcoded static shared secrets in frontend JS.
+    It does NOT perform user authentication or user identity verification, as the
+    application is an open-access scientific dashboard without user accounts.
     """
 
     def __init__(self, ttl_seconds: float = SESSION_TTL_SECONDS):
@@ -153,6 +159,7 @@ def verify_app_authorization(
 ) -> str:
     """
     Verifies that the request carries a genuine active application session token.
+    Enforces IP-bound session leasing and sliding-window rate limiting.
     No static secret is ever embedded in frontend client JavaScript.
     """
     client_ip = request.client.host if request.client else "anonymous"
@@ -178,7 +185,7 @@ def verify_app_authorization(
         logger.warning(f"Unauthorized proxy access attempt from IP: {client_ip}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Authentication required. A valid active application session token must be provided."
+            detail="Session token required. A valid active application session token must be obtained via POST /api/v1/auth/session."
         )
 
     # Apply sliding-window rate limiting by client IP
@@ -252,13 +259,16 @@ class NasaResourcesResponse(BaseModel):
 
 
 # -----------------------------------------------------------------------------
-# Session Handshake Endpoint (Task 1: Dynamic Client Sessions)
+# Session Handshake Endpoint (Dynamic Client Session Lease)
 # -----------------------------------------------------------------------------
 @app.post("/api/v1/auth/session", response_model=SessionResponse)
 def create_application_session(request: Request):
     """
-    Issues a dynamic, cryptographically secure application session token.
-    Allows frontend clients to authenticate without baking static secrets into client JS.
+    Issues a dynamic, cryptographically secure application session lease token.
+    Enables frontend clients to access backend proxy services with rate limiting
+    without baking static secrets into client JS.
+    
+    NOTE: This is an anonymous client session handshake, NOT user authentication.
     """
     client_ip = request.client.host if request.client else "anonymous"
     token = session_store.create_session(client_ip)

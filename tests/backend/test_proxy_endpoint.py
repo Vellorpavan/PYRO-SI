@@ -63,14 +63,14 @@ class TestNasaResourcesProxy(unittest.TestCase):
         """Unauthenticated client request must return HTTP 401 Unauthorized."""
         response = self.client.get("/api/v1/nasa/resources")
         self.assertEqual(response.status_code, 401)
-        self.assertIn("Authentication required", response.json()["detail"])
+        self.assertIn("Session token required", response.json()["detail"])
 
     def test_invalid_session_token_returns_401(self):
         """Request with incorrect or forged session token must return HTTP 401 Unauthorized."""
         headers = {"X-Session-Token": "invalid-forged-token-xyz-123456789"}
         response = self.client.get("/api/v1/nasa/resources", headers=headers)
         self.assertEqual(response.status_code, 401)
-        self.assertIn("Authentication required", response.json()["detail"])
+        self.assertIn("Session token required", response.json()["detail"])
 
     def test_bearer_authorization_accepted(self):
         """Bearer token in Authorization header is accepted."""
