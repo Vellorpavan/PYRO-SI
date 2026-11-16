@@ -4,7 +4,7 @@
 **Challenge:** NASA Space Apps Challenge 2026 — *Flame in Freefall*  
 **Date:** November 16, 2026  
 **Document Identifier:** NASA-PYRO-ROADMAP-001  
-**Version:** 4.11 (Phase 2.3.4.2 Scientific Data Classification Audit Completed)  
+**Version:** 4.12 (Phase 2.3.4.3 Scientific Classification & Data Provenance Audit Completed)  
 **Governance Standard:** NASA Systems Engineering Handbook (SP-2016-6105)
 
 ---
@@ -341,13 +341,24 @@ To ensure **GODEYE // PYRO-SI** achieves absolute scientific credibility while f
   - Maintained 100% test pass rate across all suites: 49 Python backend tests and 848 Node.js scientific assertions passing (**897 total platform assertions PASS / 0 FAIL**).
   - Authored `docs/PHASE_2_3_4_2_SCIENTIFIC_CLASSIFICATION_AUDIT.md` and `docs/NASA_EXPERIMENTAL_DATA_CLASSIFICATION_RULES.md`.
   - Updated `src/data/reference/psi-reconciled-combustion.json`.
+- [x] **Task 21: Phase 2.3.4.3 Scientific Classification & Data Provenance Audit:**
+  - Audited scientific measurement semantics and column origins for `PSI-10` (Flame Design) and `PSI-159` (CFI-G): isolated direct in-situ sensor telemetry (`XO2`, chamber pressure transducers, mass flow controllers, burner base thermocouples) from configuration parameters (`Xfuel`, `Xf`) and derived thermodynamic equilibrium calculations (`Tad`, `mean Zst`).
+  - Authoritatively established the physical and computational proof that Adiabatic Flame Temperature ($T_{ad}$) is a derived thermodynamic calculation via NASA Glenn's Chemical Equilibrium with Applications (CEA) code (Gordon & McBride 1994, NASA RP-1311), not an in-situ physical thermocouple measurement (which cannot survive inside the 2000–2750 K reaction zone).
+  - Uncovered primary image digitization provenance for `PSI-107` (SPICE): identified Dr. Zeng-Guang Yuan's Adobe Photoshop ruler calibration regression ($\text{Spice ruler (mm)} = -14.599 \times \text{PS reading} + 111.04$) and established the explicit classification `MEASUREMENTS_EXTRACTED_FROM_IMAGERY`, cleanly separating video-digitized observations from in-situ sensor telemetry.
+  - Rectified multi-column validation dataset `PSI-117` (MST): separated computational simulation outputs (Columns 0–3) from empirical microgravity drop-tower cool-flame droplet extinction observations ($D_{\text{ext, cool}}^{\text{Expt}}$, Columns 5–7), reclassifying the file from `CODE_OR_MODEL_ONLY` to `MIXED_EXPERIMENTAL_AND_MODEL_DATA`.
+  - Audited provenance and recorded explicit uncertainties for `PSI-102` (SAME payload execution state log with 241 event records, confirming unuploaded status of underlying `.htr` DustTrak telemetry) and `PSI-142` (ground-based 1-g atmospheric counterflow burner literature compilation from Reuter et al., *Combustion and Flame* 2017 and *Proc. Combust. Inst.* 2019).
+  - Formalized storage metadata attribution contract for `PSI-20`, `PSI-21`, and `PSI-106`: designated the $4,114,019,468,490\text{ byte}$ discrepancy as `UNRESOLVED_METADATA_STORAGE_ATTRIBUTION`, recording verified facts and strictly prohibiting unverified claims of "confirmed raw on-orbit flight telemetry" without primary NASA documentation.
+  - Added 5 new automated regression tests to `tests/backend/test_catalogue_reconciliation.py` verifying all Phase 2.3.4.3 contracts.
+  - Maintained 100% test pass rate across all suites: 54 Python backend tests and 848 Node.js scientific assertions passing (**902 total platform assertions PASS / 0 FAIL**).
+  - Authored `docs/PHASE_2_3_4_3_CLASSIFICATION_PROVENANCE_AUDIT.md` and `docs/NASA_DATA_PROVENANCE_AND_MEASUREMENT_SEMANTICS.md`.
+  - Enriched `src/data/reference/psi-reconciled-combustion.json` with fine-grained semantic provenance fields across all 24 investigations.
 
 ---
 
 ## 3. Next Phase Gates
 
 ```
-Phase 1 (Complete) ➔ Phase 1.1 (Complete) ➔ Phase 2 (Complete) ➔ Phase 2.1 (Complete) ➔ Phase 2.2 (Complete) ➔ Phase 2.2.1 (Complete) ➔ Phase 2.2.2 (Complete) ➔ Phase 2.2.3 (Complete) ➔ Phase 2.2.4 (Complete) ➔ Phase 2.2.4.1 (Complete) ➔ Phase 2.2.4.2 (Complete & FROZEN) ➔ Phase 2.3.1 (Complete) ➔ Phase 2.3.2 (Complete) ➔ Phase 2.3.3 (Complete) ➔ Phase 2.3.4 (Complete) ➔ Phase 2.3.4.1 (Complete) ➔ Phase 2.3.4.2 (Complete & AUDITED) ➔ [AWAITING USER GATE APPROVAL FOR PHASE 3] ➔ Phase 3 (Gemini RAG Integration)
+Phase 1 (Complete) ➔ Phase 1.1 (Complete) ➔ Phase 2 (Complete) ➔ Phase 2.1 (Complete) ➔ Phase 2.2 (Complete) ➔ Phase 2.2.1 (Complete) ➔ Phase 2.2.2 (Complete) ➔ Phase 2.2.3 (Complete) ➔ Phase 2.2.4 (Complete) ➔ Phase 2.2.4.1 (Complete) ➔ Phase 2.2.4.2 (Complete & FROZEN) ➔ Phase 2.3.1 (Complete) ➔ Phase 2.3.2 (Complete) ➔ Phase 2.3.3 (Complete) ➔ Phase 2.3.4 (Complete) ➔ Phase 2.3.4.1 (Complete) ➔ Phase 2.3.4.2 (Complete) ➔ Phase 2.3.4.3 (Complete & AUDITED) ➔ [AWAITING USER GATE APPROVAL FOR PHASE 3] ➔ Phase 3 (Gemini RAG Integration)
 ```
 
 No Phase 3 Gemini RAG integration will commence without explicit user review and authorization.

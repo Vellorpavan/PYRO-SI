@@ -238,11 +238,13 @@ class TestCatalogueReconciliation(unittest.TestCase):
 
     def test_mutually_exclusive_file_level_taxonomy(self):
         """
-        Phase 2.3.4.2 Task 2: Validate 7 mutually exclusive file-level classifications.
+        Phase 2.3.4.2 & 2.3.4.3: Validate mutually exclusive file-level classifications.
         """
         valid_file_classes = {
             "EXPERIMENTAL_CONFIGURATION",
             "NUMERICAL_EXPERIMENTAL_MEASUREMENTS",
+            "MEASUREMENTS_EXTRACTED_FROM_IMAGERY",
+            "MIXED_EXPERIMENTAL_AND_MODEL_DATA",
             "NUMERICAL_DERIVED_DATA",
             "DOCUMENTATION_ONLY",
             "VIDEO_OR_IMAGE_ONLY",
@@ -257,6 +259,173 @@ class TestCatalogueReconciliation(unittest.TestCase):
                     rep.get("file_classification"), valid_file_classes,
                     f"Invalid file classification in {inv['accession']}"
                 )
+
+    def test_phase_2_3_4_3_psi10_and_psi159_tad_provenance_and_measurement_separation(self):
+        """
+        Phase 2.3.4.3 Task 1: Audit PSI-10 and PSI-159 measurement semantics.
+        Assert that Tad (Adiabatic Flame Temperature) is explicitly proven to be a
+        derived chemical equilibrium calculation (NASA CEA), NOT a physical sensor observation.
+        Verify separation of direct sensor channels from configuration and derived thermochemistry.
+        """
+        for acc in ["PSI-10", "PSI-159"]:
+            inv = next((i for i in self.investigations if i["accession"] == acc), None)
+            self.assertIsNotNone(inv, f"{acc} missing from reconciled catalogue")
+            rep = inv.get("representative_file")
+            self.assertIsNotNone(rep, f"{acc} missing representative file")
+
+            # Tad semantics check
+            tad = rep.get("tad_semantics")
+            self.assertIsNotNone(tad, f"{acc} missing tad_semantics object")
+            self.assertFalse(
+                tad.get("is_physical_sensor_measurement"),
+                f"{acc} Tad must NEVER be classified as a physical sensor measurement"
+            )
+            self.assertTrue(tad.get("is_derived_calculation"))
+            self.assertEqual(
+                tad.get("provenance"), "THERMOCHEMICAL_EQUILIBRIUM_CALCULATION"
+            )
+            self.assertIn("CEA", tad.get("theoretical_basis"))
+
+            # Column separation checks
+            direct_sensors = rep.get("direct_sensor_columns", [])
+            configs = rep.get("configuration_columns", [])
+            derived = rep.get("derived_equilibrium_columns", [])
+
+            self.assertTrue(len(direct_sensors) > 0, f"{acc} missing direct sensor channels")
+            self.assertTrue(len(configs) > 0, f"{acc} missing configuration columns")
+            self.assertTrue(len(derived) > 0, f"{acc} missing derived equilibrium columns")
+
+            # Tad must be in derived, NEVER in direct sensors
+            self.assertIn("Tad (K)", derived)
+            self.assertNotIn("Tad (K)", direct_sensors)
+            self.assertNotIn("Tad (K)", configs)
+
+            # Direct sensors must include O2 and pressure measurements
+            if acc == "PSI-10":
+                self.assertIn("XO2 (init)", direct_sensors)
+                self.assertIn("pinit (atm)", direct_sensors)
+                self.assertIn("mfuel (mg/s)", direct_sensors)
+            elif acc == "PSI-159":
+                self.assertIn("XO2 before test", direct_sensors)
+                self.assertIn("approx p (bar)", direct_sensors)
+                self.assertIn("Peak burner T (C )", direct_sensors)
+
+    def test_phase_2_3_4_3_psi107_image_derived_measurement_semantics(self):
+        """
+        Phase 2.3.4.3 Task 2: Audit PSI-107 flame length measurements.
+        Verify that numerical values are derived from video footage via Photoshop ruler tool,
+        NOT measured by in-situ physical immersion probes.
+        Preserve the distinction between image-derived measurements and raw telemetry.
+        """
+        inv = next((i for i in self.investigations if i["accession"] == "PSI-107"), None)
+        self.assertIsNotNone(inv, "PSI-107 missing from catalogue")
+        rep = inv.get("representative_file")
+        self.assertIsNotNone(rep, "PSI-107 missing representative file")
+
+        # File classification must be MEASUREMENTS_EXTRACTED_FROM_IMAGERY
+        self.assertEqual(rep.get("file_classification"), "MEASUREMENTS_EXTRACTED_FROM_IMAGERY")
+        self.assertEqual(rep.get("acquisition_method"), "OPTICAL_VIDEO_EXTRACTION")
+        self.assertEqual(rep.get("value_provenance"), "DIGITIZED_VIDEO_FRAMES_VIA_PHOTOSHOP_RULER")
+
+        # Image calibration provenance
+        img_prov = rep.get("imaging_provenance")
+        self.assertIsNotNone(img_prov, "PSI-107 missing imaging_provenance")
+        self.assertIn("Photoshop", img_prov.get("digitization_tool"))
+        self.assertIn("-14.599", img_prov.get("calibration_equation"))
+        self.assertFalse(img_prov.get("is_immersion_sensor"))
+        self.assertTrue(img_prov.get("is_image_derived"))
+
+        # Investigation-level distinction preserved
+        self.assertEqual(inv["investigation_classification"], "IMAGE_DERIVED_FLIGHT_MEASUREMENTS_AVAILABLE")
+        self.assertTrue(inv["has_image_derived_measurements"])
+        self.assertFalse(inv["has_direct_transducer_telemetry"])
+
+    def test_phase_2_3_4_3_psi117_mixed_experimental_and_model_separation(self):
+        """
+        Phase 2.3.4.3 Task 3: Audit PSI-117 mixed validation content.
+        Assert that Dext_cool_Expt is recognized as experimental drop tower observations,
+        and the file is NOT classified as CODE_OR_MODEL_ONLY.
+        """
+        inv = next((i for i in self.investigations if i["accession"] == "PSI-117"), None)
+        self.assertIsNotNone(inv, "PSI-117 missing from catalogue")
+        rep = inv.get("representative_file")
+        self.assertIsNotNone(rep, "PSI-117 missing representative file")
+
+        # File must be MIXED_EXPERIMENTAL_AND_MODEL_DATA, not CODE_OR_MODEL_ONLY
+        self.assertEqual(rep.get("file_classification"), "MIXED_EXPERIMENTAL_AND_MODEL_DATA")
+        self.assertNotEqual(rep.get("file_classification"), "CODE_OR_MODEL_ONLY")
+
+        # Model and experimental columns must be separated
+        model_cols = rep.get("model_simulation_columns", [])
+        expt_cols = rep.get("experimental_observation_columns", [])
+
+        self.assertIn("Dext_cool", model_cols)
+        self.assertIn("Dext_hot", model_cols)
+        self.assertIn("Dext_cool_Expt", expt_cols)
+
+        # Semantics verification
+        mixed_sem = rep.get("mixed_content_semantics")
+        self.assertIsNotNone(mixed_sem, "PSI-117 missing mixed_content_semantics")
+        self.assertTrue(mixed_sem.get("contains_experimental_observations"))
+        self.assertTrue(mixed_sem.get("contains_model_predictions"))
+
+        # Investigation classification must reflect mixed observations & validation
+        self.assertEqual(inv["investigation_classification"], "EXPERIMENTAL_OBSERVATIONS_AND_MODEL_VALIDATION")
+        self.assertTrue(inv["has_experimental_observations"])
+        self.assertTrue(inv["has_simulation_model_predictions"])
+
+    def test_phase_2_3_4_3_psi102_and_psi142_provenance_and_uncertainty(self):
+        """
+        Phase 2.3.4.3 Task 4: Audit provenance and record unresolved uncertainty for
+        PSI-102 (SAME event log) and PSI-142 (Princeton counterflow literature compilation).
+        """
+        # PSI-102 (SAME): GMT255 log is an execution event log, not sensor time series
+        psi102 = next((i for i in self.investigations if i["accession"] == "PSI-102"), None)
+        self.assertIsNotNone(psi102)
+        rep102 = psi102.get("representative_file")
+        self.assertEqual(rep102.get("file_classification"), "EXPERIMENTAL_CONFIGURATION")
+        self.assertFalse(rep102.get("has_sensor_time_series"))
+        self.assertEqual(len(rep102.get("observation_columns", [])), 0)
+        self.assertIn("FTP", rep102.get("unresolved_uncertainty"))
+        self.assertFalse(psi102["has_flight_measurements"])
+
+        # PSI-142: Literature compilation from peer-reviewed ground tests
+        psi142 = next((i for i in self.investigations if i["accession"] == "PSI-142"), None)
+        self.assertIsNotNone(psi142)
+        rep142 = psi142.get("representative_file")
+        self.assertEqual(rep142.get("file_classification"), "NUMERICAL_DERIVED_DATA")
+        self.assertEqual(rep142.get("acquisition_method"), "DIGITIZED_LITERATURE_COMPILATION")
+        self.assertTrue(len(rep142.get("literature_citations", [])) >= 2)
+        self.assertIn("Reuter", rep142.get("literature_citations")[0])
+        self.assertIn("1-g atmospheric laboratory", rep142.get("unresolved_uncertainty"))
+        self.assertFalse(psi142["has_flight_measurements"])
+
+    def test_phase_2_3_4_3_storage_metadata_unresolved_attribution_contract(self):
+        """
+        Phase 2.3.4.3 Task 5: Verify the original meaning of metadata size fields.
+        Assert that the ~4.114 TB difference across PSI-20, PSI-21, PSI-106 is formally
+        classified as UNRESOLVED_METADATA_STORAGE_ATTRIBUTION, distinguishing verified
+        facts from prohibited unproven assertions.
+        """
+        for acc in ["PSI-20", "PSI-21", "PSI-106"]:
+            inv = next((i for i in self.investigations if i["accession"] == acc), None)
+            self.assertIsNotNone(inv)
+            audit = inv.get("storage_metadata_audit")
+            self.assertIsNotNone(audit, f"{acc} missing storage_metadata_audit")
+
+            # Must be UNRESOLVED_METADATA_STORAGE_ATTRIBUTION
+            self.assertEqual(audit.get("epistemic_status"), "UNRESOLVED_METADATA_STORAGE_ATTRIBUTION")
+
+            # Verified facts and prohibited assumptions must be recorded
+            facts = audit.get("verified_facts", [])
+            prohibited = audit.get("unverified_assumptions_prohibited", [])
+
+            self.assertTrue(len(facts) >= 2, f"{acc} missing verified facts")
+            self.assertTrue(len(prohibited) >= 1, f"{acc} missing prohibited assumptions")
+
+            # Prohibit asserting confirmed unuploaded raw telemetry
+            found_prohibition = any("unuploaded raw telemetry" in p for p in prohibited)
+            self.assertTrue(found_prohibition, f"{acc} must prohibit unproven raw telemetry assertion")
 
     def test_seven_verification_stages_evaluated(self):
         """
