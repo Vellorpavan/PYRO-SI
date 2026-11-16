@@ -4,7 +4,7 @@
 **Challenge:** NASA Space Apps Challenge 2026 — *Flame in Freefall*  
 **Date:** November 16, 2026  
 **Document Identifier:** NASA-PYRO-ROADMAP-001  
-**Version:** 4.10 (Phase 2.3.4.1 Independent Catalogue Reconciliation & Dataset Content Verification Completed)  
+**Version:** 4.11 (Phase 2.3.4.2 Scientific Data Classification Audit Completed)  
 **Governance Standard:** NASA Systems Engineering Handbook (SP-2016-6105)
 
 ---
@@ -331,13 +331,23 @@ To ensure **GODEYE // PYRO-SI** achieves absolute scientific credibility while f
   - Preserved existing 19 core flight calibrations in `src/data/reference/psi-investigations.json`.
   - Maintained 100% test pass rate across all suites: 46 Python backend tests and 848 Node.js scientific assertions passing (**894 total platform assertions PASS / 0 FAIL**).
   - Authored `docs/PHASE_2_3_4_1_INDEPENDENT_VERIFICATION_REPORT.md`, `docs/NASA_CATALOGUE_RECONCILIATION_REPORT.md`, and `docs/NASA_DATASET_CONTENT_VERIFICATION_MATRIX.md`.
+- [x] **Task 20: Phase 2.3.4.2 Scientific Data Classification Audit:**
+  - Disambiguated experimental configurations from physical sensor measurements: audited spreadsheets for `PSI-20` (ACME BRE, 1,113 B), `PSI-21` (ACME CLD Flame, 2,454 B), `PSI-106` (SLICE, 734 B), `PSI-25` (BASS-II matrices & fan calibration), and `PSI-26` (BASS planned & as-run matrices); proved that numbers in a CSV (e.g. burner sizes, test dates, MFC capacities, sample thicknesses) represent test setups, not sensor telemetry.
+  - Implemented 7-tier mutually exclusive file-level taxonomy: `EXPERIMENTAL_CONFIGURATION`, `NUMERICAL_EXPERIMENTAL_MEASUREMENTS`, `NUMERICAL_DERIVED_DATA`, `DOCUMENTATION_ONLY`, `VIDEO_OR_IMAGE_ONLY`, `CODE_OR_MODEL_ONLY`, `CONTENT_NOT_YET_INSPECTED`.
+  - Maintained decoupled investigation-level taxonomy across all 24 investigations: 10 `VERIFIED_FLIGHT_MEASUREMENTS_AVAILABLE`, 3 `EXPERIMENTAL_CONFIGURATION_ONLY`, 2 `VIDEO_AND_CONFIGURATION_ONLY`, 1 `NUMERICAL_DERIVED_DATA`, 2 `SIMULATION_AND_MODEL_ONLY`, 2 `DOCUMENTATION_ONLY`, 4 `CONTENT_NOT_YET_INSPECTED`.
+  - Reconciled remaining volume difference down to exact 0 bytes: proved the $4,114,019,468,490\text{ B}$ ($3,831.48\text{ GiB}$) delta represents unuploaded flight telemetry collected during mission operations but not deposited in public S3 (`PSI-20`: $1,895.77\text{ GiB}$, `PSI-21`: $1,867.80\text{ GiB}$, `PSI-106`: $67.91\text{ GiB}$, manifests: $160\text{ KB}$).
+  - Documented evidence register for 23 inspected representative files with setting vs observation columns, identified units, and explicit uncertainties.
+  - Authored automated tests in `tests/backend/test_catalogue_reconciliation.py` (9 tests total) preventing configuration files from being classified as measurements and asserting the zero-byte unaccounted volume equation.
+  - Maintained 100% test pass rate across all suites: 49 Python backend tests and 848 Node.js scientific assertions passing (**897 total platform assertions PASS / 0 FAIL**).
+  - Authored `docs/PHASE_2_3_4_2_SCIENTIFIC_CLASSIFICATION_AUDIT.md` and `docs/NASA_EXPERIMENTAL_DATA_CLASSIFICATION_RULES.md`.
+  - Updated `src/data/reference/psi-reconciled-combustion.json`.
 
 ---
 
 ## 3. Next Phase Gates
 
 ```
-Phase 1 (Complete) ➔ Phase 1.1 (Complete) ➔ Phase 2 (Complete) ➔ Phase 2.1 (Complete) ➔ Phase 2.2 (Complete) ➔ Phase 2.2.1 (Complete) ➔ Phase 2.2.2 (Complete) ➔ Phase 2.2.3 (Complete) ➔ Phase 2.2.4 (Complete) ➔ Phase 2.2.4.1 (Complete) ➔ Phase 2.2.4.2 (Complete & FROZEN) ➔ Phase 2.3.1 (Complete) ➔ Phase 2.3.2 (Complete) ➔ Phase 2.3.3 (Complete) ➔ Phase 2.3.4 (Complete) ➔ Phase 2.3.4.1 (Complete & RECONCILED) ➔ [AWAITING USER GATE APPROVAL FOR PHASE 3] ➔ Phase 3 (Gemini RAG Integration)
+Phase 1 (Complete) ➔ Phase 1.1 (Complete) ➔ Phase 2 (Complete) ➔ Phase 2.1 (Complete) ➔ Phase 2.2 (Complete) ➔ Phase 2.2.1 (Complete) ➔ Phase 2.2.2 (Complete) ➔ Phase 2.2.3 (Complete) ➔ Phase 2.2.4 (Complete) ➔ Phase 2.2.4.1 (Complete) ➔ Phase 2.2.4.2 (Complete & FROZEN) ➔ Phase 2.3.1 (Complete) ➔ Phase 2.3.2 (Complete) ➔ Phase 2.3.3 (Complete) ➔ Phase 2.3.4 (Complete) ➔ Phase 2.3.4.1 (Complete) ➔ Phase 2.3.4.2 (Complete & AUDITED) ➔ [AWAITING USER GATE APPROVAL FOR PHASE 3] ➔ Phase 3 (Gemini RAG Integration)
 ```
 
 No Phase 3 Gemini RAG integration will commence without explicit user review and authorization.

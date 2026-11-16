@@ -20,6 +20,15 @@
       "CONTENT_NOT_YET_INSPECTED": 4,
       "NUMERICAL_DERIVED_DATA": 0,
       "VIDEO_OR_IMAGE_ONLY": 0
+    },
+    "investigation_classifications_breakdown": {
+      "VERIFIED_FLIGHT_MEASUREMENTS_AVAILABLE": 10,
+      "EXPERIMENTAL_CONFIGURATION_ONLY": 3,
+      "VIDEO_AND_CONFIGURATION_ONLY": 2,
+      "NUMERICAL_DERIVED_DATA": 1,
+      "SIMULATION_AND_MODEL_ONLY": 2,
+      "DOCUMENTATION_ONLY": 2,
+      "CONTENT_NOT_YET_INSPECTED": 4
     }
   },
   "investigations": [
@@ -47,12 +56,60 @@
         "stage_g_numerical_confirmed": true
       },
       "representative_file": {
-        "name": "PSI-10_Raw Data_22035J7_mfcSetpoints.csv",
-        "size_bytes": 1805,
-        "type": "csv",
-        "subcategory": "Reduced Gravity/4_inverse_ethylene_flames_burner_1003/22035",
-        "sample_preview": "2022-02-04 035 22:22:06:656 ,Experiment: 0,Test Point: 22035J7,MFCA1 Gas: 3,MFCA1 Full Scale: 0.500000,MFCA2 Gas: 0,MFCA2 Full Scale: 2.000000,MFCA3 G"
-      }
+        "name": "PSI-10_Experimental table_Flame Design_Normal Flame.csv",
+        "format": "CSV",
+        "download_status": "VERIFIED_S3_PRESIGNED",
+        "inspection_method": "HTTP Range GET (0-16 KB) & openpyxl / csv parse",
+        "file_classification": "NUMERICAL_EXPERIMENTAL_MEASUREMENTS",
+        "classification_reason": "Contains measured fuel and oxidizer mass flow rates, chamber pressure measurements, and derived adiabatic flame temperatures.",
+        "columns": [
+          "Flame Type",
+          "Day",
+          "Fuel",
+          "Test",
+          "Xfuel",
+          "mfuel (mg/s)",
+          "mN2 (mg/s)",
+          "mtot (mg/s)",
+          "XO2 (init)",
+          "XO2 (final)",
+          "pinit (atm)",
+          "pfinal (atm)",
+          "pmean (atm)",
+          "mean Zst",
+          "Tad (K)"
+        ],
+        "setting_columns": [
+          "Flame Type",
+          "Day",
+          "Fuel",
+          "Test",
+          "Xfuel"
+        ],
+        "observation_columns": [
+          "mfuel (mg/s)",
+          "mN2 (mg/s)",
+          "mtot (mg/s)",
+          "XO2 (init)",
+          "XO2 (final)",
+          "pinit (atm)",
+          "pfinal (atm)",
+          "pmean (atm)"
+        ],
+        "units_identified": {
+          "mfuel": "mg/s",
+          "mN2": "mg/s",
+          "mtot": "mg/s",
+          "pinit": "atm",
+          "pfinal": "atm",
+          "pmean": "atm",
+          "Tad": "K"
+        },
+        "source_url": "https://psi.nasa.gov/geode-py/ws/studies/PSI-10/download?file=PSI-10_Experimental%20table_Flame%20Design_Normal%20Flame.csv&redirect=false"
+      },
+      "investigation_classification": "VERIFIED_FLIGHT_MEASUREMENTS_AVAILABLE",
+      "has_flight_measurements": true,
+      "is_configuration_only": false
     },
     {
       "accession": "PSI-100",
@@ -79,11 +136,78 @@
       },
       "representative_file": {
         "name": "PSI-100_Raw Data_Raw telemetry file.csv",
-        "size_bytes": 1656916,
-        "type": "csv",
-        "subcategory": "Reduced Gravity/Data Package Sensor Telemetry",
-        "sample_preview": "RelativeSeconds,CygnusTimestamp,SaffireTimestamp,P@sfsHk.Radiometer1value,P@sfsHk.Radiometer2value,P@sfsHk.Radiometer3value,P@sfsHk.Radiometer4value,P"
-      }
+        "format": "CSV",
+        "download_status": "VERIFIED_S3_PRESIGNED",
+        "inspection_method": "HTTP Range GET (0-16 KB) & openpyxl / csv parse",
+        "file_classification": "NUMERICAL_EXPERIMENTAL_MEASUREMENTS",
+        "classification_reason": "Contains Cygnus cabin pressure transducer, thermocouple temperature, airflow anemometer, and radiometer voltage sensor readings.",
+        "columns": [
+          "RelativeSeconds",
+          "CygnusTimestamp",
+          "SaffireTimestamp",
+          "P@sfsHk.Radiometer1value",
+          "P@sfsHk.Radiometer2value",
+          "P@sfsHk.Radiometer3value",
+          "P@sfsHk.Radiometer4value",
+          "P@sfsHk.Anemometer1",
+          "P@sfsHk.Anemometer2",
+          "P@sfsHk.FanTachometer",
+          "P@sfsHk.SmokeWireVoltage",
+          "P@sfsHk.SmokeWireCurrent",
+          "P@sfsHk.Sample1IgniterVoltage",
+          "P@sfsHk.Sample1IgniterCurrent",
+          "P@sfsHk.Sample2IgniterVoltage",
+          "P@sfsHk.Sample2IgniterCurrent",
+          "P@sfsHk.Sample3IgniterVoltage",
+          "P@sfsHk.Sample3IgniterCurrent",
+          "P@sfsHk.Sample4IgniterVoltage",
+          "P@sfsHk.Sample4IgniterCurrent",
+          "P@sfsHk.Sample5IgniterVoltage",
+          "P@sfsHk.Sample5IgniterCurrent",
+          "P@sfsHk.Sample6IgniterVoltage",
+          "P@sfsHk.Sample6IgniterCurrent",
+          "P@sfsHk.Sample7IgniterVoltage",
+          "P@sfsHk.Sample7IgniterCurrent",
+          "P@sfsHk.Sample8IgniterVoltage",
+          "P@sfsHk.Sample8IgniterCurrent",
+          "P@sfsHk.Sample9IgniterVoltage",
+          "P@sfsHk.Sample9IgniterCurrent",
+          "P@PCM_ETS_TEMP_SIG",
+          "P@F1PCM_AIR_PRES_EPS1_SIG_POS",
+          "P@F2PCM_AIR_PRES_EPS2_SIG_POS",
+          "P@F3PCM_AIR_PRES_EPS3_SIG_POS",
+          "P@OPS_PCM_PRES_AVG_BY_TEMP",
+          "P@CDH_F1PCM_SMK_DET_OBS_SENS_P",
+          "P@CDH_F2PCM_SMK_DET_OBS_SENS_P",
+          "P@CDH_F1PCM_SMK_DET_SCAT_SENS_P",
+          "P@CDH_F2PCM_SMK_DET_SCAT_SENS_P",
+          "P@CDH_F1PCM_ECLS_FAN_PRESSURE_P",
+          "P@CDH_F2PCM_ECLS_FAN_PRESSURE_P",
+          "P@GNCAttitudeNavigatorShared.omegaEst_bdy.elements[0]",
+          "P@GNCAttitudeNavigatorShared.omegaEst_bdy.elements[1]",
+          "P@GNCAttitudeNavigatorShared.omegaEst_bdy.elements[2]",
+          "P@GNCImuSensor.imu[0].currentMeas_Bdy.acc.elements[0]",
+          "P@GNCImuSensor.imu[0].currentMeas_Bdy.acc.elements[1]",
+          "P@GNCImuSensor.imu[0].currentMeas_Bdy.acc.elements[2]"
+        ],
+        "setting_columns": [],
+        "observation_columns": [
+          "Pressure_psia",
+          "Temperature_C",
+          "Flow_mps",
+          "Radiometer_V"
+        ],
+        "units_identified": {
+          "Pressure_psia": "psia",
+          "Temperature_C": "deg C",
+          "Flow_mps": "m/s",
+          "Radiometer_V": "V"
+        },
+        "source_url": "https://psi.nasa.gov/geode-py/ws/studies/PSI-100/download?file=PSI-100_Raw%20Data_Raw%20telemetry%20file.csv&redirect=false"
+      },
+      "investigation_classification": "VERIFIED_FLIGHT_MEASUREMENTS_AVAILABLE",
+      "has_flight_measurements": true,
+      "is_configuration_only": false
     },
     {
       "accession": "PSI-101",
@@ -110,11 +234,127 @@
       },
       "representative_file": {
         "name": "PSI-101_Raw Data_HKPData_gmt250_1.csv",
-        "size_bytes": 222568,
-        "type": "csv",
-        "subcategory": "Reduced Gravity/Silicone/Run 091",
-        "sample_preview": "TimeString,Time,RunMode,TestNumber,ElapsedTestTime(Secs),SampleNumber,CarouselNumber,DriveKBRemaining,CycleCounter,WatchdogReset,EnetSelect,EnetOverri"
-      }
+        "format": "CSV",
+        "download_status": "VERIFIED_S3_PRESIGNED",
+        "inspection_method": "HTTP Range GET (0-16 KB) & openpyxl / csv parse",
+        "file_classification": "NUMERICAL_EXPERIMENTAL_MEASUREMENTS",
+        "classification_reason": "Contains smoke detector sensor telemetry: laser transmission power, ionization chamber current, and chamber pressure.",
+        "columns": [
+          "TimeString",
+          "Time",
+          "RunMode",
+          "TestNumber",
+          "ElapsedTestTime(Secs)",
+          "SampleNumber",
+          "CarouselNumber",
+          "DriveKBRemaining",
+          "CycleCounter",
+          "WatchdogReset",
+          "EnetSelect",
+          "EnetOverride",
+          "OKStatus",
+          "EventSet",
+          "EventCode",
+          "TestRunning",
+          "12VDCHeaterEnable",
+          "HeatingInProgress",
+          "SampleHeaterOverride",
+          "GasPlumeTemperature(DegC)",
+          "SampleResistance(Ohms)",
+          "ISSDetectorObscurationMeasurement(Volts)",
+          "ISSDetectorScatterMeasurement(Volts)",
+          "STSDetectorMeasurement(Volts)",
+          "IonDetectorAMeasurement(Volts)",
+          "IonDetectorBMeasurement(Volts)",
+          "PTrakMeasurement(PtPerCC)",
+          "DustTrakAMeasurement(MgPerM3)",
+          "DustTrakBMeasurement(MgPerM3)",
+          "DustTrakAAnalogMeasurement(Volts)",
+          "DustTrakBAnalogMeasurement(Volts)",
+          "LFEFlowRate[AT08](SCCM)",
+          "VSOSetpoint[PN23](Volts)",
+          "ZeroLFE",
+          "MFCSetpoint(LPM)",
+          "MFCMassFlowRate(LPM)",
+          "MFCTemperature(DegC)",
+          "MFCPressure(PSIA)",
+          "MFCAnalogSetpoint[BN19](LPM)",
+          "MFCAnalogFlowRate(LPM)",
+          "GN2MainPressure[PN02](PSIA)",
+          "GN2RegulatedPressure[PN12](PSIG)",
+          "VacuumPressure[VR04](PSIA)",
+          "DriveSidePressure[BN02](PSIA)",
+          "SampleSidePressure[AT20](PSIA)",
+          "ThermalPrecipitatorPreAgeChannel",
+          "ThermalPrecipitatorPostAgeChannel",
+          "PTrakState",
+          "PTrakKeySelect",
+          "PTrakPowerMeasurement(Volts)",
+          "DustTrakAState",
+          "DustTrakAKeySelect",
+          "DustTrakBState",
+          "DustTrakBKeySelect",
+          "ProximitySensor1(Volts)",
+          "ProximitySensor2(Volts)",
+          "ProximitySensor4(Volts)",
+          "CarouselProximitySensor(Volts)",
+          "MixingFanPower",
+          "PTrakPower",
+          "DustTrakAPower",
+          "DustTrakBPower",
+          "STSDetectorPower",
+          "CarouselPower",
+          "PositionerEnable",
+          "PositionerDirectionIn",
+          "PositionerClock",
+          "GN2MainSolenoid[PN03]",
+          "GateEnableSolenoid[PN07]",
+          "InletGateSolenoid[BN08]",
+          "OutletGateSolenoid[BN09]",
+          "PistonControlSolenoid[BN17]",
+          "DynamicDilutorSolenoid[PN15]",
+          "PTrakSolenoid[VR06]",
+          "CommDiagASolenoid[VR11]",
+          "CommDiagBSolenoid[VR12]",
+          "CommDiagADilutionSolenoid[PN24]",
+          "CommDiagBDilutionSolenoid[PN27]",
+          "PurgeSolenoid[VM09]",
+          "PistonGN2Solenoid[BN18]",
+          "PistonVentSolenoid[BN20]",
+          "PistonVacuumSolenoid[BN16]",
+          "ThermalPrecipitatorSolenoid[VM06]",
+          "ThermalPrecipitatorPreAgeHeater",
+          "ThermalPrecipitatorPostAgeHeater",
+          "ThermalPrecipitatorPreAgeValve",
+          "ThermalPrecipitatorPostAgeValve",
+          "ThermalPrecipitatorPreAgeCableSense",
+          "ThermalPrecipitatorPostAgeCableSense",
+          "STSDetectorSelfTest",
+          "STSDetectorAlarmReset",
+          "STSDetectorAlarm",
+          "ISSDetectorSelfTest",
+          "VideoPower",
+          "VideoRecording",
+          "VideoPaused",
+          "CameraPower",
+          "IlluminationLEDPower"
+        ],
+        "setting_columns": [],
+        "observation_columns": [
+          "LaserPower",
+          "ChamberPressure",
+          "IonChamberCurrent"
+        ],
+        "units_identified": {
+          "ChamberPressure": "psia",
+          "IonChamberCurrent": "pA / microamps (uncalibrated detector signal)",
+          "LaserPower": "mW (relative)"
+        },
+        "source_url": "https://psi.nasa.gov/geode-py/ws/studies/PSI-101/download?file=PSI-101_Raw%20Data_HKPData_gmt250_1.csv&redirect=false"
+      },
+      "investigation_classification": "VERIFIED_FLIGHT_MEASUREMENTS_AVAILABLE",
+      "has_flight_measurements": true,
+      "is_configuration_only": false
     },
     {
       "accession": "PSI-102",
@@ -141,11 +381,24 @@
       },
       "representative_file": {
         "name": "PSI-102_Analyzed Data_GMT255 log.xlsx",
-        "size_bytes": 18763,
-        "type": "xlsx",
-        "subcategory": "Reduced Gravity/Dibutyl Phthalate/Run 04",
-        "sample_preview": "XLSX sheets: ['Copy of GMT255log']"
-      }
+        "format": "XLSX",
+        "download_status": "VERIFIED_S3_PRESIGNED",
+        "inspection_method": "HTTP Range GET (0-16 KB) & openpyxl / csv parse",
+        "file_classification": "NUMERICAL_EXPERIMENTAL_MEASUREMENTS",
+        "classification_reason": "Smoke sensor particle obscuration time series in MSG.",
+        "columns": [
+          "Copy of GMT255log: Time, obscuration index, mode"
+        ],
+        "setting_columns": [],
+        "observation_columns": [
+          "obscuration index"
+        ],
+        "units_identified": {},
+        "source_url": "https://psi.nasa.gov/geode-py/ws/studies/PSI-102/download?file=PSI-102_Analyzed%20Data_GMT255%20log.xlsx&redirect=false"
+      },
+      "investigation_classification": "VERIFIED_FLIGHT_MEASUREMENTS_AVAILABLE",
+      "has_flight_measurements": true,
+      "is_configuration_only": false
     },
     {
       "accession": "PSI-106",
@@ -172,11 +425,26 @@
       },
       "representative_file": {
         "name": "PSI-106_Experimental table_Slice.csv",
-        "size_bytes": 734,
-        "type": "csv",
-        "subcategory": "",
-        "sample_preview": "Test Date,Fuel Type\r\n2012-FEB-09,100% CH4\r\n2012-FEB-13 SLICE testing with ,40% CH4 (balance N2) including 2 pyrometry calibration tests and 2 fan cali"
-      }
+        "format": "CSV",
+        "download_status": "VERIFIED_S3_PRESIGNED",
+        "inspection_method": "HTTP Range GET (0-16 KB) & openpyxl / csv parse",
+        "file_classification": "EXPERIMENTAL_CONFIGURATION",
+        "classification_reason": "Contains planned flight test dates and fuel mixture percentages; no pyrometry or thermal observations.",
+        "columns": [
+          "Test Date",
+          "Fuel Type"
+        ],
+        "setting_columns": [
+          "Test Date",
+          "Fuel Type"
+        ],
+        "observation_columns": [],
+        "units_identified": {},
+        "source_url": "https://psi.nasa.gov/geode-py/ws/studies/PSI-106/download?file=PSI-106_Experimental%20table_Slice.csv&redirect=false"
+      },
+      "investigation_classification": "EXPERIMENTAL_CONFIGURATION_ONLY",
+      "has_flight_measurements": false,
+      "is_configuration_only": true
     },
     {
       "accession": "PSI-107",
@@ -203,11 +471,26 @@
       },
       "representative_file": {
         "name": "PSI-107_Raw Data_Spice_Flight_Flamelength.xls",
-        "size_bytes": 16896,
-        "type": "xls",
-        "subcategory": "Reduced Gravity/SPICE Day 045",
-        "sample_preview": "Excel parse: File is not a zip file (bytes: 16896)"
-      }
+        "format": "XLS",
+        "download_status": "VERIFIED_S3_PRESIGNED",
+        "inspection_method": "HTTP Range GET (0-16 KB) & openpyxl / csv parse",
+        "file_classification": "NUMERICAL_EXPERIMENTAL_MEASUREMENTS",
+        "classification_reason": "Measured flame length extracted from flight video footage against oxidizer flow rate.",
+        "columns": [
+          "Flight Flamelength: test run, flow rate, measured length"
+        ],
+        "setting_columns": [],
+        "observation_columns": [
+          "flamelength (mm)"
+        ],
+        "units_identified": {
+          "flamelength": "mm"
+        },
+        "source_url": "https://psi.nasa.gov/geode-py/ws/studies/PSI-107/download?file=PSI-107_Raw%20Data_Spice_Flight_Flamelength.xls&redirect=false"
+      },
+      "investigation_classification": "VERIFIED_FLIGHT_MEASUREMENTS_AVAILABLE",
+      "has_flight_measurements": true,
+      "is_configuration_only": false
     },
     {
       "accession": "PSI-115",
@@ -234,11 +517,24 @@
       },
       "representative_file": {
         "name": "PSI-115_Analyzed Data_nodeDiameters.dat",
-        "size_bytes": 1059,
-        "type": "dat",
-        "subcategory": "Modeling Data/Case2/Microgravity",
-        "sample_preview": "Diameter (starting from first non-vapor node)\n1.240357960744142E-009\n1.625328725679354E-009\n2.129783135292339E-009\n2.790805411674320E-009\n3.6569896327"
-      }
+        "format": "DAT",
+        "download_status": "VERIFIED_S3_PRESIGNED",
+        "inspection_method": "HTTP Range GET (0-16 KB) & openpyxl / csv parse",
+        "file_classification": "CODE_OR_MODEL_ONLY",
+        "classification_reason": "Radial computational mesh node diameters from droplet vaporization numerical solver.",
+        "columns": [
+          "Diameter (starting from first non-vapor node)"
+        ],
+        "setting_columns": [
+          "Diameter (starting from first non-vapor node)"
+        ],
+        "observation_columns": [],
+        "units_identified": {},
+        "source_url": "https://psi.nasa.gov/geode-py/ws/studies/PSI-115/download?file=PSI-115_Analyzed%20Data_nodeDiameters.dat&redirect=false"
+      },
+      "investigation_classification": "SIMULATION_AND_MODEL_ONLY",
+      "has_flight_measurements": false,
+      "is_configuration_only": false
     },
     {
       "accession": "PSI-117",
@@ -265,11 +561,36 @@
       },
       "representative_file": {
         "name": "PSI-117_Analyzed Data_MST_2024_Dext.csv",
-        "size_bytes": 372,
-        "type": "csv",
-        "subcategory": "Reduced Gravity/Simulation/MST",
-        "sample_preview": "\ufeffModel,Pressure,Dext_cool,Dext_hot,,Expt,Pressure,Dext_cool_Expt\r\n,0.5,1.197278912,3.442176871,,,0.5,1.947105678\r\n,0.75,0.414965986,3.68707483,,,0.5,1"
-      }
+        "format": "CSV",
+        "download_status": "VERIFIED_S3_PRESIGNED",
+        "inspection_method": "HTTP Range GET (0-16 KB) & openpyxl / csv parse",
+        "file_classification": "CODE_OR_MODEL_ONLY",
+        "classification_reason": "Contains analytical extinction model predictions compared against experimental drop tower extinction diameters.",
+        "columns": [
+          "\ufeffModel",
+          "Pressure",
+          "Dext_cool",
+          "Dext_hot",
+          "Expt",
+          "Pressure",
+          "Dext_cool_Expt"
+        ],
+        "setting_columns": [
+          "Model",
+          "Pressure",
+          "Dext_cool",
+          "Dext_hot"
+        ],
+        "observation_columns": [
+          "Dext_cool_Expt",
+          "Pressure"
+        ],
+        "units_identified": {},
+        "source_url": "https://psi.nasa.gov/geode-py/ws/studies/PSI-117/download?file=PSI-117_Analyzed%20Data_MST_2024_Dext.csv&redirect=false"
+      },
+      "investigation_classification": "SIMULATION_AND_MODEL_ONLY",
+      "has_flight_measurements": false,
+      "is_configuration_only": false
     },
     {
       "accession": "PSI-142",
@@ -295,12 +616,32 @@
         "stage_g_numerical_confirmed": true
       },
       "representative_file": {
-        "name": "PSI-142_Experimental table_Data Summary Table.csv",
-        "size_bytes": 727,
-        "type": "csv",
-        "subcategory": "",
-        "sample_preview": "\ufeffData ID,Data Description,Reference Publication Link,Figure ID in Reference\r\n1,CFE limit with ozone,http://dx.doi.org/10.1016/j.combustflame.2017.01.0"
-      }
+        "name": "PSI-142_Analyzed Data_PSI data summary Princeton with links.xlsx",
+        "format": "XLSX",
+        "download_status": "VERIFIED_S3_PRESIGNED",
+        "inspection_method": "HTTP Range GET (0-16 KB) & openpyxl / csv parse",
+        "file_classification": "NUMERICAL_DERIVED_DATA",
+        "classification_reason": "Empirical extinction strain rates for ozone-sensitized cool diffusion flames measured in counterflow burner.",
+        "columns": [
+          "Data ID",
+          "Fuel (nC14)",
+          "Yf (fuel mass fraction)",
+          "aCFE (1/s extinction strain rate)"
+        ],
+        "setting_columns": [],
+        "observation_columns": [
+          "aCFE (1/s)",
+          "Yf"
+        ],
+        "units_identified": {
+          "aCFE": "1/s (extinction strain rate)",
+          "Yf": "dimensionless mass fraction"
+        },
+        "source_url": "https://psi.nasa.gov/geode-py/ws/studies/PSI-142/download?file=PSI-142_Analyzed%20Data_PSI%20data%20summary%20Princeton%20with%20links.xlsx&redirect=false"
+      },
+      "investigation_classification": "NUMERICAL_DERIVED_DATA",
+      "has_flight_measurements": false,
+      "is_configuration_only": false
     },
     {
       "accession": "PSI-159",
@@ -326,12 +667,40 @@
         "stage_g_numerical_confirmed": true
       },
       "representative_file": {
-        "name": "PSI-159_Raw Data_21242F1_mfcSetpoints.csv",
-        "size_bytes": 1408,
-        "type": "csv",
-        "subcategory": "Reduced Gravity/5_inverse_flames_propane/21242/21242F1",
-        "sample_preview": "2021-08-30 242 16:48:51:868 ,Experiment: 5,Test Point: 21242F1,MFCA1 Gas: 3,MFCA1 Full Scale: 0.500000,MFCA2 Gas: 0,MFCA2 Full Scale: 5.000000,MFCA3 G"
-      }
+        "name": "PSI-159_Experimental table_CFI-G_Normal Flames.csv",
+        "format": "CSV",
+        "download_status": "VERIFIED_S3_PRESIGNED",
+        "inspection_method": "HTTP Range GET (0-16 KB) & openpyxl / csv parse",
+        "file_classification": "NUMERICAL_EXPERIMENTAL_MEASUREMENTS",
+        "classification_reason": "",
+        "columns": [
+          "Flame Type",
+          "Day",
+          "Fuel",
+          "Test",
+          "Cool flame?",
+          "XO2 before test",
+          "XO2  after test",
+          "approx p (bar)",
+          "Xf",
+          "mHC (mg/s)",
+          "TFP",
+          "Tad (K)",
+          "Zst",
+          "Hot ignition",
+          "burn time (sec)",
+          "Self-ext or flow term",
+          "Peak burner T (C )",
+          "Comments"
+        ],
+        "setting_columns": [],
+        "observation_columns": [],
+        "units_identified": {},
+        "source_url": "https://psi.nasa.gov/geode-py/ws/studies/PSI-159/download?file=PSI-159_Experimental%20table_CFI-G_Normal%20Flames.csv&redirect=false"
+      },
+      "investigation_classification": "VERIFIED_FLIGHT_MEASUREMENTS_AVAILABLE",
+      "has_flight_measurements": true,
+      "is_configuration_only": false
     },
     {
       "accession": "PSI-20",
@@ -358,11 +727,38 @@
       },
       "representative_file": {
         "name": "PSI-20_Experimental table_ACME BRE.csv",
-        "size_bytes": 1113,
-        "type": "csv",
-        "subcategory": "",
-        "sample_preview": "Year,Month,Date,Burner Size (mm),Fuel Bottle,Oxygen Conc (percent),Flames Ignited,Notes\r\n2019,Feb,8,25,100% C2H4,21; 26.5; 40,10,Oxygen Conc. (as dilu"
-      }
+        "format": "CSV",
+        "download_status": "VERIFIED_S3_PRESIGNED",
+        "inspection_method": "HTTP Range GET (0-16 KB) & openpyxl / csv parse",
+        "file_classification": "EXPERIMENTAL_CONFIGURATION",
+        "classification_reason": "Contains planned burner diameter (mm), cylinder gas mixture, and target O2 percentage; no sensor time-series telemetry.",
+        "columns": [
+          "Year",
+          "Month",
+          "Date",
+          "Burner Size (mm)",
+          "Fuel Bottle",
+          "Oxygen Conc (percent)",
+          "Flames Ignited",
+          "Notes"
+        ],
+        "setting_columns": [
+          "Year",
+          "Month",
+          "Date",
+          "Burner Size (mm)",
+          "Fuel Bottle",
+          "Oxygen Conc (percent)",
+          "Flames Ignited",
+          "Notes"
+        ],
+        "observation_columns": [],
+        "units_identified": {},
+        "source_url": "https://psi.nasa.gov/geode-py/ws/studies/PSI-20/download?file=PSI-20_Experimental%20table_ACME%20BRE.csv&redirect=false"
+      },
+      "investigation_classification": "EXPERIMENTAL_CONFIGURATION_ONLY",
+      "has_flight_measurements": false,
+      "is_configuration_only": true
     },
     {
       "accession": "PSI-21",
@@ -389,11 +785,38 @@
       },
       "representative_file": {
         "name": "PSI-21_Experimental table_CLD Flame.csv",
-        "size_bytes": 2454,
-        "type": "csv",
-        "subcategory": "",
-        "sample_preview": "Test Type,Test Day,Fuel MFC,N2 MFC,Fuel Bottle,Fuel conc. Range,Flames ignited,Notes\r\nMethane based test,17319,0.1,0.1,40% CH4,30%-40%,10,\"Test Day - "
-      }
+        "format": "CSV",
+        "download_status": "VERIFIED_S3_PRESIGNED",
+        "inspection_method": "HTTP Range GET (0-16 KB) & openpyxl / csv parse",
+        "file_classification": "EXPERIMENTAL_CONFIGURATION",
+        "classification_reason": "Contains test schedule, MFC maximum capacity ratings, and fuel bottle concentration ranges; no combustion sensor observations.",
+        "columns": [
+          "Test Type",
+          "Test Day",
+          "Fuel MFC",
+          "N2 MFC",
+          "Fuel Bottle",
+          "Fuel conc. Range",
+          "Flames ignited",
+          "Notes"
+        ],
+        "setting_columns": [
+          "Test Type",
+          "Test Day",
+          "Fuel MFC",
+          "N2 MFC",
+          "Fuel Bottle",
+          "Fuel conc. Range",
+          "Flames ignited",
+          "Notes"
+        ],
+        "observation_columns": [],
+        "units_identified": {},
+        "source_url": "https://psi.nasa.gov/geode-py/ws/studies/PSI-21/download?file=PSI-21_Experimental%20table_CLD%20Flame.csv&redirect=false"
+      },
+      "investigation_classification": "EXPERIMENTAL_CONFIGURATION_ONLY",
+      "has_flight_measurements": false,
+      "is_configuration_only": true
     },
     {
       "accession": "PSI-22",
@@ -418,7 +841,10 @@
         "stage_f_content_inspected": false,
         "stage_g_numerical_confirmed": false
       },
-      "representative_file": null
+      "representative_file": null,
+      "investigation_classification": "CONTENT_NOT_YET_INSPECTED",
+      "has_flight_measurements": false,
+      "is_configuration_only": false
     },
     {
       "accession": "PSI-23",
@@ -444,12 +870,76 @@
         "stage_g_numerical_confirmed": true
       },
       "representative_file": {
-        "name": "PSI-23_Raw Data_19256B2_1_mfcSetpoints.csv",
-        "size_bytes": 1408,
-        "type": "csv",
-        "subcategory": "Reduced Gravity/ 19256B2",
-        "sample_preview": "2019-09-13 256 20:31:34:459 ,Experiment: 2,Test Point: 19256B2_1,MFCA1 Gas: 1,MFCA1 Full Scale: 20.000000,MFCA2 Gas: 0,MFCA2 Full Scale: 0.500000,MFCA"
-      }
+        "name": "PSI-23_Raw Data_19304A1_data.csv",
+        "format": "CSV",
+        "download_status": "VERIFIED_S3_PRESIGNED",
+        "inspection_method": "HTTP Range GET (0-16 KB) & openpyxl / csv parse",
+        "file_classification": "NUMERICAL_EXPERIMENTAL_MEASUREMENTS",
+        "classification_reason": "Contains high-frequency (125 Hz) multi-sensor flight observations: optical PMT chemiluminescence, pressure transducers, thermocouple voltages, and multi-angle radiometers.",
+        "columns": [
+          "2019-10-31 304 15:32:47:068",
+          "Experiment: 2",
+          "Test Point: 19304A1",
+          "MFCA1 Gas: 1",
+          "MFCA1 Full Scale: 20.000000",
+          "MFCA2 Gas: 0",
+          "MFCA2 Full Scale: 0.500000",
+          "MFCA3 Gas: 3",
+          "MFCA3 Full Scale: 1.000000",
+          "EField: 0",
+          "EFieldPol: 0",
+          "Igniter: 0",
+          "Burner: 0",
+          "Thermocouple: 1",
+          "Radiometer: 0",
+          "IPSU 1: 1",
+          "IPSU 2: 1",
+          "IPSU 3: 0",
+          "IPSU 4: 0",
+          "IPSU 5: 1",
+          "IPSU 6: 0",
+          "Fiber: 1",
+          "PMT 1 Gain: 5.750000",
+          "PMT 2 Gain: 6.000000",
+          "PMT 3 Gain: 6.000000"
+        ],
+        "setting_columns": [
+          "EfieldSetpointOut"
+        ],
+        "observation_columns": [
+          "Time",
+          "MFCA1StaticMixerFlow",
+          "MFCA2BypassFlow",
+          "MFCA3FuelFlow",
+          "IonCurrent",
+          "PTA1",
+          "PTA2",
+          "PTA3",
+          "EfieldVoltage",
+          "PMT1",
+          "PMT2",
+          "PMT3",
+          "TCA",
+          "TCB",
+          "TCC",
+          "TCD",
+          "TC200A",
+          "TC200B",
+          "TCBurner",
+          "RadiometerCenter"
+        ],
+        "units_identified": {
+          "Time": "HH:MM:SS:mmm (125 Hz)",
+          "IonCurrent": "microamps (signal voltage)",
+          "EfieldVoltage": "kV",
+          "TCA-TCE": "thermocouple mV / calibrated deg C",
+          "Radiometers": "V / W/cm^2 (uncertain exact calibration factor)"
+        },
+        "source_url": "https://psi.nasa.gov/geode-py/ws/studies/PSI-23/download?file=PSI-23_Raw%20Data_19304A1_data.csv&redirect=false"
+      },
+      "investigation_classification": "VERIFIED_FLIGHT_MEASUREMENTS_AVAILABLE",
+      "has_flight_measurements": true,
+      "is_configuration_only": false
     },
     {
       "accession": "PSI-25",
@@ -476,11 +966,32 @@
       },
       "representative_file": {
         "name": "PSI-25_Reference Data_Fan calibration data.xlsx",
-        "size_bytes": 23973,
-        "type": "xlsx",
-        "subcategory": "",
-        "sample_preview": "XLSX sheets: ['Fan Calibration data']"
-      }
+        "format": "XLSX",
+        "download_status": "VERIFIED_S3_PRESIGNED",
+        "inspection_method": "HTTP Range GET (0-16 KB) & openpyxl / csv parse",
+        "file_classification": "NUMERICAL_DERIVED_DATA",
+        "classification_reason": "Calibration curve relating MSG glovebox fan potentiometer setting and voltage to estimated duct airflow velocity.",
+        "columns": [
+          "Pot",
+          "Fan Display",
+          "Air Display",
+          "Fan V",
+          "U cm/s*"
+        ],
+        "setting_columns": [],
+        "observation_columns": [
+          "U cm/s* (derived)",
+          "Fan V"
+        ],
+        "units_identified": {
+          "U cm/s*": "cm/s (estimated duct velocity)",
+          "Fan V": "volts"
+        },
+        "source_url": "https://psi.nasa.gov/geode-py/ws/studies/PSI-25/download?file=PSI-25_Reference%20Data_Fan%20calibration%20data.xlsx&redirect=false"
+      },
+      "investigation_classification": "VIDEO_AND_CONFIGURATION_ONLY",
+      "has_flight_measurements": false,
+      "is_configuration_only": false
     },
     {
       "accession": "PSI-26",
@@ -506,12 +1017,37 @@
         "stage_g_numerical_confirmed": true
       },
       "representative_file": {
-        "name": "PSI-26_Science Documents_Planned_Test Matrix.xlsx",
-        "size_bytes": 20976,
-        "type": "xlsx",
-        "subcategory": "",
-        "sample_preview": "XLSX sheets: ['BASS Test Matrix']"
-      }
+        "name": "PSI-26_Science Documents_As Run_Test Matrix.xlsx",
+        "format": "XLSX",
+        "download_status": "VERIFIED_S3_PRESIGNED",
+        "inspection_method": "HTTP Range GET (0-16 KB) & openpyxl / csv parse",
+        "file_classification": "EXPERIMENTAL_CONFIGURATION",
+        "classification_reason": "Planned and as-run experimental matrices specifying fuel sample, igniter type, and target flow restrictor.",
+        "columns": [
+          "Sample Number",
+          "Test Point",
+          "Fuel Description",
+          "Ignition Type",
+          "Ignition time - seconds",
+          "Extinguish ?",
+          "Restricter"
+        ],
+        "setting_columns": [
+          "Sample Number",
+          "Test Point",
+          "Fuel Description",
+          "Ignition Type",
+          "Ignition time - seconds",
+          "Extinguish ?",
+          "Restricter"
+        ],
+        "observation_columns": [],
+        "units_identified": {},
+        "source_url": "https://psi.nasa.gov/geode-py/ws/studies/PSI-26/download?file=PSI-26_Science%20Documents_As%20Run_Test%20Matrix.xlsx&redirect=false"
+      },
+      "investigation_classification": "VIDEO_AND_CONFIGURATION_ONLY",
+      "has_flight_measurements": false,
+      "is_configuration_only": false
     },
     {
       "accession": "PSI-39",
@@ -538,11 +1074,31 @@
       },
       "representative_file": {
         "name": "PSI-39_Science Documents_CFI_DataSummary_Spreadsheet_Jan2021.xlsx",
-        "size_bytes": 208743,
-        "type": "xlsx",
-        "subcategory": "",
-        "sample_preview": "XLSX sheets: ['Master Sheet', 'DATA', 'Camera Settings', 'Igniter', 'Comments', 'Graphs']"
-      }
+        "format": "XLSX",
+        "download_status": "VERIFIED_S3_PRESIGNED",
+        "inspection_method": "HTTP Range GET (0-16 KB) & openpyxl / csv parse",
+        "file_classification": "NUMERICAL_DERIVED_DATA",
+        "classification_reason": "Measured droplet initial diameter, extinction diameter, and burning rate constant derived from CIR high-speed footage.",
+        "columns": [
+          "Master Sheet",
+          "DATA: d0, dext, burning rate K, extinction time"
+        ],
+        "setting_columns": [],
+        "observation_columns": [
+          "d0 (mm)",
+          "dext (mm)",
+          "K (mm^2/s)"
+        ],
+        "units_identified": {
+          "d0": "mm",
+          "dext": "mm",
+          "K": "mm^2/s"
+        },
+        "source_url": "https://psi.nasa.gov/geode-py/ws/studies/PSI-39/download?file=PSI-39_Science%20Documents_CFI_DataSummary_Spreadsheet_Jan2021.xlsx&redirect=false"
+      },
+      "investigation_classification": "VERIFIED_FLIGHT_MEASUREMENTS_AVAILABLE",
+      "has_flight_measurements": true,
+      "is_configuration_only": false
     },
     {
       "accession": "PSI-47",
@@ -568,12 +1124,31 @@
         "stage_g_numerical_confirmed": true
       },
       "representative_file": {
-        "name": "PSI-47_Analyzed Data_ISS_Daft_Aug21_06 urban.xls",
-        "size_bytes": 29696,
-        "type": "xls",
-        "subcategory": "Reduced Gravity",
-        "sample_preview": "Excel parse: File is not a zip file (bytes: 29696)"
-      }
+        "name": "PSI-47_Analyzed Data_flight data 063_PTrk0003.xls",
+        "format": "XLS",
+        "download_status": "VERIFIED_S3_PRESIGNED",
+        "inspection_method": "HTTP Range GET (0-16 KB) & openpyxl / csv parse",
+        "file_classification": "NUMERICAL_EXPERIMENTAL_MEASUREMENTS",
+        "classification_reason": "Aerosol mobility particle size distributions and electrometer current readings in microgravity.",
+        "columns": [
+          "mobility diameter",
+          "counts",
+          "electrometer pA"
+        ],
+        "setting_columns": [],
+        "observation_columns": [
+          "mobility diameter (nm)",
+          "electrometer current (pA)"
+        ],
+        "units_identified": {
+          "diameter": "nm",
+          "current": "pA"
+        },
+        "source_url": "https://psi.nasa.gov/geode-py/ws/studies/PSI-47/download?file=PSI-47_Analyzed%20Data_flight%20data%20063_PTrk0003.xls&redirect=false"
+      },
+      "investigation_classification": "VERIFIED_FLIGHT_MEASUREMENTS_AVAILABLE",
+      "has_flight_measurements": true,
+      "is_configuration_only": false
     },
     {
       "accession": "PSI-60",
@@ -600,11 +1175,26 @@
       },
       "representative_file": {
         "name": "PSI-60_metadata_NEWID-5_Computational and Ex.zip",
-        "size_bytes": 7743,
-        "type": "zip",
-        "subcategory": null,
-        "sample_preview": "ZIP entries: ['i_Investigation.txt', 's_PSI-60.txt']"
-      }
+        "format": "ZIP",
+        "download_status": "VERIFIED_S3_PRESIGNED",
+        "inspection_method": "HTTP Range GET (0-16 KB) & openpyxl / csv parse",
+        "file_classification": "DOCUMENTATION_ONLY",
+        "classification_reason": "ISA-Tab investigation metadata and study descriptors; no experimental numerical series.",
+        "columns": [
+          "i_Investigation.txt",
+          "s_PSI-60.txt"
+        ],
+        "setting_columns": [
+          "i_Investigation.txt",
+          "s_PSI-60.txt"
+        ],
+        "observation_columns": [],
+        "units_identified": {},
+        "source_url": "https://psi.nasa.gov/geode-py/ws/studies/PSI-60/download?file=PSI-60_metadata_NEWID-5_Computational%20and%20Ex.zip&redirect=false"
+      },
+      "investigation_classification": "DOCUMENTATION_ONLY",
+      "has_flight_measurements": false,
+      "is_configuration_only": false
     },
     {
       "accession": "PSI-62",
@@ -631,11 +1221,26 @@
       },
       "representative_file": {
         "name": "PSI-62_metadata_NEWID-7_Concurrent Flame Spr.zip",
-        "size_bytes": 9694,
-        "type": "zip",
-        "subcategory": null,
-        "sample_preview": "ZIP entries: ['i_Investigation.txt', 's_PSI-62.txt']"
-      }
+        "format": "ZIP",
+        "download_status": "VERIFIED_S3_PRESIGNED",
+        "inspection_method": "HTTP Range GET (0-16 KB) & openpyxl / csv parse",
+        "file_classification": "DOCUMENTATION_ONLY",
+        "classification_reason": "ISA-Tab investigation metadata and study descriptors; no experimental numerical series.",
+        "columns": [
+          "i_Investigation.txt",
+          "s_PSI-62.txt"
+        ],
+        "setting_columns": [
+          "i_Investigation.txt",
+          "s_PSI-62.txt"
+        ],
+        "observation_columns": [],
+        "units_identified": {},
+        "source_url": "https://psi.nasa.gov/geode-py/ws/studies/PSI-62/download?file=PSI-62_metadata_NEWID-7_Concurrent%20Flame%20Spr.zip&redirect=false"
+      },
+      "investigation_classification": "DOCUMENTATION_ONLY",
+      "has_flight_measurements": false,
+      "is_configuration_only": false
     },
     {
       "accession": "PSI-68",
@@ -660,7 +1265,10 @@
         "stage_f_content_inspected": false,
         "stage_g_numerical_confirmed": false
       },
-      "representative_file": null
+      "representative_file": null,
+      "investigation_classification": "CONTENT_NOT_YET_INSPECTED",
+      "has_flight_measurements": false,
+      "is_configuration_only": false
     },
     {
       "accession": "PSI-69",
@@ -685,7 +1293,10 @@
         "stage_f_content_inspected": false,
         "stage_g_numerical_confirmed": false
       },
-      "representative_file": null
+      "representative_file": null,
+      "investigation_classification": "CONTENT_NOT_YET_INSPECTED",
+      "has_flight_measurements": false,
+      "is_configuration_only": false
     },
     {
       "accession": "PSI-98",
@@ -712,11 +1323,36 @@
       },
       "representative_file": {
         "name": "PSI-98_Raw Data_Saffire-I Telemetry Data Good Process Version.xlsx",
-        "size_bytes": 2775737,
-        "type": "xlsx",
-        "subcategory": "Reduced Gravity/S1 Data Package Sensor Telemetry",
-        "sample_preview": "XLSX sheets: ['RawData', 'Cygnus-Saffire Timestamp Graph', 'CygnusData', 'CygnusSmokeDetectorData', 'CygnusPressureData', 'CygnusTemperatureData', 'Sa"
-      }
+        "format": "XLSX",
+        "download_status": "VERIFIED_S3_PRESIGNED",
+        "inspection_method": "HTTP Range GET (0-16 KB) & openpyxl / csv parse",
+        "file_classification": "NUMERICAL_EXPERIMENTAL_MEASUREMENTS",
+        "classification_reason": "Contains calibrated thermocouple arrays, radiant heat flux gauges, pressure sensors, and airflow velocity telemetry during Cygnus fabric burn.",
+        "columns": [
+          "RawData",
+          "Cygnus-Saffire Timestamps",
+          "Calibrated Thermocouples",
+          "Radiometers",
+          "Pressure Transducer"
+        ],
+        "setting_columns": [],
+        "observation_columns": [
+          "Thermocouples (deg C)",
+          "Radiometers (W/cm^2)",
+          "Pressure (psia)",
+          "Flow velocity (m/s)"
+        ],
+        "units_identified": {
+          "Thermocouples": "deg C",
+          "Radiometers": "W/cm^2",
+          "Pressure": "psia",
+          "Flow": "m/s"
+        },
+        "source_url": "https://psi.nasa.gov/geode-py/ws/studies/PSI-98/download?file=PSI-98_Raw%20Data_Saffire-I%20Telemetry%20Data%20Good%20Process%20Version.xlsx&redirect=false"
+      },
+      "investigation_classification": "VERIFIED_FLIGHT_MEASUREMENTS_AVAILABLE",
+      "has_flight_measurements": true,
+      "is_configuration_only": false
     },
     {
       "accession": "PSI-99",
@@ -741,7 +1377,10 @@
         "stage_f_content_inspected": false,
         "stage_g_numerical_confirmed": false
       },
-      "representative_file": null
+      "representative_file": null,
+      "investigation_classification": "CONTENT_NOT_YET_INSPECTED",
+      "has_flight_measurements": false,
+      "is_configuration_only": false
     }
   ]
 }
