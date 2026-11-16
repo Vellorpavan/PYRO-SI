@@ -208,6 +208,45 @@ function handleComparison(rawQuery) {
     const idA = invA.psiId || invA.id || invA.accession;
     const idB = invB.psiId || invB.id || invB.accession;
 
+    let imgA = './assets/images/card_bass2.jpg';
+    let imgB = './assets/images/card_saffire.jpg';
+    if (idA === 'PSI-25' || idA === 'PSI-26') imgA = './assets/images/card_bass2.jpg';
+    else if (idA === 'PSI-98' || idA === 'PSI-100') imgA = './assets/images/card_saffire.jpg';
+    else if (idA === 'PSI-10' || idA === 'PSI-159') imgA = './assets/images/card_acme.jpg';
+    else if (idA === 'PSI-69') imgA = './assets/images/card_flex.jpg';
+
+    if (idB === 'PSI-98' || idB === 'PSI-100') imgB = './assets/images/card_saffire.jpg';
+    else if (idB === 'PSI-25' || idB === 'PSI-26') imgB = './assets/images/card_bass2.jpg';
+    else if (idB === 'PSI-10' || idB === 'PSI-159') imgB = './assets/images/card_acme.jpg';
+    else if (idB === 'PSI-69') imgB = './assets/images/card_flex.jpg';
+
+    const comparisonCards = [
+      {
+        code: codeA,
+        id: idA,
+        image: imgA,
+        platform: invA.platform || 'ISS',
+        facility: invA.rackFull || invA.rack,
+        flow: invA.airflowRange || 'Refer to parameters',
+        scale: idA === 'PSI-25' ? 'Small-Scale Coupon (1.2 cm width)' : (invA.fuelDetails || 'Standard specimen')
+      },
+      {
+        code: codeB,
+        id: idB,
+        image: imgB,
+        platform: invB.platform || 'Cygnus Resupply Vehicle',
+        facility: invB.rackFull || invB.rack,
+        flow: invB.airflowRange || 'Refer to parameters',
+        scale: idB === 'PSI-98' ? 'Large-Scale Structural Panel (0.94 m sheet)' : (invB.fuelDetails || 'Standard specimen')
+      }
+    ];
+
+    const actions = [
+      { label: `View ${codeA} in Matrix`, icon: 'fa-table-cells', onclick: `window.viewPsiStudy('${idA}')` },
+      { label: `View ${codeB} in Matrix`, icon: 'fa-table-cells', onclick: `window.viewPsiStudy('${idB}')` },
+      { label: 'Compare in Simulator', icon: 'fa-fire-flame-curved', onclick: "window.switchMainTab('tab-simulator')" }
+    ];
+
     const content = `Comparative Technical Analysis: ${codeA} (${idA}) vs ${codeB} (${idB})\n\n` +
       `1. Research Facility & Flight Platform:\n` +
       `• ${codeA}: ${invA.rackFull || invA.rack} (${invA.platform || 'ISS'})\n` +
@@ -231,6 +270,8 @@ function handleComparison(rawQuery) {
       title: `Comparative Synthesis: ${codeA} vs ${codeB}`,
       badge: `Comparative Synthesis (${idA} vs ${idB})`,
       content,
+      comparisonCards,
+      actions,
       sources: [
         { label: `NASA PSI Record: ${codeA} (${idA})`, url: invA.psiUrl || `https://psi.nasa.gov/physci/repo/data/investigations/${idA}` },
         { label: `NASA PSI Record: ${codeB} (${idB})`, url: invB.psiUrl || `https://psi.nasa.gov/physci/repo/data/investigations/${idB}` }
@@ -299,11 +340,52 @@ function handleInvestigation(inv) {
     (measurementProvenanceNote ? `${measurementProvenanceNote}\n\n` : '\n') +
     `Investigation Summary:\n${summary}`;
 
+  let image = './assets/images/card_bass2.jpg';
+  let imageCaption = `Figure 1: NASA ${code} (${id}) Microgravity Combustion Experiment`;
+  if (id === 'PSI-25' || id === 'PSI-26' || (code && code.toUpperCase().includes('BASS'))) {
+    image = './assets/images/card_bass2.jpg';
+    imageCaption = 'Figure 1: NASA BASS-II Microgravity Science Glovebox (MSG) Solid Fuel Flame Spread (PMMA flat film in 0 to 55 cm/s forced flow)';
+  } else if (id === 'PSI-98' || id === 'PSI-99' || id === 'PSI-100' || id === 'PSI-157' || (code && code.toUpperCase().includes('SAFFIRE'))) {
+    image = './assets/images/card_saffire.jpg';
+    imageCaption = 'Figure 1: NASA Saffire Large-Scale Structural Burn inside Cygnus Vehicle (0.94 m SIBAL fabric panel at 20 cm/s flow)';
+  } else if (id === 'PSI-10' || id === 'PSI-159' || id === 'PSI-20' || id === 'PSI-21' || id === 'PSI-106' || (code && code.toUpperCase().includes('ACME'))) {
+    image = './assets/images/card_acme.jpg';
+    imageCaption = 'Figure 1: NASA ACME Coflow Burner Gaseous Diffusion Flame in Combustion Integrated Rack (CIR)';
+  } else if (id === 'PSI-69' || id === 'PSI-70' || id === 'PSI-39' || id === 'PSI-117' || (code && code.toUpperCase().includes('FLEX'))) {
+    image = './assets/images/card_flex.jpg';
+    imageCaption = 'Figure 1: NASA FLEX Isolated Droplet Combustion & Low-Temperature Cool Flame (500–800 K) in CIR';
+  } else if (id === 'PSI-107') {
+    image = './assets/images/card_bass2.jpg';
+    imageCaption = 'Figure 1: NASA SPICE Flame Length Calibration & Optical Ruler Measurement in MSG';
+  }
+
+  const parameters = {
+    investigationId: id,
+    code: code,
+    facility: rack,
+    fuel: `${fuel} (${fuelDetails})`,
+    flow: flow,
+    sensors: sensors,
+    dataVolume: inv.dataSize || 'Open Access',
+    dataTier: inv.downloadableAssets?.accessTier || 'Tier A: Open Flight Data',
+    epistemicClassification: inv.provenance?.epistemicClassification || 'NUMERICAL_EXPERIMENTAL_DATA'
+  };
+
+  const actions = [
+    { label: 'Explore in PSI Matrix', icon: 'fa-table-cells', onclick: `window.viewPsiStudy('${id}')` },
+    { label: 'Load in Simulator', icon: 'fa-fire-flame-curved', onclick: "window.switchMainTab('tab-simulator')" },
+    { label: 'Copy Citation', icon: 'fa-copy', onclick: `window.copyResearchCitation('${doi}')` }
+  ];
+
   return {
     intent: 'investigation',
     title: `NASA Investigation: ${code} (${id})`,
     badge: `VERIFIED FLIGHT RECORD: ${id}`,
     content,
+    image,
+    imageCaption,
+    parameters,
+    actions,
     sources: [
       { label: `NASA PSI Official Repository: ${id}`, url: psiUrl },
       { label: `Citation / Reference (${doi})`, url: doi.startsWith('10.') ? `https://doi.org/${doi}` : psiUrl, doi: doi.startsWith('10.') ? doi : undefined }
@@ -363,6 +445,8 @@ export function queryKnowledgeBase(rawQuery) {
     return {
       intent: 'thematic',
       ...knowledgeStore.coolflames,
+      image: './assets/images/card_flex.jpg',
+      imageCaption: 'Figure 1: NASA FLEX Isolated Droplet Combustion & Low-Temperature Cool Flame (500–800 K) in CIR',
       sources: [
         { label: 'Nayagam et al. (2012) Combustion and Flame', url: 'https://doi.org/10.1016/j.combustflame.2012.07.009', doi: '10.1016/j.combustflame.2012.07.009' },
         { label: 'NASA PSI Repository: FLEX (PSI-69)', url: 'https://psi.nasa.gov/physci/repo/data/investigations/PSI-69' }
@@ -377,6 +461,8 @@ export function queryKnowledgeBase(rawQuery) {
     return {
       intent: 'thematic',
       ...knowledgeStore.moon,
+      image: './assets/images/sidebar_lunar_card.jpg',
+      imageCaption: 'Figure 1: Artemis Lunar Habitat (0.16g) 34% O₂ Exploration Atmosphere Flammability Regime & Low-Buoyancy Convective Flame Spread',
       sources: [
         { label: 'NASA-STD-3001 Vol 2 Rev F [V2 6003] inspired pO2', url: 'https://www.nasa.gov' },
         { label: 'T\'ien & Ferkul (1999) Low-Buoyancy Combustion', url: 'https://doi.org/10.1016/S0082-0784(98)80058-2' }
@@ -391,6 +477,8 @@ export function queryKnowledgeBase(rawQuery) {
     return {
       intent: 'thematic',
       ...knowledgeStore.suppress,
+      image: './assets/images/hero_space_flame_bg.jpg',
+      imageCaption: 'Figure 1: Microgravity Flame Suppression & Fine Water Mist Volumetric Heat Absorption Dynamics',
       sources: [
         { label: 'NASA-STD-3001 Volume 2 Revision F (July 14, 2026)', url: 'https://www.nasa.gov' },
         { label: 'NASA-STD-6001B w/Change 3 (Flammability Screening)', url: 'https://www.nasa.gov' }
@@ -406,6 +494,8 @@ export function queryKnowledgeBase(rawQuery) {
     return {
       intent: 'thematic',
       ...data,
+      image: './assets/images/card_acme.jpg',
+      imageCaption: 'Figure 1: NASA Combustion Integrated Rack (CIR) & Microgravity Science Glovebox (MSG) Hardware Platforms',
       sources: [
         { label: 'NASA GRC Combustion Integrated Rack (CIR)', url: 'https://psi.nasa.gov' },
         { label: 'NASA MSFC Microgravity Science Glovebox (MSG)', url: 'https://psi.nasa.gov' }
@@ -420,6 +510,8 @@ export function queryKnowledgeBase(rawQuery) {
     return {
       intent: 'thematic',
       ...knowledgeStore.alarms,
+      image: './assets/images/card_bass2.jpg',
+      imageCaption: 'Figure 1: Microgravity Aerosol Diagnostics and Smoke Sensor Discrimination via SAME-R & DAFT Systems',
       sources: [
         { label: 'NASA PSI Repository: SAME-R (PSI-101)', url: 'https://psi.nasa.gov/physci/repo/data/investigations/PSI-101' },
         { label: 'NASA PSI Repository: DAFT-2 (PSI-47)', url: 'https://psi.nasa.gov/physci/repo/data/investigations/PSI-47' }
@@ -434,6 +526,8 @@ export function queryKnowledgeBase(rawQuery) {
     return {
       intent: 'thematic',
       ...knowledgeStore.saffire,
+      image: './assets/images/card_saffire.jpg',
+      imageCaption: 'Figure 1: NASA Saffire Large-Scale Structural Burn inside Cygnus Vehicle (0.94 m SIBAL fabric panel at 20 cm/s flow)',
       sources: [
         { label: 'NASA PSI Repository: SAFFIRE-I (PSI-98)', url: 'https://psi.nasa.gov/physci/repo/data/investigations/PSI-98' },
         { label: 'Saffire-I Flight Analysis (DOI: 10.2514/6.2017-0158)', url: 'https://doi.org/10.2514/6.2017-0158', doi: '10.2514/6.2017-0158' }
@@ -467,9 +561,33 @@ export function getPresetResponse(key) {
   const entry = knowledgeStore[resolvedKey];
   if (!entry) return null;
 
+  let presetImg = './assets/images/card_bass2.jpg';
+  let presetCap = `Figure 1: NASA Combustion Research Briefing — ${entry.badge}`;
+  if (resolvedKey === 'moon') {
+    presetImg = './assets/images/sidebar_lunar_card.jpg';
+    presetCap = 'Figure 1: Artemis Lunar Habitat (0.16g) 34% O₂ Exploration Atmosphere Flammability Regime';
+  } else if (resolvedKey === 'coolflames') {
+    presetImg = './assets/images/card_flex.jpg';
+    presetCap = 'Figure 1: NASA FLEX Isolated Droplet Burning & Radiative Extinction followed by 500–800 K Invisible Cool Flame Regime';
+  } else if (resolvedKey === 'hardware') {
+    presetImg = './assets/images/card_acme.jpg';
+    presetCap = 'Figure 1: Primary NASA Microgravity Combustion Facilities (CIR, MSG, and Cygnus Wind Tunnel)';
+  } else if (resolvedKey === 'alarms') {
+    presetImg = './assets/images/card_bass2.jpg';
+    presetCap = 'Figure 1: Microgravity Aerosol Diagnostics and Smoke Sensor Discrimination via SAME-R & DAFT Systems';
+  } else if (resolvedKey === 'saffire') {
+    presetImg = './assets/images/card_saffire.jpg';
+    presetCap = 'Figure 1: NASA Saffire Cygnus Cargo Vehicle Large-Scale Structural Burn (0.94 m Fabric Sheet)';
+  } else if (resolvedKey === 'suppress') {
+    presetImg = './assets/images/hero_space_flame_bg.jpg';
+    presetCap = 'Figure 1: Microgravity Flame Suppression & Fine Water Mist Volumetric Heat Absorption Dynamics';
+  }
+
   return {
     intent: 'preset',
     ...entry,
+    image: presetImg,
+    imageCaption: presetCap,
     sources: [
       { label: `NASA PSI Knowledge Archive: ${entry.badge}`, url: 'https://psi.nasa.gov' }
     ],

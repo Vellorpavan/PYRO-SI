@@ -311,17 +311,90 @@ def get_iss_telemetry():
     }
 
 
+def try_gemini_synthesis(raw_query: str) -> Optional[QueryResponse]:
+    """
+    Attempts to query the official Google Gemini API (gemini-2.0-flash / gemini-1.5-flash)
+    using the official google.genai SDK.
+    Grounds the model on NASA Physical Sciences Informatics (PSI) combustion research.
+    """
+    gemini_key = os.getenv("GEMINI_API_KEY")
+    if not gemini_key or gemini_key.strip() in ("", "your_gemini_api_key_here"):
+        return None
+
+    try:
+        from google import genai
+        client = genai.Client(api_key=gemini_key.strip())
+        model_name = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
+
+        system_instruction = (
+            "You are GODEYE // PYRO-SI, NASA Combustion Science Intelligence Co-Pilot. "
+            "You provide grounded, executive scientific briefings based on NASA Physical Sciences Informatics (PSI), "
+            "NASA-STD-3001 Rev F, and NASA-STD-6001B.\n"
+            "Strict Guidelines:\n"
+            "1. If the user greeting is conversational, return intent 'greeting', verified false, and no sources.\n"
+            "2. For specific flight investigations (BASS-II, Saffire, ACME, FLEX, etc.), return exact parameters, "
+            "distinguishing direct sensor measurements from image-extracted data (e.g. BASS-II optical videos, SPICE photoshop rulers) "
+            "and derived equilibrium calculations (e.g. Tad via NASA CEA).\n"
+            "3. For multi-investigation comparisons, contrast small-scale vs large-scale dynamics, flow velocities, and facilities.\n"
+            "4. For out-of-scope queries (e.g. speed of sound on Mars, non-space topics), return intent 'unsupported', verified false, empty sources.\n"
+            "Return valid JSON conforming to:\n"
+            "{\n"
+            "  \"title\": \"string\",\n"
+            "  \"badge\": \"string\",\n"
+            "  \"content\": \"string\",\n"
+            "  \"citations\": [\"string\"],\n"
+            "  \"intent\": \"greeting\" | \"investigation\" | \"comparison\" | \"thematic\" | \"unsupported\",\n"
+            "  \"status\": \"string\",\n"
+            "  \"verified\": boolean,\n"
+            "  \"sources\": [{\"label\": \"string\", \"url\": \"string\", \"doi\": \"string\"}]\n"
+            "}"
+        )
+
+        resp = client.models.generate_content(
+            model=model_name,
+            contents=f"User Query: {raw_query}",
+            config=dict(
+                system_instruction=system_instruction,
+                response_mime_type="application/json"
+            )
+        )
+
+        if resp and resp.text:
+            parsed = json.loads(resp.text)
+            return QueryResponse(
+                title=parsed.get("title", "NASA Combustion Research Intelligence"),
+                badge=parsed.get("badge", "Synthesized"),
+                content=parsed.get("content", ""),
+                citations=parsed.get("citations", []),
+                intent=parsed.get("intent", "thematic"),
+                status=parsed.get("status", "VERIFIED NASA PSI EVIDENCE"),
+                verified=bool(parsed.get("verified", False)),
+                sources=parsed.get("sources", [])
+            )
+    except Exception as e:
+        logger.warning(f"[Copilot] Gemini API call skipped or encountered error: {e}. Falling back to deterministic knowledge engine.")
+        return None
+
+    return None
+
+
 @app.post("/api/v1/copilot/query", response_model=QueryResponse)
 def handle_copilot_query(req: QueryRequest):
     """
     Evidence-grounded, intent-aware Co-Pilot research query endpoint.
     Distinguishes greetings, multi-study comparisons, specific study retrievals,
     and out-of-scope queries without returning fabricated research syntheses.
+    Supports real-time Gemini API generative synthesis when GEMINI_API_KEY is configured.
     """
     raw_q = req.query.strip()
     q = raw_q.lower()
     if not q:
         raise HTTPException(status_code=400, detail="Query cannot be empty.")
+
+    # 0. Live Gemini API Synthesis (if configured)
+    gemini_resp = try_gemini_synthesis(raw_q)
+    if gemini_resp is not None:
+        return gemini_resp
 
     # 1. Greetings
     if re.match(r"^(hello|hi|hey|greetings|howdy|good\s+morning|good\s+afternoon|good\s+evening|help|who\s+are\s+you)(\s+.*)?$", q):

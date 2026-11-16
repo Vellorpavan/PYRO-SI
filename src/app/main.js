@@ -52,6 +52,18 @@ window.runPredictiveModel = runPredictiveModel;
 window.runSiPrompt = runSiPrompt;
 window.submitCustomSiQuery = submitCustomSiQuery;
 window.copySubmissionBlock = copySubmissionBlock;
+window.copyResearchCitation = (citationText) => {
+  if (!citationText) return;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(citationText).then(() => {
+      alert(`Research citation copied to clipboard:\n${citationText}`);
+    }).catch(() => {
+      prompt('Copy Research Citation:', citationText);
+    });
+  } else {
+    prompt('Copy Research Citation:', citationText);
+  }
+};
 
 // Lab Studio View Switcher (3D Orbital Globe vs 2D Flame Physics)
 window.switchLabStudio = (mode) => {
