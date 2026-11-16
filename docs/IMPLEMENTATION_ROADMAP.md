@@ -4,7 +4,7 @@
 **Challenge:** NASA Space Apps Challenge 2026 — *Flame in Freefall*  
 **Date:** November 16, 2026  
 **Document Identifier:** NASA-PYRO-ROADMAP-001  
-**Version:** 4.9 (Phase 2.3.4 NASA PSI Combustion Dataset Discovery & Retrieval Completed)  
+**Version:** 4.10 (Phase 2.3.4.1 Independent Catalogue Reconciliation & Dataset Content Verification Completed)  
 **Governance Standard:** NASA Systems Engineering Handbook (SP-2016-6105)
 
 ---
@@ -317,13 +317,27 @@ To ensure **GODEYE // PYRO-SI** achieves absolute scientific credibility while f
   - Preserved existing 19-record catalogue and scientific equation integrity.
   - Authored `docs/NASA_PSI_RETRIEVAL_ARCHITECTURE.md`, `docs/NASA_COMBUSTION_DATASET_AVAILABILITY_MATRIX.md`, and `docs/PHASE_2_3_4_NASA_COMBUSTION_DATA_DISCOVERY.md`.
   - Maintained 100% test pass rate: 34 Python backend tests and 848 Node.js scientific assertions passing.
+- [x] **Task 19: Phase 2.3.4.1 Independent Catalogue Reconciliation & Dataset Content Verification:**
+  - Independently audited and mathematically reconciled catalogue arithmetic directly from underlying NASA PSI records: corrected total file count from 16,334 to 16,354 files (+20 files from complete unpaginated iteration across all 24 investigations).
+  - Resolved dataset size semantic conflation: separated metadata-reported data volume (`metadata_reported_size_bytes` = 13,496,771,103,733 bytes / 12,569.85 GiB / 12.28 TiB / 13.50 TB decimal) from actual available downloadable bytes in AWS S3 (`available_file_size_bytes` = 6,267,023,479,252 bytes / 5,836.62 GiB / 5.70 TiB / 6.27 TB decimal).
+  - Reconciled single-table accessions: proved `PSI-20` (ACME BRE, 1,113 B), `PSI-21` (ACME CLD Flame, 2,454 B), and `PSI-106` (SLICE, 734 B) were small CSV test matrices, correcting the erroneous Phase 2.3.4 addition of their ~3.74 TB metadata values to downloadable file volume.
+  - Isolated zero-file investigations: verified that `PSI-22`, `PSI-68`, `PSI-69`, and `PSI-99` have 0 files in public S3 despite listing 2,901.75 GiB (2.83 TiB) in metadata; strictly classified them as `CONTENT_NOT_YET_INSPECTED` with `available_file_size_bytes == 0`.
+  - Evaluated 7 verification stages (Stage A through G) on representative files: Stage A (24/24), Stage B (20/24), Stage C (20/20), Stage D (20/20), Stage E (20/20 for files < 5 MB), Stage F (20/20 opened and inspected), Stage G (16 numerical experimental confirmed, 2 models/code, 2 documentation-only).
+  - Enforced 6 mutually exclusive epistemic classifications across all 24 investigations: `NUMERICAL_EXPERIMENTAL_DATA` (16), `CODE_OR_MODEL_ONLY` (2: PSI-115, PSI-117), `DOCUMENTATION_ONLY` (2: PSI-60, PSI-62), `CONTENT_NOT_YET_INSPECTED` (4: PSI-22, PSI-68, PSI-69, PSI-99), `NUMERICAL_DERIVED_DATA` (0 standalone), `VIDEO_OR_IMAGE_ONLY` (0 standalone).
+  - Audited search discovery completeness: documented 11 queries, 46 initial candidate accessions, and detailed reasons for excluding 22 non-combustion accessions (fluid physics, materials science, colloids, biophysics, ultracold atoms).
+  - Reassessed anonymous session protection: documented `POST /api/v1/auth/session` as an anonymous client session lease token and rate gate with a realistic threat model (protects against casual scraping and API key exposure; does not defend against distributed botnets or proxy rotation).
+  - Authored automated regression suite in `tests/backend/test_catalogue_reconciliation.py` (6 tests asserting summary totals strictly equal the sum of individual records).
+  - Generated reconciled JSON catalogue in `src/data/reference/psi-reconciled-combustion.json`.
+  - Preserved existing 19 core flight calibrations in `src/data/reference/psi-investigations.json`.
+  - Maintained 100% test pass rate across all suites: 46 Python backend tests and 848 Node.js scientific assertions passing (**894 total platform assertions PASS / 0 FAIL**).
+  - Authored `docs/PHASE_2_3_4_1_INDEPENDENT_VERIFICATION_REPORT.md`, `docs/NASA_CATALOGUE_RECONCILIATION_REPORT.md`, and `docs/NASA_DATASET_CONTENT_VERIFICATION_MATRIX.md`.
 
 ---
 
 ## 3. Next Phase Gates
 
 ```
-Phase 1 (Complete) ➔ Phase 1.1 (Complete) ➔ Phase 2 (Complete) ➔ Phase 2.1 (Complete) ➔ Phase 2.2 (Complete) ➔ Phase 2.2.1 (Complete) ➔ Phase 2.2.2 (Complete) ➔ Phase 2.2.3 (Complete) ➔ Phase 2.2.4 (Complete) ➔ Phase 2.2.4.1 (Complete) ➔ Phase 2.2.4.2 (Complete & FROZEN) ➔ Phase 2.3.1 (Complete) ➔ Phase 2.3.2 (Complete) ➔ Phase 2.3.3 (Complete) ➔ Phase 2.3.4 (Complete & VERIFIED) ➔ [AWAITING USER GATE APPROVAL FOR PHASE 3] ➔ Phase 3 (Gemini RAG Integration)
+Phase 1 (Complete) ➔ Phase 1.1 (Complete) ➔ Phase 2 (Complete) ➔ Phase 2.1 (Complete) ➔ Phase 2.2 (Complete) ➔ Phase 2.2.1 (Complete) ➔ Phase 2.2.2 (Complete) ➔ Phase 2.2.3 (Complete) ➔ Phase 2.2.4 (Complete) ➔ Phase 2.2.4.1 (Complete) ➔ Phase 2.2.4.2 (Complete & FROZEN) ➔ Phase 2.3.1 (Complete) ➔ Phase 2.3.2 (Complete) ➔ Phase 2.3.3 (Complete) ➔ Phase 2.3.4 (Complete) ➔ Phase 2.3.4.1 (Complete & RECONCILED) ➔ [AWAITING USER GATE APPROVAL FOR PHASE 3] ➔ Phase 3 (Gemini RAG Integration)
 ```
 
 No Phase 3 Gemini RAG integration will commence without explicit user review and authorization.
