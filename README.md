@@ -94,13 +94,23 @@ node tests/test-runner.js
 
 ```text
 PYRO-SI/
-├── _ORIGINAL_SOURCE_BACKUP.html    # Preserved monolithic source backup
 ├── index.html                      # Modular HTML entry point
 ├── package.json                    # NPM scripts & metadata
 ├── .env.example                    # Environment variable template
 ├── .gitignore                      # Git exclusion rules
+├── PROJECT_CONTEXT.md              # NASA Space Apps Challenge mission context
 │
-├── docs/                           # Engineering documentation (see index below)
+├── docs/                           # Authoritative engineering documentation
+│   ├── ARCHITECTURE.md             # System architecture & component design
+│   ├── DATASET_CATALOG.md          # NASA PSI investigation catalog & links
+│   ├── SCIENTIFIC_VALIDATION.md    # Math transparency & formula disclosures
+│   ├── DEVELOPMENT_RULES.md        # Engineering guidelines & scientific rules
+│   └── figures/                    # Interactive isometric figures (Anatomy skill)
+│
+├── backend/                        # FastAPI Scientific Intelligence Gateway
+│   ├── api/main.py                 # REST API, Gemini synthesis & proxy endpoints
+│   ├── intelligence/nasa_rag.py    # NASA PSI RAG retrieval engine
+│   └── services/                   # Data reconciliation & ingest services
 │
 ├── public/                         # Static assets
 │   ├── index.html
@@ -138,7 +148,8 @@ PYRO-SI/
 └── tests/
     ├── unit/                       # Flammability model & ranker tests
     ├── scientific/                 # Partial-g bounding curve tests
-    └── test-runner.js              # Zero-dependency runner
+    ├── backend/                    # Python API & RAG verification tests
+    └── test-runner.js              # Zero-dependency test runner
 ```
 
 ### Design principles
@@ -171,16 +182,12 @@ Key phenomena modeled or visualized:
 
 | Document | Purpose |
 |---|---|
-| [`EXISTING_SYSTEM_AUDIT.md`](docs/EXISTING_SYSTEM_AUDIT.md) | Feature-by-feature audit of the original system |
-| [`ARCHITECTURE.md`](docs/ARCHITECTURE.md) | System architecture and component design |
-| [`GAP_ANALYSIS.md`](docs/GAP_ANALYSIS.md) | Missing capabilities and research dataset gaps |
-| [`DATASET_CATALOG.md`](docs/DATASET_CATALOG.md) | NASA PSI investigation catalog and links |
-| [`SCIENTIFIC_VALIDATION.md`](docs/SCIENTIFIC_VALIDATION.md) | Math transparency and formula disclosures |
-| [`GOOGLE_TECH_INTEGRATION.md`](docs/GOOGLE_TECH_INTEGRATION.md) | Gemini RAG and GCP architecture plan |
-| [`UI_UX_IMPROVEMENT_PLAN.md`](docs/UI_UX_IMPROVEMENT_PLAN.md) | Design tokens and accessibility standards |
-| [`DEVELOPMENT_RULES.md`](docs/DEVELOPMENT_RULES.md) | Engineering guidelines and scientific rules |
-| [`IMPLEMENTATION_ROADMAP.md`](docs/IMPLEMENTATION_ROADMAP.md) | Phased implementation schedule |
-| [`MIGRATION_AND_TESTING_REPORT.md`](docs/MIGRATION_AND_TESTING_REPORT.md) | Verification report and benchmarks |
+| [`PROJECT_CONTEXT.md`](PROJECT_CONTEXT.md) | NASA Space Apps Challenge mission background & problem framing |
+| [`ARCHITECTURE.md`](docs/ARCHITECTURE.md) | System architecture, data flow, and component design |
+| [`DATASET_CATALOG.md`](docs/DATASET_CATALOG.md) | NASA Physical Sciences Informatics (PSI) investigation catalog |
+| [`SCIENTIFIC_VALIDATION.md`](docs/SCIENTIFIC_VALIDATION.md) | Mathematical formulas, physics equations, and scientific disclosures |
+| [`DEVELOPMENT_RULES.md`](docs/DEVELOPMENT_RULES.md) | Engineering standards, code conventions, and safety boundaries |
+| [`combustion-rig/`](docs/figures/combustion-rig/combustion-rig.html) | Interactive isometric explanation figure (Anatomy skill) |
 
 ---
 
